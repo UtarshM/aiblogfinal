@@ -19,6 +19,10 @@ const getApiBase = () => {
 
 const API_BASE = getApiBase();
 
+// Debug: Log API URL in console
+console.log('[API] Environment:', import.meta.env.MODE, 'PROD:', import.meta.env.PROD);
+console.log('[API] Using API URL:', API_BASE);
+
 // Create axios instance with default config
 const axiosInstance = axios.create({
   baseURL: API_BASE,
