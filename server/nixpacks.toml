@@ -1,6 +1,6 @@
 # Force Node.js detection
 [phases.setup]
-nixPkgs = ["nodejs_22", "npm", "python311"]
+nixPkgs = ["nodejs", "python311"]
 
 [phases.install]
 cmds = ["npm install"]
