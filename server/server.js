@@ -650,7 +650,7 @@ app.post('/api/auth/change-password', authenticateToken, async (req, res) => {
 // Delete Account (authenticated)
 app.delete('/api/auth/delete-account', authenticateToken, async (req, res) => {
   try {
-    const { password } = req.body;
+    const { password, confirmText } = req.body;
     const userId = req.user.userId;
 
     // Find user
@@ -659,8 +659,19 @@ app.delete('/api/auth/delete-account', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Verify password before deletion
-    if (password) {
+    // Check if user signed up with Google (has googleId)
+    const isGoogleUser = !!user.googleId;
+
+    if (isGoogleUser) {
+      // For Google users, verify they typed "DELETE"
+      if (confirmText !== 'DELETE') {
+        return res.status(400).json({ error: 'Please type DELETE to confirm account deletion' });
+      }
+    } else {
+      // For email/password users, verify password
+      if (!password) {
+        return res.status(400).json({ error: 'Password is required to delete account' });
+      }
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         return res.status(400).json({ error: 'Incorrect password' });
@@ -679,6 +690,22 @@ app.delete('/api/auth/delete-account', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Delete account error:', error);
     res.status(500).json({ error: 'Server error during account deletion' });
+  }
+});
+
+// Check if user is Google OAuth user
+app.get('/api/auth/account-type', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({ 
+      isGoogleUser: !!user.googleId,
+      email: user.email 
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

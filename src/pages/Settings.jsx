@@ -532,14 +532,34 @@ export default function Settings() {
                                                     const confirmed = window.confirm('⚠️ Are you sure you want to delete your account? This action cannot be undone.');
                                                     if (!confirmed) return;
 
-                                                    const password = window.prompt('Enter your password to confirm deletion:');
-                                                    if (!password) return;
-
                                                     try {
                                                         const token = localStorage.getItem('token');
                                                         const API_URL = import.meta.env.PROD
                                                             ? 'https://ai-automation-production-c35e.up.railway.app'
                                                             : 'http://localhost:3001';
+
+                                                        // First check if user is Google OAuth user
+                                                        const typeResponse = await fetch(`${API_URL}/api/auth/account-type`, {
+                                                            headers: { 'Authorization': `Bearer ${token}` }
+                                                        });
+                                                        const typeData = await typeResponse.json();
+
+                                                        let deleteBody = {};
+
+                                                        if (typeData.isGoogleUser) {
+                                                            // Google user - ask to type DELETE
+                                                            const confirmText = window.prompt('You signed in with Google. Type "DELETE" to confirm account deletion:');
+                                                            if (confirmText !== 'DELETE') {
+                                                                alert('❌ You must type DELETE exactly to confirm.');
+                                                                return;
+                                                            }
+                                                            deleteBody = { confirmText };
+                                                        } else {
+                                                            // Email/password user - ask for password
+                                                            const password = window.prompt('Enter your password to confirm deletion:');
+                                                            if (!password) return;
+                                                            deleteBody = { password };
+                                                        }
 
                                                         const response = await fetch(`${API_URL}/api/auth/delete-account`, {
                                                             method: 'DELETE',
@@ -547,7 +567,7 @@ export default function Settings() {
                                                                 'Content-Type': 'application/json',
                                                                 'Authorization': `Bearer ${token}`
                                                             },
-                                                            body: JSON.stringify({ password })
+                                                            body: JSON.stringify(deleteBody)
                                                         });
 
                                                         const data = await response.json();
