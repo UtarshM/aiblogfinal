@@ -1,0 +1,49 @@
+PROPRIETARY LICENSE
+
+Copyright © 2025 Harsh J Kuhikar. All Rights Reserved.
+
+AI Marketing Platform
+
+This software and associated documentation files (the "Software") are the 
+exclusive property of Harsh J Kuhikar.
+
+TERMS AND CONDITIONS:
+
+1. OWNERSHIP
+   The Software is owned by and is the proprietary property of Harsh J Kuhikar.
+
+2. RESTRICTIONS
+   You may NOT:
+   - Copy, modify, or distribute the Software
+   - Reverse engineer, decompile, or disassemble the Software
+   - Remove or alter any copyright notices
+   - Use the Software for commercial purposes without permission
+   - Transfer or sublicense the Software to any third party
+
+3. COPYRIGHT
+   All rights, title, and interest in and to the Software, including all 
+   intellectual property rights, are and shall remain the exclusive property 
+   of Harsh J Kuhikar.
+
+4. TERMINATION
+   This license is effective until terminated. Your rights under this license 
+   will terminate automatically without notice if you fail to comply with any 
+   of its terms.
+
+5. DISCLAIMER
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+6. LIMITATION OF LIABILITY
+   IN NO EVENT SHALL HARSH J KUHIKAR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+   LIABILITY ARISING FROM THE USE OF THE SOFTWARE.
+
+For licensing inquiries or permissions, contact:
+Harsh J Kuhikar
+
+---
+
+UNAUTHORIZED USE, REPRODUCTION, OR DISTRIBUTION IS STRICTLY PROHIBITED.
+
+© 2025 Harsh J Kuhikar. All Rights Reserved.

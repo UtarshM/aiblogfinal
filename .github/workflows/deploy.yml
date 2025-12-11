@@ -1,0 +1,63 @@
+# GitHub Actions - Auto Deploy to AWS EC2
+# When you push to main branch, it automatically deploys to your server
+
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /var/www/ai-marketing
+            
+            # Pull latest code
+            git pull origin main
+            
+            # Install backend dependencies
+            cd server
+            npm install --production
+            
+            # Install frontend dependencies and build
+            cd ..
+            npm install --production
+            npm run build
+            
+            # Restart backend with PM2
+            pm2 restart ai-marketing-backend || pm2 start server/server.js --name ai-marketing-backend
+            
+            echo "✅ Deployment complete!"
+
+# ═══════════════════════════════════════════════════════════════
+# SETUP INSTRUCTIONS:
+# ═══════════════════════════════════════════════════════════════
+#
+# 1. Go to your GitHub repo → Settings → Secrets and variables → Actions
+#
+# 2. Add these secrets:
+#    - EC2_HOST: Your EC2 public IP (e.g., 54.123.45.67)
+#    - EC2_USERNAME: ubuntu
+#    - EC2_SSH_KEY: Your private key content (the .pem file content)
+#
+# 3. On your EC2, setup Git:
+#    cd /var/www/ai-marketing
+#    git init
+#    git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+#    git pull origin main
+#
+# 4. Now every push to main branch will auto-deploy!
+# ═══════════════════════════════════════════════════════════════
