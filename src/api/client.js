@@ -2,12 +2,16 @@ import axios from 'axios';
 
 // Auto-detect API URL based on environment
 const getApiBase = () => {
-  // In production, use relative URL (same domain)
+  // If VITE_API_URL is set, use it (for split deployment: Vercel + Railway)
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // In production, use relative URL (same domain deployment)
   if (import.meta.env.PROD) {
     return '/api';
   }
   // In development, use localhost
-  return import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+  return 'http://localhost:3001/api';
 };
 
 const API_BASE = getApiBase();
