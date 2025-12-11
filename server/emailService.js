@@ -51,6 +51,16 @@ export function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Helper function to send email with timeout
+async function sendMailWithTimeout(mailOptions, timeoutMs = 5000) {
+  return Promise.race([
+    transporter.sendMail(mailOptions),
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Email timeout')), timeoutMs)
+    )
+  ]);
+}
+
 // Send OTP Email
 export async function sendOTPEmail(email, otp, name) {
   const mailOptions = {
@@ -106,7 +116,7 @@ export async function sendOTPEmail(email, otp, name) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await sendMailWithTimeout(mailOptions, 5000); // 5 second timeout
     return { success: true };
   } catch (error) {
     console.error('Email send error:', error);

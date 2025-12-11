@@ -127,7 +127,7 @@ PORT=3001
 MONGODB_URI=mongodb+srv://White-Label-AI-Automation:Kuhikar%401122@white-label-ai-automati.7wej9qy.mongodb.net/ai-marketing?retryWrites=true&w=majority
 
 # JWT Secret (CHANGE THIS!)
-JWT_SECRET=your-super-secure-random-string-at-least-32-characters
+JWT_SECRET=34c4707a286765174936301cd234a6ec
 
 # Frontend URL (update with your domain)
 FRONTEND_URL=https://yourdomain.com
