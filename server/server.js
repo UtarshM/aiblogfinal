@@ -160,19 +160,24 @@ app.post('/api/auth/signup', async (req, res) => {
     await newOTP.save();
 
     // Try to send OTP email (but don't fail if email not configured)
+    let emailSent = false;
     try {
       const emailResult = await sendOTPEmail(email, otp, name);
+      emailSent = emailResult.success;
       if (!emailResult.success) {
-        console.log('Email not sent (not configured):', emailResult.error);
+        console.log('Email not sent:', emailResult.error);
       }
     } catch (emailError) {
-      console.log('Email service not configured:', emailError.message);
+      console.log('Email service error:', emailError.message);
     }
 
+    // Always return OTP if email failed (so user can still verify)
     res.json({ 
       success: true, 
-      message: 'OTP sent to your email. Please verify to complete registration.',
-      otp: process.env.NODE_ENV === 'development' ? otp : undefined // Show OTP in dev mode
+      message: emailSent 
+        ? 'OTP sent to your email. Please verify to complete registration.'
+        : 'Account created! Use the OTP below to verify (email service unavailable).',
+      otp: emailSent ? undefined : otp // Show OTP if email failed
     });
 
   } catch (error) {
