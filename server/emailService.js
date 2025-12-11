@@ -15,17 +15,24 @@ let transporter;
 let useResend = false;
 let useBrevo = false;
 
+console.log('[EMAIL] Checking BREVO_API_KEY:', process.env.BREVO_API_KEY ? 'SET' : 'NOT SET');
+
 if (process.env.BREVO_API_KEY) {
   // Brevo (Sendinblue) - FREE 300 emails/day, no domain verification needed
   useBrevo = true;
+  const brevoEmail = process.env.BREVO_EMAIL || process.env.EMAIL_USER || 'scalezix@gmail.com';
+  console.log('[EMAIL] Using Brevo with email:', brevoEmail);
   transporter = nodemailer.createTransport({
     host: 'smtp-relay.brevo.com',
     port: 587,
     secure: false,
     auth: {
-      user: process.env.BREVO_EMAIL || process.env.EMAIL_USER,
+      user: brevoEmail,
       pass: process.env.BREVO_API_KEY
-    }
+    },
+    connectionTimeout: 30000,
+    greetingTimeout: 30000,
+    socketTimeout: 30000
   });
   console.log('✅ Email Service: Brevo configured');
 } else if (process.env.RESEND_API_KEY) {
@@ -169,7 +176,7 @@ export async function sendOTPEmail(email, otp, name) {
     if (useResend) {
       await sendViaResend(email, mailOptions.subject, mailOptions.html);
     } else if (transporter) {
-      await sendMailWithTimeout(mailOptions, 10000); // 10 second timeout for SMTP
+      await sendMailWithTimeout(mailOptions, 30000); // 30 second timeout for SMTP
     } else {
       throw new Error('No email service configured');
     }
