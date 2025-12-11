@@ -116,6 +116,147 @@ app.get('/api/health', (req, res) => {
 
 // AUTH ENDPOINTS
 
+// Google OAuth URL
+app.get('/api/auth/google/url', (req, res) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  
+  if (!clientId) {
+    return res.status(400).json({ 
+      error: 'Google OAuth not configured',
+      message: 'Please use email and password to login'
+    });
+  }
+  
+  const redirectUri = process.env.NODE_ENV === 'production'
+    ? 'https://ai-automation-production-c35e.up.railway.app/api/auth/google/callback'
+    : 'http://localhost:3001/api/auth/google/callback';
+  
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${clientId}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `&response_type=code` +
+    `&scope=${encodeURIComponent('email profile')}` +
+    `&access_type=offline`;
+  
+  res.json({ authUrl });
+});
+
+// Google OAuth Callback
+app.get('/api/auth/google/callback', async (req, res) => {
+  try {
+    const { code } = req.query;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    
+    if (!code) {
+      return res.redirect(`${frontendUrl}/login?error=no_code`);
+    }
+    
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const redirectUri = process.env.NODE_ENV === 'production'
+      ? 'https://ai-automation-production-c35e.up.railway.app/api/auth/google/callback'
+      : 'http://localhost:3001/api/auth/google/callback';
+    
+    // Exchange code for tokens
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: redirectUri,
+        grant_type: 'authorization_code'
+      })
+    });
+    
+    const tokens = await tokenResponse.json();
+    
+    if (!tokens.access_token) {
+      console.error('Google token error:', tokens);
+      return res.redirect(`${frontendUrl}/login?error=token_failed`);
+    }
+    
+    // Get user info from Google
+    const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: { Authorization: `Bearer ${tokens.access_token}` }
+    });
+    
+    const googleUser = await userResponse.json();
+    
+    if (!googleUser.email) {
+      return res.redirect(`${frontendUrl}/login?error=no_email`);
+    }
+    
+    // Find or create user
+    let user = await User.findOne({ email: googleUser.email.toLowerCase() });
+    
+    if (!user) {
+      // Create new user
+      user = new User({
+        name: googleUser.name || googleUser.email.split('@')[0],
+        email: googleUser.email.toLowerCase(),
+        password: await bcrypt.hash(Math.random().toString(36), 10), // Random password
+        isVerified: true, // Google users are auto-verified
+        googleId: googleUser.id,
+        profile: {
+          firstName: googleUser.given_name || '',
+          lastName: googleUser.family_name || '',
+          profileImage: googleUser.picture || null
+        }
+      });
+      await user.save();
+      console.log('✅ New Google user created:', googleUser.email);
+    } else {
+      // Update existing user with Google info
+      user.googleId = googleUser.id;
+      user.isVerified = true;
+      if (googleUser.picture && !user.profile?.profileImage) {
+        user.profile = { ...user.profile, profileImage: googleUser.picture };
+      }
+      await user.save();
+    }
+    
+    // Generate JWT
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    // Redirect to frontend with token
+    res.redirect(`${frontendUrl}/oauth/callback?token=${token}&name=${encodeURIComponent(user.name)}`);
+    
+  } catch (error) {
+    console.error('Google OAuth error:', error);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/login?error=oauth_failed`);
+  }
+});
+
+// GitHub OAuth URL
+app.get('/api/auth/github/url', (req, res) => {
+  const clientId = process.env.GITHUB_CLIENT_ID;
+  
+  if (!clientId) {
+    return res.status(400).json({ 
+      error: 'GitHub OAuth not configured',
+      message: 'Please use email and password to login'
+    });
+  }
+  
+  const redirectUri = process.env.NODE_ENV === 'production'
+    ? 'https://ai-automation-production-c35e.up.railway.app/api/auth/github/callback'
+    : 'http://localhost:3001/api/auth/github/callback';
+  
+  const authUrl = `https://github.com/login/oauth/authorize?` +
+    `client_id=${clientId}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `&scope=user:email`;
+  
+  res.json({ authUrl });
+});
+
 // Sign Up - Step 1: Create account and send OTP
 app.post('/api/auth/signup', async (req, res) => {
   try {

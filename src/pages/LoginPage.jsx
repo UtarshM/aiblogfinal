@@ -53,17 +53,17 @@ export default function LoginPage() {
         setError('');
 
         try {
-            // Simulate Google OAuth - in production, this would open Google OAuth popup
-            // For now, auto-login with test account
-            const response = await axios.post(`${API_URL}/auth/login`, {
-                email: 'test@example.com',
-                password: 'Test123456'
-            });
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            navigate('/dashboard');
+            // Get Google OAuth URL from backend
+            const response = await axios.get(`${API_URL}/auth/google/url`);
+            if (response.data.authUrl) {
+                // Redirect to Google OAuth
+                window.location.href = response.data.authUrl;
+            } else {
+                setError('Google login not configured. Please use email login.');
+            }
         } catch (err) {
-            setError('Google login failed. Please try manual login.');
+            // If Google OAuth not configured, show friendly message
+            setError('Google login is not available yet. Please use email and password to login.');
         } finally {
             setLoading(false);
         }
@@ -74,17 +74,17 @@ export default function LoginPage() {
         setError('');
 
         try {
-            // Simulate GitHub OAuth - in production, this would open GitHub OAuth popup
-            // For now, auto-login with test account
-            const response = await axios.post(`${API_URL}/auth/login`, {
-                email: 'test@example.com',
-                password: 'Test123456'
-            });
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            navigate('/dashboard');
+            // Get GitHub OAuth URL from backend
+            const response = await axios.get(`${API_URL}/auth/github/url`);
+            if (response.data.authUrl) {
+                // Redirect to GitHub OAuth
+                window.location.href = response.data.authUrl;
+            } else {
+                setError('GitHub login not configured. Please use email login.');
+            }
         } catch (err) {
-            setError('GitHub login failed. Please try manual login.');
+            // If GitHub OAuth not configured, show friendly message
+            setError('GitHub login is not available yet. Please use email and password to login.');
         } finally {
             setLoading(false);
         }
