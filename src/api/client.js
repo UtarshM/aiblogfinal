@@ -6,9 +6,10 @@ const getApiBase = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  // In production, use relative URL (same domain deployment)
+  // In production on Vercel, use the Railway backend
   if (import.meta.env.PROD) {
-    return '/api';
+    // IMPORTANT: Update this URL after Railway deployment
+    return 'https://ai-automation-production.up.railway.app/api';
   }
   // In development, use localhost
   return 'http://localhost:3001/api';
