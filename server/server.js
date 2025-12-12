@@ -890,73 +890,75 @@ app.post('/api/content/generate-human', async (req, res) => {
     if (!config.topic || !config.topic.trim()) {
       return res.status(400).json({ error: 'Topic is required' });
     }
+
+    const topic = config.topic;
+    const tone = config.tone || 'professional';
+    const minWords = config.minWords || 1500;
+
+    // Use Google AI API directly (Node.js - no Python needed)
+    const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
     
-    const { spawn } = await import('child_process');
-    const path = await import('path');
-    const { fileURLToPath } = await import('url');
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    
-    const pythonScript = path.join(__dirname, 'final_human_writer.py');
-    const python = spawn('python', [pythonScript], {
-      cwd: __dirname
-    });
-    
-    let result = '';
-    let error = '';
-    
-    python.stdout.on('data', (data) => {
-      const output = data.toString();
-      console.log('[PYTHON STDOUT]', output);
-      result += output;
-    });
-    
-    python.stderr.on('data', (data) => {
-      const output = data.toString();
-      console.log('[PYTHON STDERR]', output);
-      error += output;
-    });
-    
-    python.on('close', (code) => {
-      if (code !== 0) {
-        console.error('Python error:', error);
-        const errorMsg = error.includes('ModuleNotFoundError') 
-          ? 'Python dependencies missing. Please run: pip install requests python-dotenv'
-          : error.includes('No module named')
-          ? 'Python dependencies missing. Please install required packages.'
-          : error || 'Content generation failed. Please check your API keys.';
-        res.status(500).json({ error: errorMsg });
-      } else {
-        try {
-          // Find the JSON in the output (in case there are debug messages)
-          const jsonMatch = result.match(/\{[\s\S]*\}/);
-          if (!jsonMatch) {
-            console.error('No JSON found in result:', result);
-            res.status(500).json({ error: 'Failed to parse generated content. Please try again.' });
-            return;
-          }
-          
-          const data = JSON.parse(jsonMatch[0]);
-          if (!data.content || !data.content.trim()) {
-            res.status(500).json({ error: 'Generated content is empty. Please check your Google AI API key.' });
-          } else {
-            res.json(data);
-          }
-        } catch (e) {
-          console.error('Parse error:', e, 'Result:', result.substring(0, 200));
-          res.status(500).json({ error: 'Failed to parse generated content. Please try again.' });
+    if (!GOOGLE_AI_KEY) {
+      return res.status(500).json({ error: 'Google AI API key not configured' });
+    }
+
+    const prompt = `Write a comprehensive, SEO-optimized article about "${topic}".
+
+Requirements:
+- Minimum ${minWords} words
+- Tone: ${tone}
+- Include an engaging introduction
+- Use proper headings (H2, H3) with ## and ### markdown
+- Include bullet points and numbered lists where appropriate
+- Add relevant statistics and facts
+- Write in a human, conversational style (avoid AI-sounding phrases)
+- Include a compelling conclusion with call-to-action
+- Make it informative and valuable for readers
+
+Important: Write naturally like a human expert would. Avoid phrases like "In today's world", "It's important to note", "In conclusion". Be direct and engaging.
+
+Write the complete article now:`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.8,
+          maxOutputTokens: 8192
         }
-      }
+      })
     });
+
+    const data = await response.json();
     
-    python.on('error', (err) => {
-      console.error('Python spawn error:', err);
-      res.status(500).json({ error: 'Python not found. Please install Python 3 and add it to PATH.' });
+    if (data.error) {
+      console.error('Google AI error:', data.error);
+      return res.status(500).json({ error: data.error.message || 'AI generation failed' });
+    }
+
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!content) {
+      return res.status(500).json({ error: 'No content generated. Please try again.' });
+    }
+
+    // Generate title from topic
+    const title = topic.charAt(0).toUpperCase() + topic.slice(1);
+    
+    // Count words
+    const wordCount = content.split(/\s+/).length;
+
+    res.json({
+      content: content,
+      title: title,
+      wordCount: wordCount,
+      topic: topic
     });
-    
-    python.stdin.write(JSON.stringify(config));
-    python.stdin.end();
+
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('Content generation error:', error);
     res.status(500).json({ error: error.message || 'An unexpected error occurred' });
   }
 });

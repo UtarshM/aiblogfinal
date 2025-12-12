@@ -1,12 +1,9 @@
-# Force Node.js detection with Python support
+# Node.js with Python support for AI content generation
 [phases.setup]
-nixPkgs = ["nodejs_22", "python311", "python311Packages.pip"]
+nixPkgs = ["nodejs_22", "python311"]
 
 [phases.install]
-cmds = [
-    "npm ci || npm install",
-    "python3 -m pip install --user requests python-dotenv beautifulsoup4 google-generativeai"
-]
+cmds = ["npm ci || npm install"]
 
 [start]
 cmd = "node server.js"
