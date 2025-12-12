@@ -1,8 +1,8 @@
 /**
  * AI Marketing Platform - Settings Page
  * 
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { useState, useEffect } from 'react'
@@ -807,4 +807,4 @@ export default function Settings() {
     )
 }
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

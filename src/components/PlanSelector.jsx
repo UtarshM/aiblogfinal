@@ -1,8 +1,8 @@
 /**
  * AI Marketing Platform - Plan Selector (For Demo/Testing)
  * 
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { usePlan, PLANS } from '../context/PlanContext'
@@ -30,8 +30,8 @@ export default function PlanSelector() {
                                 key={plan}
                                 onClick={() => setCurrentPlan(plan)}
                                 className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${currentPlan === plan
-                                        ? 'bg-white text-blue-600 shadow-lg'
-                                        : 'bg-white/10 hover:bg-white/20'
+                                    ? 'bg-white text-blue-600 shadow-lg'
+                                    : 'bg-white/10 hover:bg-white/20'
                                     }`}
                             >
                                 {plan.charAt(0).toUpperCase() + plan.slice(1)}
@@ -44,4 +44,4 @@ export default function PlanSelector() {
     )
 }
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

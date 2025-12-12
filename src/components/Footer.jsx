@@ -191,7 +191,7 @@ export default function Footer() {
                                 </Link>
                             </div>
                             <div className="text-gray-500 text-sm">
-                                Made with ❤️ by <span className="text-white font-semibold">Harsh J Kuhikar</span>
+                                Made with ❤️ by <span className="text-white font-semibold">Scalezix Venture PVT LTD</span>
                             </div>
                         </div>
                     </div>

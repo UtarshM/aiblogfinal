@@ -1,8 +1,8 @@
 """
 Unique Content Generator - Creates Diverse, Human-Like Content
 Each post is unique with different writing styles, tones, and structures
-Author: Harsh J Kuhikar
-Copyright: 2025 Harsh J Kuhikar. All Rights Reserved.
+Author: Scalezix Venture PVT LTD
+Copyright: 2025 Scalezix Venture PVT LTD. All Rights Reserved.
 """
 
 import requests

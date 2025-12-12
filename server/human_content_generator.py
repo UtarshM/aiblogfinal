@@ -2,7 +2,7 @@
 SINGLE-STEP Human Content Generator
 Generates 100% human-like content from scratch (NOT AI rewrite)
 Uses templates and natural writing patterns
-Author: Harsh J Kuhikar
+Author: Scalezix Venture PVT LTD
 Copyright: 2025 All Rights Reserved
 """
 

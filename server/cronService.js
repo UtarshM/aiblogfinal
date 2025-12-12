@@ -1,8 +1,8 @@
 /**
  * Cron Service - Scheduled Post Publishing
  * Runs every minute to check for posts that need to be published
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import cron from 'node-cron';

@@ -1,8 +1,8 @@
 /**
  * OAuth Service - Multi-Tenant Social Media Authentication
  * Handles Twitter, Facebook, and Instagram OAuth flows
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { TwitterApi } from 'twitter-api-v2';

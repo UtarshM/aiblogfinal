@@ -1,8 +1,8 @@
 """
 SEO-Optimized Content Writer with Proper HTML Structure
 Generates professional blog posts with H1, H2, H3, paragraphs, and high-quality images
-Author: Harsh J Kuhikar
-Copyright: 2025 Harsh J Kuhikar. All Rights Reserved.
+Author: Scalezix Venture PVT LTD
+Copyright: 2025 Scalezix Venture PVT LTD. All Rights Reserved.
 """
 
 import requests

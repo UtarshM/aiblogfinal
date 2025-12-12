@@ -76,9 +76,9 @@ Push to `main` branch automatically deploys to your server. See `.github/workflo
 
 ## License
 
-Proprietary - All rights reserved to Harsh J Kuhikar
+Proprietary - All rights reserved to Scalezix Venture PVT LTD
 
 ## Author
 
-**Harsh J Kuhikar**
+**Scalezix Venture PVT LTD**
 - © 2025 All Rights Reserved

@@ -1266,4 +1266,4 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
     )
 }
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

@@ -1,8 +1,8 @@
 /**
  * AI Marketing Platform - Plan Context
  * 
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { createContext, useContext, useState } from 'react'
@@ -90,4 +90,4 @@ export function usePlan() {
     return context
 }
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

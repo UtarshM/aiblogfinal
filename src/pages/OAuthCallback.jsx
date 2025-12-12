@@ -1,6 +1,6 @@
 /**
  * OAuth Callback Page - Handles OAuth redirects
- * @author Harsh J Kuhikar
+ * @author Scalezix Venture PVT LTD
  * @copyright 2025 All Rights Reserved
  */
 

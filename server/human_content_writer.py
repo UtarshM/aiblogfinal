@@ -1,8 +1,8 @@
 """
 Human-Like Content Writer - Generates 75%+ Human Content
 No AI patterns, natural flow, dynamic TOC based on actual content
-Author: Harsh J Kuhikar
-Copyright: 2025 Harsh J Kuhikar. All Rights Reserved.
+Author: Scalezix Venture PVT LTD
+Copyright: 2025 Scalezix Venture PVT LTD. All Rights Reserved.
 """
 
 import requests

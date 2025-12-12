@@ -1,8 +1,8 @@
 """
 Ultra Human Content Writer - Writes Like a Real Person
 No AI patterns, natural imperfections, casual and authentic
-Author: Harsh J Kuhikar
-Copyright: 2025 Harsh J Kuhikar. All Rights Reserved.
+Author: Scalezix Venture PVT LTD
+Copyright: 2025 Scalezix Venture PVT LTD. All Rights Reserved.
 """
 
 import requests

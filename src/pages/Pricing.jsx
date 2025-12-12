@@ -1,8 +1,8 @@
 /**
  * AI Marketing Platform - Pricing Page
  * 
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { Check, Lock } from 'lucide-react'
@@ -255,6 +255,6 @@ export default function Pricing() {
 }
 
 /* 
- * Copyright © 2025 Harsh J Kuhikar
+ * Copyright © 2025 Scalezix Venture PVT LTD
  * All Rights Reserved
  */

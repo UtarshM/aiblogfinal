@@ -1,7 +1,7 @@
 """
 Google Images Scraper - Get Real Images
 Fetches real images from Google Images instead of AI-generated ones
-Author: Harsh J Kuhikar
+Author: Scalezix Venture PVT LTD
 Copyright: 2025 All Rights Reserved
 """
 

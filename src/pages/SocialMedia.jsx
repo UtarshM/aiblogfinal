@@ -1,7 +1,7 @@
 /**
  * Social Media Management & Scheduling
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { useState, useEffect } from 'react'

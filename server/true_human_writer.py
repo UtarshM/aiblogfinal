@@ -2,7 +2,7 @@
 TRUE Human Content Writer - 0% AI Detection
 Generates completely unique, unpredictable content
 NO templates, NO patterns, NO repetition
-Author: Harsh J Kuhikar
+Author: Scalezix Venture PVT LTD
 Copyright: 2025 All Rights Reserved
 """
 

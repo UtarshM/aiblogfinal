@@ -1,7 +1,7 @@
 /**
  * Content Creation & Publishing Tool
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { useState, useEffect } from 'react'
@@ -845,7 +845,7 @@ Make each description specific, visual, and relevant to the content's main point
             // Company/Author name
             pdf.setTextColor(255, 255, 255)
             pdf.setFontSize(12)
-            pdf.text('Harsh J Kuhikar', margin, 15)
+            pdf.text('Scalezix Venture PVT LTD', margin, 15)
 
             // Title
             pdf.setFontSize(24)
@@ -1004,7 +1004,7 @@ Make each description specific, visual, and relevant to the content's main point
                     { align: 'center' }
                 )
                 pdf.text(
-                    '© 2025 Harsh J Kuhikar - All Rights Reserved',
+                    '© 2025 Scalezix Venture PVT LTD - All Rights Reserved',
                     pageWidth / 2,
                     pageHeight - 5,
                     { align: 'center' }
@@ -1156,7 +1156,7 @@ Make each description specific, visual, and relevant to the content's main point
                 new Paragraph({
                     children: [
                         new TextRun({
-                            text: `By: Harsh J Kuhikar | Generated on: ${currentDate}`,
+                            text: `By: Scalezix Venture PVT LTD | Generated on: ${currentDate}`,
                             size: 20,
                             color: '666666'
                         })
@@ -1289,7 +1289,7 @@ Make each description specific, visual, and relevant to the content's main point
                 new Paragraph({
                     children: [
                         new TextRun({
-                            text: '© 2025 Harsh J Kuhikar - All Rights Reserved',
+                            text: '© 2025 Scalezix Venture PVT LTD - All Rights Reserved',
                             size: 20,
                             color: '666666'
                         })
@@ -2199,4 +2199,4 @@ Make each description specific, visual, and relevant to the content's main point
     )
 }
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

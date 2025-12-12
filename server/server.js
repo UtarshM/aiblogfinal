@@ -1,11 +1,11 @@
 /**
  * AI Marketing Platform - Backend Server
  * 
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
- * @license Proprietary - All rights reserved to Harsh J Kuhikar
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
+ * @license Proprietary - All rights reserved to Scalezix Venture PVT LTD
  * 
- * This software is the exclusive property of Harsh J Kuhikar.
+ * This software is the exclusive property of Scalezix Venture PVT LTD.
  * Unauthorized copying, modification, distribution, or use is strictly prohibited.
  */
 
@@ -21,7 +21,7 @@ import { analyzeWebsite } from './seoAnalyzer.js';
 import { User, OTP } from './authModels.js';
 import { generateOTP, sendOTPEmail, sendWelcomeEmail, sendReminderEmail } from './emailService.js';
 
-// Created by: Harsh J Kuhikar
+// Created by: Scalezix Venture PVT LTD
 
 dotenv.config();
 
@@ -1808,7 +1808,7 @@ app.listen(PORT, () => {
   console.log(`✅ API available at http://localhost:${PORT}/api`);
   console.log(`✅ MongoDB Atlas connected`);
   console.log(`✅ AI Services: Google AI, Llama API, OpenRouter`);
-  console.log(`\n© 2025 Harsh J Kuhikar - All Rights Reserved\n`);
+  console.log(`\n© 2025 Scalezix Venture PVT LTD - All Rights Reserved\n`);
 });
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

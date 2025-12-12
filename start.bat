@@ -1,7 +1,7 @@
 @echo off
 echo ========================================
 echo AI Marketing Platform - Starting...
-echo (c) 2025 Harsh J Kuhikar
+echo (c) 2025 Scalezix Venture PVT LTD
 echo ========================================
 echo.
 

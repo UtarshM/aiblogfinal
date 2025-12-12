@@ -1,17 +1,17 @@
 /**
  * AI Marketing Platform
  * 
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
- * @license Proprietary - All rights reserved to Harsh J Kuhikar
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
+ * @license Proprietary - All rights reserved to Scalezix Venture PVT LTD
  * @version 1.0.0
  * 
- * This software is the exclusive property of Harsh J Kuhikar.
+ * This software is the exclusive property of Scalezix Venture PVT LTD.
  * Unauthorized copying, modification, distribution, or use of this software,
  * via any medium, is strictly prohibited without explicit written permission
- * from Harsh J Kuhikar.
+ * from Scalezix Venture PVT LTD.
  * 
- * For licensing inquiries, contact: Harsh J Kuhikar
+ * For licensing inquiries, contact: Scalezix Venture PVT LTD
  */
 
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -25,7 +25,7 @@ const API_URL = import.meta.env.PROD
     ? 'https://ai-automation-production-c35e.up.railway.app/api'
     : 'http://localhost:3001/api'
 
-// Copyright: Harsh J Kuhikar - All Rights Reserved
+// Copyright: Scalezix Venture PVT LTD - All Rights Reserved
 const tools = [
     { name: 'Content Creation', path: '/tools/content-creation', icon: FileText },
     { name: 'Job History', path: '/tools/job-history', icon: History },
@@ -37,7 +37,7 @@ const tools = [
     { name: 'Pricing', path: '/pricing', icon: DollarSign },
 ]
 
-// Developed by: Harsh J Kuhikar
+// Developed by: Scalezix Venture PVT LTD
 export default function Layout({ children }) {
     const navigate = useNavigate()
     const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -105,10 +105,10 @@ export default function Layout({ children }) {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-    // Creator: Harsh J Kuhikar
+    // Creator: Scalezix Venture PVT LTD
     return (
         <div className="min-h-screen bg-gray-50 flex">
-            {/* Desktop Sidebar - Created by Harsh J Kuhikar */}
+            {/* Desktop Sidebar - Created by Scalezix Venture PVT LTD */}
             <aside
                 className={`hidden md:flex flex-col bg-white border-r transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'
                     }`}
@@ -251,7 +251,7 @@ export default function Layout({ children }) {
                 )
             }
 
-            {/* Mobile Sidebar - Developed by Harsh J Kuhikar */}
+            {/* Mobile Sidebar - Developed by Scalezix Venture PVT LTD */}
             <aside
                 className={`md:hidden fixed left-0 top-0 bottom-0 w-64 bg-white border-r z-50 transform transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
@@ -297,13 +297,13 @@ export default function Layout({ children }) {
                     </div>
                 </nav>
 
-                {/* Footer - Copyright Harsh J Kuhikar */}
+                {/* Footer - Copyright Scalezix Venture PVT LTD */}
                 <div className="p-4 border-t">
                     <div className="text-xs text-gray-500">
                         <p className="font-semibold mb-1">AI Marketing Platform</p>
                         <p className="mb-2">Powered by AI</p>
                         <div className="pt-2 border-t border-gray-200">
-                            <p className="font-semibold text-gray-700">© 2025 Harsh J Kuhikar</p>
+                            <p className="font-semibold text-gray-700">© 2025 Scalezix Venture PVT LTD</p>
                             <p className="text-[10px] mt-1">All Rights Reserved</p>
                         </div>
                     </div>
@@ -330,10 +330,10 @@ export default function Layout({ children }) {
                     </Link>
                 </header>
 
-                {/* Page Content - Built by Harsh J Kuhikar */}
+                {/* Page Content - Built by Scalezix Venture PVT LTD */}
                 <main className="flex-1 overflow-auto">{children}</main>
 
-                {/* Main Footer - Copyright Harsh J Kuhikar */}
+                {/* Main Footer - Copyright Scalezix Venture PVT LTD */}
                 <footer className="bg-white border-t py-6 px-6">
                     <div className="max-w-7xl mx-auto">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
@@ -348,7 +348,7 @@ export default function Layout({ children }) {
                             </div>
                         </div>
                         <div className="text-center text-sm text-gray-700 border-t pt-4">
-                            <span className="font-semibold">© 2025 Harsh J Kuhikar</span>
+                            <span className="font-semibold">© 2025 Scalezix Venture PVT LTD</span>
                             <span className="mx-2">•</span>
                             <span>All Rights Reserved</span>
                         </div>
@@ -361,7 +361,7 @@ export default function Layout({ children }) {
 
 /* 
  * End of file
- * Copyright © 2025 Harsh J Kuhikar
+ * Copyright © 2025 Scalezix Venture PVT LTD
  * All Rights Reserved
  * Unauthorized use, reproduction, or distribution is prohibited
  */

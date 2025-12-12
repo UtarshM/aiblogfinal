@@ -1,8 +1,8 @@
 """
 Advanced SEO Content Writer with TOC, E-E-A-T, Schema, and Scheduling
 Generates professional blog posts with complete SEO optimization
-Author: Harsh J Kuhikar
-Copyright: 2025 Harsh J Kuhikar. All Rights Reserved.
+Author: Scalezix Venture PVT LTD
+Copyright: 2025 Scalezix Venture PVT LTD. All Rights Reserved.
 """
 
 import requests

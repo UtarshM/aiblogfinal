@@ -1,8 +1,8 @@
 /**
  * SEO Automation & Optimization Tool - Professional Edition
  * Real website analysis with Excel export
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { useState } from 'react'
@@ -822,8 +822,8 @@ export default function SEOAutomation() {
                                                         </span>
                                                     ) : (
                                                         <span className={`px-3 py-1 rounded text-sm font-medium ${item.score >= 80 ? 'bg-green-100 text-green-700' :
-                                                                item.score >= 60 ? 'bg-yellow-100 text-yellow-700' :
-                                                                    'bg-red-100 text-red-700'
+                                                            item.score >= 60 ? 'bg-yellow-100 text-yellow-700' :
+                                                                'bg-red-100 text-red-700'
                                                             }`}>
                                                             Score: {item.score}/100
                                                         </span>
@@ -842,4 +842,4 @@ export default function SEOAutomation() {
     )
 }
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

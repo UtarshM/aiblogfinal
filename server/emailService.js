@@ -1,7 +1,7 @@
 /**
  * Email Service for OTP and Notifications
  * Supports Brevo (Sendinblue), Gmail, AWS SES, and Resend
- * @author Harsh J Kuhikar
+ * @author Scalezix Venture PVT LTD
  * @copyright 2025 All Rights Reserved
  */
 
@@ -183,7 +183,7 @@ export async function sendOTPEmail(email, otp, name) {
           </div>
           <div class="footer">
             <p>© 2025 AI Marketing Platform. All rights reserved.</p>
-            <p>Powered by Harsh J Kuhikar</p>
+            <p>Powered by Scalezix Venture PVT LTD</p>
           </div>
         </div>
       </body>

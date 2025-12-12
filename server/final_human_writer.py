@@ -1,7 +1,7 @@
 """
 FINAL Human Content Writer - Enhanced Humanized Version
 Safe + Strong Human-Like Variability
-Author: Harsh J Kuhikar
+Author: Scalezix Venture PVT LTD
 Edition: 2025 - Humanized Writing Engine v2
 """
 

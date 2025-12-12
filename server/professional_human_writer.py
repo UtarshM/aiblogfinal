@@ -1,7 +1,7 @@
 """
 Professional Human Content Writer - Enterprise Grade
 Zero Errors, Maximum Authenticity
-Author: Harsh J Kuhikar
+Author: Scalezix Venture PVT LTD
 Edition: 2025 - Professional Writing Engine v3.0
 """
 

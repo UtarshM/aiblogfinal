@@ -1,8 +1,8 @@
 /**
  * AI Marketing Platform - Main Application
  * 
- * @author Harsh J Kuhikar
- * @copyright 2025 Harsh J Kuhikar. All Rights Reserved.
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  * @license Proprietary
  */
 
@@ -34,7 +34,7 @@ function ProtectedRoute({ children }) {
     return token ? children : <Navigate to="/" replace />;
 }
 
-// Created by: Harsh J Kuhikar
+// Created by: Scalezix Venture PVT LTD
 function App() {
     return (
         <ThemeProvider>
@@ -125,4 +125,4 @@ function App() {
 
 export default App
 
-/* Copyright © 2025 Harsh J Kuhikar - All Rights Reserved */
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

@@ -1,7 +1,7 @@
 """
 ULTIMATE Content Humanizer - 0% AI Detection
 Most aggressive humanization system possible
-Author: Harsh J Kuhikar
+Author: Scalezix Venture PVT LTD
 Copyright: 2025 All Rights Reserved
 """
 
