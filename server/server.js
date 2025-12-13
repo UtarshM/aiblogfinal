@@ -881,7 +881,80 @@ app.post('/api/content/generate', async (req, res) => {
   }
 });
 
-// SINGLE-STEP HUMAN CONTENT GENERATION
+// Helper function to fetch images from Unsplash
+async function fetchTopicImages(topic, count = 4) {
+  const images = [];
+  const searchQuery = encodeURIComponent(topic);
+  
+  try {
+    // Use Unsplash Source (no API key needed, direct image URLs)
+    for (let i = 0; i < count; i++) {
+      const timestamp = Date.now() + i;
+      images.push({
+        url: `https://source.unsplash.com/800x500/?${searchQuery}&sig=${timestamp}`,
+        alt: `${topic} - Image ${i + 1}`
+      });
+    }
+    console.log(`[Images] Generated ${images.length} Unsplash images for: ${topic}`);
+  } catch (err) {
+    console.log('[Images] Error fetching images:', err.message);
+  }
+  
+  return images;
+}
+
+// Helper function to insert images into content
+function insertImagesIntoContent(htmlContent, images) {
+  if (!images || images.length === 0) return htmlContent;
+  
+  // Split content by </h2> tags to find good insertion points
+  const sections = htmlContent.split(/<\/h2>/gi);
+  
+  if (sections.length <= 1) {
+    // No h2 tags, split by paragraphs
+    const paragraphs = htmlContent.split(/<\/p>/gi);
+    const step = Math.floor(paragraphs.length / (images.length + 1));
+    
+    let result = '';
+    let imageIndex = 0;
+    
+    for (let i = 0; i < paragraphs.length; i++) {
+      result += paragraphs[i] + (paragraphs[i].includes('<p') ? '</p>' : '');
+      
+      if (imageIndex < images.length && (i + 1) % step === 0 && i > 0 && i < paragraphs.length - 1) {
+        const img = images[imageIndex];
+        result += `\n<figure style="margin: 20px 0; text-align: center;">
+          <img src="${img.url}" alt="${img.alt}" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          <figcaption style="font-size: 14px; color: #666; margin-top: 8px;">${img.alt}</figcaption>
+        </figure>\n`;
+        imageIndex++;
+      }
+    }
+    return result;
+  }
+  
+  // Insert images after h2 sections
+  let result = '';
+  let imageIndex = 0;
+  const step = Math.max(1, Math.floor(sections.length / images.length));
+  
+  for (let i = 0; i < sections.length; i++) {
+    result += sections[i] + (i < sections.length - 1 ? '</h2>' : '');
+    
+    if (imageIndex < images.length && (i + 1) % step === 0 && i < sections.length - 1) {
+      const img = images[imageIndex];
+      result += `\n<figure style="margin: 20px 0; text-align: center;">
+        <img src="${img.url}" alt="${img.alt}" style="max-width: 100%; height: auto; border-radius: 8px;" />
+        <figcaption style="font-size: 14px; color: #666; margin-top: 8px;">${img.alt}</figcaption>
+      </figure>\n`;
+      imageIndex++;
+    }
+  }
+  
+  return result;
+}
+
+// SINGLE-STEP HUMAN CONTENT GENERATION WITH IMAGES
 app.post('/api/content/generate-human', async (req, res) => {
   try {
     console.log('[Content] generate-human endpoint called');
@@ -894,39 +967,63 @@ app.post('/api/content/generate-human', async (req, res) => {
 
     const topic = config.topic;
     const tone = config.tone || 'professional';
-    const minWords = config.minWords || 1500;
+    const minWords = config.minWords || 3000;
+    const numImages = config.numImages || 4;
 
-    const prompt = `You are an expert content writer. Write a comprehensive, SEO-optimized article about "${topic}".
+    // Enhanced prompt for longer, more detailed content
+    const prompt = `You are an expert content writer and SEO specialist. Write a VERY LONG, comprehensive, detailed article about "${topic}".
 
-STRICT REQUIREMENTS:
-- Write MINIMUM ${minWords} words (this is mandatory)
+CRITICAL LENGTH REQUIREMENT:
+- This article MUST be at least ${minWords} words long
+- Write 8-10 detailed sections minimum
+- Each section should have 300-400 words
+- Include subsections within each main section
+
+STRUCTURE (Follow this exactly):
+1. Introduction (300+ words) - Hook the reader, explain why this topic matters
+2. Background/History (300+ words) - Context and origins
+3. Main Concept Explained (400+ words) - Core explanation with examples
+4. Key Benefits/Advantages (350+ words) - Detailed benefits with real examples
+5. How It Works/Process (400+ words) - Step-by-step breakdown
+6. Best Practices (350+ words) - Expert tips and recommendations
+7. Common Mistakes to Avoid (300+ words) - What NOT to do
+8. Real-World Examples/Case Studies (400+ words) - Specific examples with data
+9. Future Trends (300+ words) - What's coming next
+10. Conclusion with Action Steps (250+ words) - Summary and next steps
+
+CONTENT REQUIREMENTS:
 - Tone: ${tone}
-- Start with an engaging introduction that hooks the reader
-- Use proper HTML headings: <h2> for main sections, <h3> for subsections
-- Include bullet points (<ul><li>) and numbered lists (<ol><li>) where appropriate
-- Add real statistics, facts, and data points
-- Write in a natural, human conversational style
-- Include a compelling conclusion with call-to-action
-- Make it informative, valuable, and engaging
+- Include specific statistics, percentages, and data points
+- Add real examples and case studies
+- Use bullet points and numbered lists
+- Include expert quotes or insights
+- Make it actionable and valuable
 
-IMPORTANT WRITING STYLE:
-- Write like a human expert, NOT like AI
-- AVOID these phrases: "In today's world", "It's important to note", "In conclusion", "Let's dive in", "Without further ado"
-- Use short paragraphs (2-3 sentences max)
-- Include personal insights and opinions
-- Use active voice
-- Add rhetorical questions to engage readers
+WRITING STYLE:
+- Write like a human expert sharing knowledge
+- Use conversational but professional tone
+- Short paragraphs (2-3 sentences)
+- Active voice throughout
+- Include rhetorical questions
+- AVOID: "In today's world", "It's important to note", "In conclusion", "Let's dive in"
 
-FORMAT: Write in clean HTML format with proper <h2>, <h3>, <p>, <ul>, <ol>, <li> tags.
+HTML FORMAT:
+- Use <h2> for main sections
+- Use <h3> for subsections
+- Use <p> for paragraphs
+- Use <ul><li> for bullet lists
+- Use <ol><li> for numbered lists
+- Use <strong> for emphasis
 
-Now write the complete ${minWords}+ word article:`;
+NOW WRITE THE COMPLETE ${minWords}+ WORD ARTICLE:`;
 
     let content = null;
     let apiUsed = '';
-
-    // Try OpenRouter first
+    const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-    if (OPENROUTER_API_KEY) {
+
+    // Try OpenRouter first (if key exists)
+    if (OPENROUTER_API_KEY && !content) {
       console.log('[Content] Trying OpenRouter API...');
       try {
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -940,83 +1037,90 @@ Now write the complete ${minWords}+ word article:`;
           body: JSON.stringify({
             model: 'anthropic/claude-3-haiku',
             messages: [{ role: 'user', content: prompt }],
-            max_tokens: 8000,
+            max_tokens: 16000,
             temperature: 0.7
           })
         });
 
-        const data = await response.json();
-        
-        if (response.ok && data.choices?.[0]?.message?.content) {
-          content = data.choices[0].message.content;
-          apiUsed = 'OpenRouter';
-          console.log('[Content] OpenRouter success');
-        } else {
-          console.log('[Content] OpenRouter failed:', data.error?.message || 'Unknown error');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.choices?.[0]?.message?.content) {
+            content = data.choices[0].message.content;
+            apiUsed = 'OpenRouter';
+            console.log('[Content] OpenRouter success');
+          }
         }
       } catch (err) {
         console.log('[Content] OpenRouter error:', err.message);
       }
     }
 
-    // Fallback to Google AI
-    if (!content) {
-      const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
-      if (GOOGLE_AI_KEY) {
-        console.log('[Content] Trying Google AI API...');
-        try {
-          // Try gemini-1.5-flash-latest model
-          const googleResponse = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GOOGLE_AI_KEY}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                  temperature: 0.7,
-                  maxOutputTokens: 8000
-                }
-              })
-            }
-          );
-
-          const googleData = await googleResponse.json();
-          
-          if (googleResponse.ok && googleData.candidates?.[0]?.content?.parts?.[0]?.text) {
-            content = googleData.candidates[0].content.parts[0].text;
-            apiUsed = 'Google AI';
-            console.log('[Content] Google AI success');
-          } else {
-            console.log('[Content] Google AI failed:', googleData.error?.message || 'Unknown error');
+    // Try Google AI (Gemini)
+    if (!content && GOOGLE_AI_KEY) {
+      console.log('[Content] Trying Google AI API...');
+      try {
+        const googleResponse = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GOOGLE_AI_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.7,
+                maxOutputTokens: 16000,
+                topP: 0.95,
+                topK: 40
+              }
+            })
           }
-        } catch (err) {
-          console.log('[Content] Google AI error:', err.message);
+        );
+
+        const googleData = await googleResponse.json();
+        
+        if (googleData.candidates?.[0]?.content?.parts?.[0]?.text) {
+          content = googleData.candidates[0].content.parts[0].text;
+          apiUsed = 'Google AI';
+          console.log('[Content] Google AI success');
+        } else {
+          console.log('[Content] Google AI response:', JSON.stringify(googleData).substring(0, 500));
         }
+      } catch (err) {
+        console.log('[Content] Google AI error:', err.message);
       }
     }
 
     // If all APIs fail, return error
     if (!content) {
       return res.status(500).json({ 
-        error: 'All AI services are currently unavailable. Please check your API keys in Railway environment variables.' 
+        error: 'AI services unavailable. Please check your API keys (OPENROUTER_API_KEY or GOOGLE_AI_KEY) in Railway.' 
       });
     }
 
+    // Fetch topic-relevant images
+    console.log('[Content] Fetching images for topic:', topic);
+    const images = await fetchTopicImages(topic, numImages);
+    
+    // Insert images into content
+    const contentWithImages = insertImagesIntoContent(content, images);
+    
     // Generate title from topic
     const title = topic.charAt(0).toUpperCase() + topic.slice(1);
     
     // Count words (strip HTML tags first)
-    const textOnly = content.replace(/<[^>]*>/g, ' ');
+    const textOnly = contentWithImages.replace(/<[^>]*>/g, ' ');
     const wordCount = textOnly.split(/\s+/).filter(w => w.length > 0).length;
 
-    console.log(`[Content] Generated successfully using ${apiUsed}:`, wordCount, 'words');
+    console.log(`[Content] Generated using ${apiUsed}: ${wordCount} words, ${images.length} images`);
+    console.log('[Content] Has image markdown:', contentWithImages.includes('<img'));
+    console.log('[Content] Number of images in content:', (contentWithImages.match(/<img/g) || []).length);
 
     res.json({
-      content: content,
+      content: contentWithImages,
       title: title,
       wordCount: wordCount,
-      topic: topic
+      topic: topic,
+      images: images
     });
 
   } catch (error) {
