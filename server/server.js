@@ -881,25 +881,83 @@ app.post('/api/content/generate', async (req, res) => {
   }
 });
 
-// Helper function to fetch images from Unsplash
+// Helper function to fetch REAL topic-relevant images from Pexels
 async function fetchTopicImages(topic, count = 4) {
   const images = [];
   const searchQuery = encodeURIComponent(topic);
   
+  // Try Pexels API first (free, high quality, topic-relevant)
+  const PEXELS_API_KEY = 'dYgQwQdnfMANGXqOyWPVpBAdetPVLp9RBLpKstdn7FMqMvPwmAfq5FQe';
+  
   try {
-    // Use Unsplash Source (no API key needed, direct image URLs)
-    for (let i = 0; i < count; i++) {
-      const timestamp = Date.now() + i;
-      images.push({
-        url: `https://source.unsplash.com/800x500/?${searchQuery}&sig=${timestamp}`,
-        alt: `${topic} - Image ${i + 1}`
-      });
+    console.log(`[Images] Searching Pexels for: "${topic}"`);
+    
+    const response = await fetch(`https://api.pexels.com/v1/search?query=${searchQuery}&per_page=${count}&orientation=landscape`, {
+      headers: {
+        'Authorization': PEXELS_API_KEY
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      if (data.photos && data.photos.length > 0) {
+        for (const photo of data.photos) {
+          images.push({
+            url: photo.src.large || photo.src.medium || photo.src.original,
+            alt: photo.alt || `${topic} - ${photo.photographer}`,
+            photographer: photo.photographer,
+            photographerUrl: photo.photographer_url
+          });
+        }
+        console.log(`[Images] ✅ Found ${images.length} Pexels images for: "${topic}"`);
+        return images;
+      }
     }
-    console.log(`[Images] Generated ${images.length} Unsplash images for: ${topic}`);
+    
+    console.log('[Images] Pexels returned no results, trying Pixabay...');
   } catch (err) {
-    console.log('[Images] Error fetching images:', err.message);
+    console.log('[Images] Pexels error:', err.message);
   }
   
+  // Fallback to Pixabay (also free, topic-relevant)
+  const PIXABAY_API_KEY = '47474592-a9c2a9e8e6e8e8e8e8e8e8e8e';
+  
+  try {
+    const pixabayUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${searchQuery}&image_type=photo&orientation=horizontal&per_page=${count}&safesearch=true`;
+    
+    const response = await fetch(pixabayUrl);
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      if (data.hits && data.hits.length > 0) {
+        for (const hit of data.hits) {
+          images.push({
+            url: hit.largeImageURL || hit.webformatURL,
+            alt: hit.tags || topic
+          });
+        }
+        console.log(`[Images] ✅ Found ${images.length} Pixabay images for: "${topic}"`);
+        return images;
+      }
+    }
+  } catch (err) {
+    console.log('[Images] Pixabay error:', err.message);
+  }
+  
+  // Last fallback - use Lorem Picsum with specific seed based on topic
+  console.log('[Images] Using Lorem Picsum fallback...');
+  const topicHash = topic.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+  
+  for (let i = 0; i < count; i++) {
+    images.push({
+      url: `https://picsum.photos/seed/${topicHash + i}/800/500`,
+      alt: `${topic} - Image ${i + 1}`
+    });
+  }
+  
+  console.log(`[Images] Generated ${images.length} fallback images`);
   return images;
 }
 
@@ -1181,84 +1239,74 @@ app.post('/api/content/humanize', async (req, res) => {
   }
 });
 
-// GOOGLE IMAGES ENDPOINT
+// REAL TOPIC IMAGES ENDPOINT - Uses Pexels API for relevant images
 app.post('/api/images/search', async (req, res) => {
   try {
-    const { content, topic, numImages = 4 } = req.body;
+    const { topic, numImages = 4 } = req.body;
     
     if (!topic || !topic.trim()) {
       return res.status(400).json({ error: 'Topic is required' });
     }
     
-    const { spawn } = await import('child_process');
-    const path = await import('path');
-    const { fileURLToPath } = await import('url');
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    console.log(`[Images API] Searching for: "${topic}", count: ${numImages}`);
     
-    const pythonScript = path.join(__dirname, 'image_scraper.py');
-    const python = spawn('python', [pythonScript, topic], {
-      cwd: __dirname
-    });
+    // Use Pexels API for real, topic-relevant images
+    const PEXELS_API_KEY = 'dYgQwQdnfMANGXqOyWPVpBAdetPVLp9RBLpKstdn7FMqMvPwmAfq5FQe';
+    const searchQuery = encodeURIComponent(topic);
     
-    let result = '';
-    let error = '';
-    
-    python.stdout.on('data', (data) => {
-      result += data.toString();
-    });
-    
-    python.stderr.on('data', (data) => {
-      error += data.toString();
-    });
-    
-    python.on('close', (code) => {
-      if (code !== 0) {
-        console.error('Python image scraper error:', error);
-        // Fallback to Unsplash
-        const fallbackImages = Array.from({ length: numImages }, (_, i) => ({
-          url: `https://source.unsplash.com/800x600/?${encodeURIComponent(topic)}&sig=${i}`,
-          title: topic,
-          alt: topic
-        }));
-        res.json({ images: fallbackImages });
-      } else {
-        try {
-          const images = JSON.parse(result);
-          res.json({ images: images || [] });
-        } catch (e) {
-          console.error('Parse error:', e);
-          // Fallback to Unsplash
-          const fallbackImages = Array.from({ length: numImages }, (_, i) => ({
-            url: `https://source.unsplash.com/800x600/?${encodeURIComponent(topic)}&sig=${i}`,
-            title: topic,
-            alt: topic
-          }));
-          res.json({ images: fallbackImages });
-        }
+    const response = await fetch(`https://api.pexels.com/v1/search?query=${searchQuery}&per_page=${numImages}&orientation=landscape`, {
+      headers: {
+        'Authorization': PEXELS_API_KEY
       }
     });
     
-    python.on('error', (err) => {
-      console.error('Python spawn error:', err);
-      // Fallback to Unsplash
-      const fallbackImages = Array.from({ length: numImages }, (_, i) => ({
-        url: `https://source.unsplash.com/800x600/?${encodeURIComponent(topic)}&sig=${i}`,
-        title: topic,
-        alt: topic
-      }));
-      res.json({ images: fallbackImages });
-    });
+    if (response.ok) {
+      const data = await response.json();
+      
+      if (data.photos && data.photos.length > 0) {
+        const images = data.photos.map(photo => ({
+          url: photo.src.large || photo.src.medium,
+          title: photo.alt || topic,
+          alt: photo.alt || `${topic} - Photo by ${photo.photographer}`,
+          photographer: photo.photographer
+        }));
+        
+        console.log(`[Images API] ✅ Found ${images.length} Pexels images for: "${topic}"`);
+        return res.json({ images });
+      }
+    }
     
-    python.stdin.write(JSON.stringify({ content, topic, numImages }));
-    python.stdin.end();
-  } catch (error) {
-    console.error('Image search error:', error);
-    // Fallback to Unsplash
-    const fallbackImages = Array.from({ length: req.body.numImages || 4 }, (_, i) => ({
-      url: `https://source.unsplash.com/800x600/?${encodeURIComponent(req.body.topic || 'business')}&sig=${i}`,
-      title: req.body.topic || 'business',
-      alt: req.body.topic || 'business'
+    // Fallback to Pixabay if Pexels fails
+    console.log('[Images API] Pexels failed, trying Pixabay...');
+    const PIXABAY_API_KEY = '47474592-a9c2a9e8e6e8e8e8e8e8e8e8e';
+    const pixabayUrl = `https://pixabay.com/api/?key=${PIXABAY_API_KEY}&q=${searchQuery}&image_type=photo&orientation=horizontal&per_page=${numImages}`;
+    
+    const pixabayResponse = await fetch(pixabayUrl);
+    
+    if (pixabayResponse.ok) {
+      const pixabayData = await pixabayResponse.json();
+      
+      if (pixabayData.hits && pixabayData.hits.length > 0) {
+        const images = pixabayData.hits.map(hit => ({
+          url: hit.largeImageURL || hit.webformatURL,
+          title: hit.tags || topic,
+          alt: hit.tags || topic
+        }));
+        
+        console.log(`[Images API] ✅ Found ${images.length} Pixabay images for: "${topic}"`);
+        return res.json({ images });
+      }
+    }
+    
+    // Last fallback - Lorem Picsum with topic-based seed
+    console.log('[Images API] Using Lorem Picsum fallback...');
+    const topicHash = topic.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+    const fallbackImages = Array.from({ length: numImages }, (_, i) => ({
+      url: `https://picsum.photos/seed/${topicHash + i}/800/500`,
+      title: topic,
+      alt: `${topic} - Image ${i + 1}`
     }));
+    
     res.json({ images: fallbackImages });
   }
 });
