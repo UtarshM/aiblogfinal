@@ -1,220 +1,157 @@
 import axios from 'axios';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Initialize Google AI
-const genAI = process.env.GOOGLE_AI_KEY ? new GoogleGenerativeAI(process.env.GOOGLE_AI_KEY) : null;
+// OpenRouter API Configuration
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
-// Google AI - For Content Generation with retry and fallback
-export const generateContent = async (prompt) => {
-  if (!genAI) {
-    console.log('Google AI not configured, using fallback');
-    return generateFallbackContent(prompt);
+// Helper function to call OpenRouter API
+async function callOpenRouter(prompt, maxTokens = 2000) {
+  if (!OPENROUTER_API_KEY) {
+    console.log('⚠️ OpenRouter API key not configured');
+    return null;
   }
-  
-  // Try multiple models in order of preference
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-pro-latest'];
-  
-  for (const modelName of models) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
-      console.log(`✅ Content generated using: ${modelName}`);
-      return text;
-    } catch (error) {
-      console.log(`⚠️ ${modelName} failed: ${error.message.substring(0, 50)}...`);
-      // Continue to next model
-    }
-  }
-  
-  // If all models fail, use fallback
-  console.log('⚠️ All AI models unavailable, using fallback content');
-  return generateFallbackContent(prompt);
-};
 
-// OpenRouter AI - For SEO Analysis
-export const analyzeSEO = async (url, keyword) => {
   try {
     const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
+      OPENROUTER_URL,
       {
-        model: 'mistralai/mistral-7b-instruct:free',
-        messages: [
-          {
-            role: 'user',
-            content: `Analyze the SEO for URL: ${url} with focus keyword: ${keyword}. Provide a score (0-100) and specific recommendations for improvement. Format as JSON with: score, issues (array of {type, text}), and recommendations.`
-          }
-        ]
+        model: 'anthropic/claude-3-haiku',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: maxTokens,
+        temperature: 0.7
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY || 'sk-or-v1-demo'}`,
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'http://localhost:3001',
+          'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:5173',
           'X-Title': 'AI Marketing Platform'
         }
       }
     );
 
-    const aiResponse = response.data.choices[0].message.content;
-    try {
-      return JSON.parse(aiResponse);
-    } catch {
-      return parseSEOResponse(aiResponse);
+    const content = response.data?.choices?.[0]?.message?.content;
+    if (content) {
+      console.log('✅ OpenRouter API call successful');
+      return content;
     }
+    return null;
   } catch (error) {
-    console.error('OpenRouter AI Error:', error.message);
-    return generateFallbackSEO(url, keyword);
+    console.error('OpenRouter API error:', error.response?.data || error.message);
+    return null;
   }
+}
+
+// Content Generation using OpenRouter
+export const generateContent = async (prompt) => {
+  const result = await callOpenRouter(prompt, 4000);
+  if (result) return result;
+  
+  console.log('⚠️ Using fallback content');
+  return generateFallbackContent(prompt);
 };
 
-// Llama API - For Keyword Research
-export const analyzeKeywords = async (keyword) => {
-  try {
-    const response = await axios.post(
-      'https://api.llama-api.com/chat/completions',
-      {
-        model: 'llama-13b-chat',
-        messages: [
-          {
-            role: 'user',
-            content: `Provide keyword research data for: "${keyword}". Include 4 related keywords with estimated search volume, difficulty (0-100), and CPC. Format as JSON array.`
-          }
-        ]
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${process.env.LLAMA_API_KEY || 'demo-key'}`,
-          'Content-Type': 'application/json'
-        }
+// SEO Analysis using OpenRouter
+export const analyzeSEO = async (url, keyword) => {
+  const prompt = `Analyze the SEO for URL: ${url} with focus keyword: ${keyword}. Provide a score (0-100) and specific recommendations for improvement. Format as JSON with: score, issues (array of {type, text}), and recommendations.`;
+  
+  const result = await callOpenRouter(prompt, 1500);
+  if (result) {
+    try {
+      // Try to parse JSON from response
+      const jsonMatch = result.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
       }
-    );
-
-    const aiResponse = response.data.choices[0].message.content;
-    try {
-      return JSON.parse(aiResponse);
+      return parseSEOResponse(result);
     } catch {
-      return parseKeywordResponse(aiResponse, keyword);
+      return parseSEOResponse(result);
     }
-  } catch (error) {
-    console.error('Llama API Error:', error.message);
-    return generateFallbackKeywords(keyword);
-  }
-};
-
-// Google AI - For Lead Scoring with retry
-export const scoreLeadWithAI = async (leadData) => {
-  if (!genAI) {
-    let score = 70;
-    if (leadData.budget?.includes('10,000+')) score += 15;
-    else if (leadData.budget?.includes('5,000')) score += 10;
-    if (['Technology', 'Finance'].includes(leadData.industry)) score += 10;
-    return Math.min(100, score + Math.floor(Math.random() * 10));
   }
   
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-pro-latest'];
+  return generateFallbackSEO(url, keyword);
+};
+
+// Keyword Research using OpenRouter
+export const analyzeKeywords = async (keyword) => {
+  const prompt = `Provide keyword research data for: "${keyword}". Include 4 related keywords with estimated search volume, difficulty (0-100), and CPC. Format as JSON array with objects containing: term, volume, difficulty, cpc.`;
+  
+  const result = await callOpenRouter(prompt, 1000);
+  if (result) {
+    try {
+      const jsonMatch = result.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      return parseKeywordResponse(result, keyword);
+    } catch {
+      return parseKeywordResponse(result, keyword);
+    }
+  }
+  
+  return generateFallbackKeywords(keyword);
+};
+
+// Lead Scoring using OpenRouter
+export const scoreLeadWithAI = async (leadData) => {
   const prompt = `Score this lead from 0-100 based on: Company: ${leadData.company}, Industry: ${leadData.industry}, Budget: ${leadData.budget}. Return only the numeric score.`;
   
-  for (const modelName of models) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
-      const score = parseInt(text.match(/\d+/)?.[0] || '75');
-      return Math.min(100, Math.max(0, score));
-    } catch (error) {
-      continue;
-    }
+  const result = await callOpenRouter(prompt, 100);
+  if (result) {
+    const score = parseInt(result.match(/\d+/)?.[0] || '75');
+    return Math.min(100, Math.max(0, score));
   }
   
-  return Math.floor(Math.random() * 40) + 60;
+  // Fallback scoring
+  let score = 70;
+  if (leadData.budget?.includes('10,000+')) score += 15;
+  else if (leadData.budget?.includes('5,000')) score += 10;
+  if (['Technology', 'Finance'].includes(leadData.industry)) score += 10;
+  return Math.min(100, score + Math.floor(Math.random() * 10));
 };
 
-// Google AI - For Chat Responses with retry
+// Chat Response using OpenRouter
 export const generateChatResponse = async (userMessage, history = []) => {
-  if (!genAI) {
-    return generateFallbackChatResponse(userMessage);
-  }
-  
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-pro-latest'];
   const context = history.length > 0 
     ? `Previous conversation:\n${history.map(m => `${m.sender}: ${m.text}`).join('\n')}\n\n`
     : '';
   const prompt = `${context}User: ${userMessage}\n\nYou are a helpful AI marketing assistant. Provide a professional, concise response.`;
   
-  for (const modelName of models) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      return response.text();
-    } catch (error) {
-      continue;
-    }
-  }
+  const result = await callOpenRouter(prompt, 1000);
+  if (result) return result;
   
   return generateFallbackChatResponse(userMessage);
 };
 
-// Google AI - For Social Media Post Generation with retry
+// Social Media Post Generation using OpenRouter
 export const generateSocialPost = async (topic, platform) => {
-  if (!genAI) {
-    return `🚀 Exciting news about ${topic}! We're thrilled to share this with you. Stay tuned for more updates! #${topic.replace(/\s+/g, '')} #${platform} #Marketing`;
-  }
-  
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-pro-latest'];
   const prompt = `Create an engaging ${platform} post about: ${topic}. Keep it concise and platform-appropriate with relevant hashtags.`;
   
-  for (const modelName of models) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      return response.text();
-    } catch (error) {
-      continue;
-    }
-  }
+  const result = await callOpenRouter(prompt, 500);
+  if (result) return result;
   
-  return `Check out our latest update on ${topic}! #marketing #${platform.toLowerCase()}`;
+  return `🚀 Exciting news about ${topic}! We're thrilled to share this with you. Stay tuned for more updates! #${topic.replace(/\s+/g, '')} #${platform} #Marketing`;
 };
 
-// Google AI - For Campaign Optimization with retry
+// Campaign Optimization using OpenRouter
 export const optimizeCampaign = async (campaignData) => {
-  if (!genAI) {
-    return [
-      `Increase budget allocation for ${campaignData.name} based on ${campaignData.roi}x ROI`,
-      'Test new ad creative variations to improve engagement',
-      'Optimize landing page conversion rate and user experience'
-    ];
-  }
+  const prompt = `Analyze this campaign: Name: ${campaignData.name}, ROI: ${campaignData.roi}, Spend: $${campaignData.spend}, Conversions: ${campaignData.conversions}. Provide 3 specific optimization recommendations as a numbered list.`;
   
-  const models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-pro-latest'];
-  const prompt = `Analyze this campaign: Name: ${campaignData.name}, ROI: ${campaignData.roi}, Spend: $${campaignData.spend}, Conversions: ${campaignData.conversions}. Provide 3 specific optimization recommendations.`;
-  
-  for (const modelName of models) {
-    try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      const response = result.response;
-      const text = response.text();
-      return text.split('\n').filter(line => line.trim()).slice(0, 3);
-    } catch (error) {
-      continue;
-    }
+  const result = await callOpenRouter(prompt, 500);
+  if (result) {
+    return result.split('\n').filter(line => line.trim()).slice(0, 3);
   }
   
   return [
-    'Increase budget for high-performing keywords',
-    'Test new ad creative variations',
-    'Optimize landing page conversion rate'
+    `Increase budget allocation for ${campaignData.name} based on ${campaignData.roi}x ROI`,
+    'Test new ad creative variations to improve engagement',
+    'Optimize landing page conversion rate and user experience'
   ];
 };
+
 
 // Fallback functions
 function generateFallbackContent(prompt) {
