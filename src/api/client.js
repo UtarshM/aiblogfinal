@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Production API URL - Render Backend (Free Tier)
+// Production API URL - Render Backend (Free Tier) - Updated Dec 15, 2025
 const RENDER_API_URL = 'https://ai-automation-9q0q.onrender.com/api';
 
 // Auto-detect API URL based on environment
