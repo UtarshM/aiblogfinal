@@ -143,7 +143,7 @@ app.get('/api/auth/google/url', (req, res) => {
   }
   
   const redirectUri = process.env.NODE_ENV === 'production'
-    ? 'https://ai-marketing-api.onrender.com/api/auth/google/callback'
+    ? 'https://ai-automation-9q0q.onrender.com/api/auth/google/callback'
     : 'http://localhost:3001/api/auth/google/callback';
   
   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
@@ -169,7 +169,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const redirectUri = process.env.NODE_ENV === 'production'
-      ? 'https://ai-marketing-api.onrender.com/api/auth/google/callback'
+      ? 'https://ai-automation-9q0q.onrender.com/api/auth/google/callback'
       : 'http://localhost:3001/api/auth/google/callback';
     
     // Exchange code for tokens
@@ -261,7 +261,7 @@ app.get('/api/auth/github/url', (req, res) => {
   }
   
   const redirectUri = process.env.NODE_ENV === 'production'
-    ? 'https://ai-marketing-api.onrender.com/api/auth/github/callback'
+    ? 'https://ai-automation-9q0q.onrender.com/api/auth/github/callback'
     : 'http://localhost:3001/api/auth/github/callback';
   
   const authUrl = `https://github.com/login/oauth/authorize?` +
