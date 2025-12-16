@@ -146,12 +146,22 @@ app.get('/api/auth/google/url', (req, res) => {
     ? 'https://ai-automation-9q0q.onrender.com/api/auth/google/callback'
     : 'http://localhost:3001/api/auth/google/callback';
   
+  // Extended scopes for more user data (DOB, Phone, Gender)
+  const scopes = [
+    'email',
+    'profile',
+    'https://www.googleapis.com/auth/user.birthday.read',
+    'https://www.googleapis.com/auth/user.gender.read',
+    'https://www.googleapis.com/auth/user.phonenumbers.read'
+  ].join(' ');
+  
   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
     `client_id=${clientId}` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}` +
     `&response_type=code` +
-    `&scope=${encodeURIComponent('email profile')}` +
-    `&access_type=offline`;
+    `&scope=${encodeURIComponent(scopes)}` +
+    `&access_type=offline` +
+    `&prompt=consent`;
   
   res.json({ authUrl });
 });
@@ -192,7 +202,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
       return res.redirect(`${frontendUrl}/login?error=token_failed`);
     }
     
-    // Get user info from Google
+    // Get basic user info from Google
     const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: `Bearer ${tokens.access_token}` }
     });
@@ -203,11 +213,50 @@ app.get('/api/auth/google/callback', async (req, res) => {
       return res.redirect(`${frontendUrl}/login?error=no_email`);
     }
     
+    // Get additional user data (DOB, Gender, Phone) from People API
+    let birthday = null;
+    let gender = null;
+    let phoneNumber = null;
+    
+    try {
+      const peopleResponse = await fetch(
+        'https://people.googleapis.com/v1/people/me?personFields=birthdays,genders,phoneNumbers',
+        { headers: { Authorization: `Bearer ${tokens.access_token}` } }
+      );
+      
+      if (peopleResponse.ok) {
+        const peopleData = await peopleResponse.json();
+        console.log('[Google OAuth] People API data:', JSON.stringify(peopleData, null, 2));
+        
+        // Extract birthday
+        if (peopleData.birthdays && peopleData.birthdays.length > 0) {
+          const bday = peopleData.birthdays[0].date;
+          if (bday) {
+            birthday = `${bday.year || '????'}-${String(bday.month).padStart(2, '0')}-${String(bday.day).padStart(2, '0')}`;
+          }
+        }
+        
+        // Extract gender
+        if (peopleData.genders && peopleData.genders.length > 0) {
+          gender = peopleData.genders[0].value; // 'male', 'female', or custom
+        }
+        
+        // Extract phone number
+        if (peopleData.phoneNumbers && peopleData.phoneNumbers.length > 0) {
+          phoneNumber = peopleData.phoneNumbers[0].value;
+        }
+      }
+    } catch (peopleError) {
+      console.log('[Google OAuth] People API error (optional data):', peopleError.message);
+    }
+    
+    console.log('[Google OAuth] Extracted data - Birthday:', birthday, 'Gender:', gender, 'Phone:', phoneNumber);
+    
     // Find or create user
     let user = await User.findOne({ email: googleUser.email.toLowerCase() });
     
     if (!user) {
-      // Create new user
+      // Create new user with all available data
       user = new User({
         name: googleUser.name || googleUser.email.split('@')[0],
         email: googleUser.email.toLowerCase(),
@@ -217,19 +266,30 @@ app.get('/api/auth/google/callback', async (req, res) => {
         profile: {
           firstName: googleUser.given_name || '',
           lastName: googleUser.family_name || '',
-          profileImage: googleUser.picture || null
+          profileImage: googleUser.picture || null,
+          dateOfBirth: birthday,
+          gender: gender,
+          phone: phoneNumber
         }
       });
       await user.save();
-      console.log('✅ New Google user created:', googleUser.email);
+      console.log('✅ New Google user created with extended data:', googleUser.email);
     } else {
       // Update existing user with Google info
       user.googleId = googleUser.id;
       user.isVerified = true;
-      if (googleUser.picture && !user.profile?.profileImage) {
-        user.profile = { ...user.profile, profileImage: googleUser.picture };
-      }
+      user.profile = {
+        ...user.profile,
+        profileImage: googleUser.picture || user.profile?.profileImage,
+        firstName: googleUser.given_name || user.profile?.firstName,
+        lastName: googleUser.family_name || user.profile?.lastName,
+        // Only update if we got new data and user doesn't have it
+        dateOfBirth: birthday || user.profile?.dateOfBirth,
+        gender: gender || user.profile?.gender,
+        phone: phoneNumber || user.profile?.phone
+      };
       await user.save();
+      console.log('✅ Updated Google user with extended data:', googleUser.email);
     }
     
     // Generate JWT

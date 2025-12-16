@@ -39,9 +39,21 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  googleId: {
+    type: String,
+    sparse: true
+  },
   profile: {
-    type: mongoose.Schema.Types.Mixed,
-    default: {}
+    firstName: String,
+    lastName: String,
+    profileImage: String,
+    dateOfBirth: String,
+    gender: String,
+    phone: String,
+    location: String,
+    company: String,
+    website: String,
+    bio: String
   },
   // Password reset fields
   resetToken: {
