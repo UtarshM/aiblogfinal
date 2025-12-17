@@ -546,6 +546,103 @@ export class LinkedInOAuth {
 }
 
 /**
+ * Google OAuth 2.0 Flow
+ */
+export class GoogleOAuth {
+    constructor() {
+        this.clientId = process.env.GOOGLE_CLIENT_ID;
+        this.clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+        this.callbackURL = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3001/api/auth/callback/google';
+    }
+
+    /**
+     * Generate OAuth URL for user authorization
+     */
+    getAuthorizationURL() {
+        const state = crypto.randomBytes(32).toString('hex');
+
+        oauthStates.set(state, {
+            platform: 'google',
+            timestamp: Date.now()
+        });
+
+        const params = new URLSearchParams({
+            client_id: this.clientId,
+            redirect_uri: this.callbackURL,
+            response_type: 'code',
+            scope: 'openid email profile',
+            state,
+            access_type: 'offline',
+            prompt: 'consent'
+        });
+
+        return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    }
+
+    /**
+     * Handle OAuth callback and get access token
+     */
+    async handleCallback(code, state) {
+        const stateData = oauthStates.get(state);
+        if (!stateData) {
+            throw new Error('Invalid or expired state');
+        }
+
+        oauthStates.delete(state);
+
+        // Exchange code for access token
+        const params = new URLSearchParams({
+            code,
+            client_id: this.clientId,
+            client_secret: this.clientSecret,
+            redirect_uri: this.callbackURL,
+            grant_type: 'authorization_code'
+        });
+
+        const response = await axios.post(
+            'https://oauth2.googleapis.com/token',
+            params.toString(),
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+
+        const { access_token, refresh_token, id_token } = response.data;
+
+        // Get user info
+        const userInfo = await this.getUserInfo(access_token);
+
+        return {
+            accessToken: access_token,
+            refreshToken: refresh_token,
+            idToken: id_token,
+            googleId: userInfo.sub,
+            email: userInfo.email,
+            name: userInfo.name,
+            picture: userInfo.picture,
+            emailVerified: userInfo.email_verified
+        };
+    }
+
+    /**
+     * Get user information
+     */
+    async getUserInfo(accessToken) {
+        const response = await axios.get(
+            'https://www.googleapis.com/oauth2/v3/userinfo',
+            {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            }
+        );
+        return response.data;
+    }
+}
+
+/**
  * Clean up expired OAuth states (run periodically)
  */
 export function cleanupExpiredStates() {

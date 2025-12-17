@@ -142,9 +142,10 @@ app.get('/api/auth/google/url', (req, res) => {
     });
   }
   
-  const redirectUri = process.env.NODE_ENV === 'production'
-    ? 'https://ai-automation-9q0q.onrender.com/api/auth/google/callback'
-    : 'http://localhost:3001/api/auth/google/callback';
+  const redirectUri = process.env.GOOGLE_CALLBACK_URL || 
+    (process.env.NODE_ENV === 'production'
+      ? 'http://52.204.136.243:3001/api/auth/google/callback'
+      : 'http://localhost:3001/api/auth/google/callback');
   
   // Basic scopes (no verification needed)
   // For extended data (DOB, Phone, Gender), add user as test user in Google Console
@@ -173,9 +174,10 @@ app.get('/api/auth/google/callback', async (req, res) => {
     
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri = process.env.NODE_ENV === 'production'
-      ? 'https://ai-automation-9q0q.onrender.com/api/auth/google/callback'
-      : 'http://localhost:3001/api/auth/google/callback';
+    const redirectUri = process.env.GOOGLE_CALLBACK_URL || 
+      (process.env.NODE_ENV === 'production'
+        ? 'http://52.204.136.243:3001/api/auth/google/callback'
+        : 'http://localhost:3001/api/auth/google/callback');
     
     // Exchange code for tokens
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {

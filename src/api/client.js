@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// Production API URL - Render Backend (Free Tier)
-// IMPORTANT: Update this URL after creating Render service
-const RENDER_API_URL = 'https://YOUR_RENDER_URL.onrender.com/api';
+// Production API URL - AWS EC2 Backend
+const AWS_API_URL = 'http://52.204.136.243:3001/api';
 
 // Auto-detect API URL based on environment
 const getApiBase = () => {
@@ -10,9 +9,9 @@ const getApiBase = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  // In production, use Render backend
+  // In production, use AWS backend
   if (import.meta.env.PROD) {
-    return RENDER_API_URL;
+    return AWS_API_URL;
   }
   // In development only, use localhost
   return 'http://localhost:3001/api';
