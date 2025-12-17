@@ -127,7 +127,7 @@ export default function SignupPage() {
 
                     {/* Title */}
                     <h1 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                        {step === 'signup' ? 'Create Account' : 'Verify Email'}
+                        {step === 'signup' ? 'Harsh Random' : 'Verify Email'}
                     </h1>
                     <p className="text-center text-gray-600 mb-8">
                         {step === 'signup' ? 'HArsh' : 'Enter the OTP sent to your email'}
