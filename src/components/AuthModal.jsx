@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
-// Production API URL - AWS EC2 Backend
+// Production API URL - AWS EC2 Backend (HTTPS)
 const API_URL = import.meta.env.PROD
-    ? 'http://52.204.136.243:3001/api'
+    ? 'https://blogapi.scalezix.com/api'
     : 'http://localhost:3001/api';
 
 export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {

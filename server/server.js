@@ -37,8 +37,8 @@ const corsOptions = {
   origin: isProduction 
     ? [
         process.env.FRONTEND_URL, 
-        'https://ai-automation-ten-pi.vercel.app',
-        'https://yourdomain.com'
+        'https://aiblog.scalezix.com',
+        'https://aiblogfinal.vercel.app'
       ].filter(Boolean)
     : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'],
   credentials: true,
@@ -144,7 +144,7 @@ app.get('/api/auth/google/url', (req, res) => {
   
   const redirectUri = process.env.GOOGLE_CALLBACK_URL || 
     (process.env.NODE_ENV === 'production'
-      ? 'http://52-204-136-243.nip.io:3001/api/auth/google/callback'
+      ? 'https://blogapi.scalezix.com/api/auth/google/callback'
       : 'http://localhost:3001/api/auth/google/callback');
   
   // Basic scopes (no verification needed)
@@ -176,7 +176,7 @@ app.get('/api/auth/google/callback', async (req, res) => {
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const redirectUri = process.env.GOOGLE_CALLBACK_URL || 
       (process.env.NODE_ENV === 'production'
-        ? 'http://52-204-136-243.nip.io:3001/api/auth/google/callback'
+        ? 'https://blogapi.scalezix.com/api/auth/google/callback'
         : 'http://localhost:3001/api/auth/google/callback');
     
     // Exchange code for tokens

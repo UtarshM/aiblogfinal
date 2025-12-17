@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Production API URL - AWS EC2 Backend
-const AWS_API_URL = 'http://52.204.136.243:3001/api';
+// Production API URL - AWS EC2 Backend (HTTPS)
+const AWS_API_URL = 'https://blogapi.scalezix.com/api';
 
 // Auto-detect API URL based on environment
 const getApiBase = () => {
