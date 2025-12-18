@@ -9,10 +9,12 @@
  * Unauthorized copying, modification, distribution, or use is strictly prohibited.
  */
 
+// CRITICAL: Load env FIRST before any other imports
+import 'dotenv/config';
+
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import connectDB, { Lead, Content, SocialPost, Client, Campaign, ChatMessage, WhiteLabelConfig, SEOAnalysis } from './database.js';
@@ -22,8 +24,6 @@ import { User, OTP } from './authModels.js';
 import { generateOTP, sendOTPEmail, sendWelcomeEmail, sendReminderEmail } from './emailService.js';
 
 // Created by: Scalezix Venture PVT LTD
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;

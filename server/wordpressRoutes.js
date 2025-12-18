@@ -9,9 +9,8 @@ import multer from 'multer';
 import xlsx from 'xlsx';
 import { WordPressSite, WordPressPostQueue, BulkImportJob } from './wordpressModels.js';
 import { testWordPressConnection, postToWordPress, checkWordPressAPI } from './wordpressService.js';
-import dotenv from 'dotenv';
 
-dotenv.config();
+// NO dotenv here - env is loaded ONCE in server.js
 const router = express.Router();
 
 // Configure multer for Excel uploads

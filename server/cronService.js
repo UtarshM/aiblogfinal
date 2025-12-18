@@ -13,6 +13,11 @@ import { postToMultiplePlatforms } from './postingService.js';
  * Check and publish scheduled posts
  */
 async function checkScheduledPosts() {
+    // Safety check - don't run if MongoDB is not connected
+    if (!global.mongoConnected) {
+        return;
+    }
+
     try {
         const now = new Date();
 

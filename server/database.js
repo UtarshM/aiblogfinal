@@ -1,11 +1,19 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 
-dotenv.config();
+// NO dotenv here - env is loaded ONCE in server.js
 
 const connectDB = async () => {
+  const uri = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+  if (!uri) {
+    console.error('❌ MongoDB URI missing from environment variables');
+    console.log('⚠️ Server will continue without database (content generation still works)');
+    global.mongoConnected = false;
+    return;
+  }
+
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
+    await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });

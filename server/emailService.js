@@ -6,9 +6,8 @@
  */
 
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
 
-dotenv.config();
+// NO dotenv here - env is loaded ONCE in server.js
 
 // Create transporter based on configuration
 let transporter;
