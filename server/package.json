@@ -5,9 +5,11 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "echo No build needed"
+    "build": "echo No build needed",
+    "bulk-generate": "node bulkBlogGenerator.js"
   },
   "dependencies": {
+    "csv-parse": "^5.5.3",
     "@google/generative-ai": "^0.1.3",
     "axios": "^1.6.2",
     "bcryptjs": "^3.0.3",
