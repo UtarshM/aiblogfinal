@@ -1,184 +1,213 @@
 /**
- * Bulk Blog Generator - AWS Backend Automation Script
+ * Bulk Blog Generator - SaaS Backend Service
  * 
- * Processes CSV/Excel files to generate human-like blog content using Gemini 1.5 Flash
- * and publishes to WordPress with scheduling support.
+ * Processes Excel/CSV files uploaded by clients through the web UI.
+ * Uses client's WordPress sites stored in database.
+ * Generates 10,000+ word human-like content using Gemini 1.5 Flash.
  * 
  * @author Scalezix Venture PVT LTD
  * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
- * 
- * Usage: node bulkBlogGenerator.js [input_file] [wordpress_site_id]
- * Example: node bulkBlogGenerator.js blog_data.csv site123
  */
 
-import 'dotenv/config';
-import fs from 'fs';
-import path from 'path';
-import { parse } from 'csv-parse/sync';
-import * as XLSX from 'xlsx';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import axios from 'axios';
-import mongoose from 'mongoose';
+import { WordPressSite, BulkImportJob } from './wordpressModels.js';
 
 // Configuration
 const CONFIG = {
-  DELAY_BETWEEN_POSTS: 5000, // 5 seconds delay between API calls
+  DELAY_BETWEEN_POSTS: 5000, // 5 seconds between API calls
   MAX_RETRIES: 3,
-  WORD_TARGET: 5000,
-  OUTPUT_FILE: 'published_links.csv'
+  WORD_TARGET: 10000, // 10,000 words minimum
+  WORDS_PER_SECTION: 1200 // 1200 words per H2 section
 };
 
-// Colors for console output
-const colors = {
-  reset: '\x1b[0m',
-  green: '\x1b[32m',
-  red: '\x1b[31m',
-  yellow: '\x1b[33m',
-  blue: '\x1b[34m',
-  cyan: '\x1b[36m'
-};
-
-function log(message, type = 'info') {
-  const timestamp = new Date().toISOString();
-  const colorMap = {
-    info: colors.blue,
-    success: colors.green,
-    error: colors.red,
-    warning: colors.yellow,
-    progress: colors.cyan
-  };
-  console.log(`${colorMap[type]}[${timestamp}] ${message}${colors.reset}`);
-}
-
 /**
- * Read and parse input file (CSV or Excel)
+ * THE ULTIMATE HUMAN CONTENT PROMPT
+ * Designed to generate 10,000+ words that pass AI detection
  */
-function readInputFile(filePath) {
-  const ext = path.extname(filePath).toLowerCase();
-  
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`Input file not found: ${filePath}`);
-  }
-  
-  log(`Reading input file: ${filePath}`, 'info');
-  
-  if (ext === '.csv') {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const records = parse(content, {
-      columns: true,
-      skip_empty_lines: true,
-      trim: true
-    });
-    return records;
-  } else if (ext === '.xlsx' || ext === '.xls') {
-    const workbook = XLSX.readFile(filePath);
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const records = XLSX.utils.sheet_to_json(worksheet);
-    return records;
-  } else {
-    throw new Error(`Unsupported file format: ${ext}. Use .csv or .xlsx`);
-  }
-}
-
-/**
- * Normalize column names from CSV/Excel
- */
-function normalizeRow(row) {
-  const normalized = {};
-  
-  // Map various column name formats to standard names
-  const columnMappings = {
-    'title': ['title', 'Title', 'TITLE', 'topic', 'Topic'],
-    'hTags': ['h tags', 'H Tags', 'htags', 'HTags', 'headings', 'Headings', 'H Tags (Actual Headings)'],
-    'keywords': ['keywords', 'Keywords', 'KEYWORDS', 'keyword', 'Keyword'],
-    'reference': ['reference', 'Reference', 'REFERENCE', 'references', 'References', 'ref', 'Ref'],
-    'eeat': ['eeat', 'EEAT', 'E-E-A-T', 'expertise', 'Expertise'],
-    'date': ['date', 'Date', 'DATE', 'publish_date', 'Publish Date'],
-    'time': ['time', 'Time', 'TIME', 'publish_time', 'Publish Time']
-  };
-  
-  for (const [standardName, possibleNames] of Object.entries(columnMappings)) {
-    for (const possibleName of possibleNames) {
-      if (row[possibleName] !== undefined) {
-        normalized[standardName] = row[possibleName];
-        break;
-      }
-    }
-  }
-  
-  return normalized;
-}
-
-/**
- * Build the human-like content generation prompt
- */
-function buildPrompt(row) {
+function buildHumanPrompt(row) {
   const { title, hTags, keywords, reference, eeat } = row;
   
-  return `You are a professional human ghostwriter. Write a 5,000-word, extremely detailed blog post about "${title}".
+  // Parse H-tags (separated by | or newlines)
+  const headings = hTags ? hTags.split(/[|\n]/).map(h => h.trim()).filter(h => h) : [];
+  const headingsList = headings.map((h, i) => `${i + 1}. ${h}`).join('\n');
+  
+  return `You are a professional human ghostwriter with 20 years of experience. Write an extremely detailed, 10,000-word blog post about "${title}".
 
-STRUCTURE & SEO:
-- Use ONLY these headings in order: ${hTags}
-- Format them as <h2 id="sectionX"> for main headings or <h3> for sub-headings
-- Add a Table of Contents after the opening paragraph:
-  <div class="toc"><h3>Table of Contents</h3><ul><li><a href="#section1">First Heading</a></li>...</ul></div>
-- KEYWORDS: You MUST include every single one of these keywords naturally throughout the content: ${keywords}
-- EEAT COMPLIANCE: ${eeat || 'Write with the authority of an expert in this field.'}
-- REFERENCE CONTEXT: ${reference ? `Use the information from ${reference} to ensure factual accuracy.` : 'Ensure all information is accurate and well-researched.'}
+═══════════════════════════════════════════════════════════════
+STRUCTURE & HEADINGS (USE EXACTLY THESE IN ORDER)
+═══════════════════════════════════════════════════════════════
 
-HUMAN-WRITING ENGINE (BURSTINESS) - THIS IS CRITICAL:
+${headingsList || 'Create 8-10 detailed section headings appropriate for this topic.'}
 
-1. SENTENCE VARIATION:
-   - Vary sentence length drastically
-   - Follow a long, 30-word sentence with a 3-word sentence
-   - Then maybe a medium one. See how that works?
+Format each main heading as: <h2 id="section1">Heading Text</h2>
+Format sub-headings as: <h3>Sub-heading Text</h3>
+
+After the opening paragraph, add a Table of Contents:
+<div class="toc">
+<h3>What You'll Learn</h3>
+<ul>
+<li><a href="#section1">First Heading</a></li>
+<li><a href="#section2">Second Heading</a></li>
+...
+</ul>
+</div>
+
+═══════════════════════════════════════════════════════════════
+KEYWORDS (MUST INCLUDE ALL NATURALLY)
+═══════════════════════════════════════════════════════════════
+
+${keywords || title}
+
+Weave every keyword into the content naturally. Don't force them. Use variations and related terms.
+
+═══════════════════════════════════════════════════════════════
+E-E-A-T AUTHORITY
+═══════════════════════════════════════════════════════════════
+
+${eeat || 'Write as an industry expert with years of hands-on experience.'}
+
+Show expertise through:
+- Personal stories and experiences
+- Specific examples with real details
+- Industry insider knowledge
+- Practical tips only an expert would know
+
+═══════════════════════════════════════════════════════════════
+REFERENCE MATERIAL
+═══════════════════════════════════════════════════════════════
+
+${reference || 'Use your knowledge to provide accurate, well-researched information.'}
+
+═══════════════════════════════════════════════════════════════
+HUMAN-WRITING ENGINE (THIS IS CRITICAL)
+═══════════════════════════════════════════════════════════════
+
+1. BURSTINESS - Vary sentence length dramatically:
+   - Write a long sentence with 25-35 words that flows naturally and covers multiple points.
+   - Then short. Like this.
+   - Then medium length, maybe 15 words or so.
+   - Mix it up constantly. Never let two sentences be the same length.
 
 2. PERSONAL VOICE:
-   - Use "I" and "You" throughout
-   - Speak directly to the reader like a friend
-   - Share personal insights: "In my experience...", "What I've found is..."
+   - Use "I" constantly: "I've seen this happen...", "In my experience...", "What I tell people is..."
+   - Use "You" to connect: "You've probably noticed...", "Here's what you need to know..."
+   - Share opinions: "Honestly, I think...", "My take on this is..."
+   - Add personality: "Look, here's the deal...", "Can I be real with you?"
 
-3. NATURAL LANGUAGE:
-   - Use contractions everywhere (don't, it's, we've, you're, they're)
-   - Start sentences with "But," "And," "So," or "Now"
-   - Add casual phrases: "Here's the thing," "Look," "Honestly"
+3. CONTRACTIONS (Always use these):
+   - don't, won't, can't, isn't, aren't, wasn't, weren't
+   - it's, that's, there's, here's, what's
+   - you're, they're, we're, I'm, I've, I'd
+   - couldn't, wouldn't, shouldn't, haven't, hasn't
 
-4. BANNED AI WORDS - NEVER USE THESE:
-   ❌ delve → use "look into"
-   ❌ realm → use "area" or "world"
-   ❌ landscape → use "world" or "space"
-   ❌ robust → use "strong" or "solid"
-   ❌ leverage → use "use"
-   ❌ comprehensive → use "full" or "complete"
-   ❌ game-changer → use "big deal" or describe what it does
-   ❌ cutting-edge → use "new" or "latest"
-   ❌ seamless → use "smooth" or "easy"
-   ❌ utilize → use "use"
-   ❌ implement → use "set up" or "start"
-   ❌ facilitate → use "help"
-   ❌ Moreover, Furthermore, Therefore, Nevertheless → use "Also", "Plus", "And", "But", "So"
+4. SENTENCE STARTERS (Use these often):
+   - "But here's the thing..."
+   - "And that's exactly why..."
+   - "So what does this mean?"
+   - "Now, I know what you're thinking..."
+   - "Look, I get it."
+   - "Here's what most people miss..."
+   - "The truth is..."
+   - "Honestly?"
 
-5. LENGTH REQUIREMENT - DEEP DIVE:
-   - Each H2 section should be at least 800-1000 words
-   - Provide examples, stories, and detailed explanations
-   - Do NOT summarize - go deep into each topic
-   - Total content must be at least 5,000 words
+5. CASUAL PHRASES (Sprinkle throughout):
+   - "you know what I mean?"
+   - "here's the deal"
+   - "let me tell you"
+   - "trust me on this"
+   - "I've been there"
+   - "real talk"
+   - "no joke"
+   - "seriously though"
 
-6. ENDING:
-   - No "In Conclusion" or "To Sum Up"
-   - End with a "Parting Thought" section
-   - Make it memorable and personal
+═══════════════════════════════════════════════════════════════
+BANNED WORDS - NEVER USE THESE (AI GIVEAWAYS)
+═══════════════════════════════════════════════════════════════
 
-HTML FORMAT:
-- <h2 id="section1"> for main headings (with id for TOC links)
-- <h3> for sub-headings
-- <p> for paragraphs
-- <ul><li> for bullet lists (use sparingly)
-- <strong> for emphasis
-- <blockquote> for quotes or important callouts
+❌ NEVER USE          → ✅ USE INSTEAD
+─────────────────────────────────────────
+delve                → look into, dig into, explore
+realm                → area, world, space, field
+landscape            → world, scene, space
+robust               → strong, solid, reliable
+leverage             → use, take advantage of
+comprehensive        → full, complete, thorough
+game-changer         → big deal, huge, changes everything
+cutting-edge         → new, latest, modern
+seamless             → smooth, easy, simple
+utilize              → use
+implement            → set up, start, put in place
+facilitate           → help, make easier
+optimal              → best, ideal
+subsequently         → then, after that, later
+furthermore          → also, plus, and
+moreover             → also, and, plus
+therefore            → so, that's why
+nevertheless         → but, still, even so
+consequently         → so, as a result
+paramount            → important, key, crucial
+plethora             → many, lots of, tons of
+myriad               → many, countless
+embark               → start, begin
+foster               → build, grow, develop
+endeavor             → try, attempt, effort
+ascertain            → find out, figure out
+commence             → start, begin
+terminate            → end, stop
+prior to             → before
+in order to          → to
+at this point in time → now
+in the event that    → if
+due to the fact that → because
 
-START DIRECTLY WITH THE CONTENT. No intro like "Here is..." - just begin the article:`;
+═══════════════════════════════════════════════════════════════
+LENGTH REQUIREMENTS (NON-NEGOTIABLE)
+═══════════════════════════════════════════════════════════════
+
+TOTAL: At least 10,000 words (this is a DEEP DIVE article)
+
+Each H2 section: 1,000-1,500 words minimum
+
+Include in each section:
+- A personal story or example (150-200 words)
+- Detailed explanation with specifics (400-500 words)
+- Practical tips or steps (200-300 words)
+- Common mistakes to avoid (150-200 words)
+- Real-world application (150-200 words)
+
+DO NOT SUMMARIZE. Go deep. Explain everything thoroughly.
+Pretend you're writing a mini-book chapter for each section.
+
+═══════════════════════════════════════════════════════════════
+ENDING (NO "IN CONCLUSION")
+═══════════════════════════════════════════════════════════════
+
+End with a section called "Parting Thoughts" or "Final Words"
+- Make it personal and memorable
+- Share one last piece of advice
+- End with an encouraging statement
+- NO bullet point summaries
+- NO "In conclusion" or "To summarize"
+
+═══════════════════════════════════════════════════════════════
+HTML FORMAT
+═══════════════════════════════════════════════════════════════
+
+<h2 id="section1">Heading</h2>
+<h3>Sub-heading</h3>
+<p>Paragraph text</p>
+<ul><li>List item</li></ul>
+<strong>Bold text</strong>
+<em>Italic text</em>
+<blockquote>Important quote or callout</blockquote>
+
+═══════════════════════════════════════════════════════════════
+START WRITING NOW
+═══════════════════════════════════════════════════════════════
+
+Begin directly with an engaging opening paragraph. No "Here is..." or any meta-commentary.
+Just start the article as if you're a human expert sharing your knowledge.`;
 }
 
 /**
@@ -188,7 +217,7 @@ async function generateContent(prompt, retries = 0) {
   const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
   
   if (!GOOGLE_AI_KEY) {
-    throw new Error('GOOGLE_AI_KEY not found in environment variables');
+    throw new Error('GOOGLE_AI_KEY not configured');
   }
   
   try {
@@ -196,26 +225,31 @@ async function generateContent(prompt, retries = 0) {
     const model = genAI.getGenerativeModel({ 
       model: 'gemini-1.5-flash',
       generationConfig: {
-        temperature: 0.8,
-        maxOutputTokens: 32000,
+        temperature: 0.85, // Higher for more human-like variation
+        maxOutputTokens: 65536, // Maximum tokens for long content
         topP: 0.95,
         topK: 40
       }
     });
     
-    log('Calling Gemini 1.5 Flash API...', 'progress');
+    console.log('[BulkGen] Calling Gemini 1.5 Flash...');
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const content = response.text();
+    let content = response.text();
+    
+    // Clean the content
+    content = cleanContent(content);
     
     // Count words
-    const wordCount = content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w.length > 0).length;
-    log(`Generated ${wordCount} words`, 'success');
+    const wordCount = countWords(content);
+    console.log(`[BulkGen] Generated ${wordCount} words`);
     
-    return content;
+    return { content, wordCount };
   } catch (error) {
+    console.error('[BulkGen] Gemini error:', error.message);
+    
     if (retries < CONFIG.MAX_RETRIES) {
-      log(`API error, retrying (${retries + 1}/${CONFIG.MAX_RETRIES})...`, 'warning');
+      console.log(`[BulkGen] Retrying (${retries + 1}/${CONFIG.MAX_RETRIES})...`);
       await delay(2000);
       return generateContent(prompt, retries + 1);
     }
@@ -229,28 +263,47 @@ async function generateContent(prompt, retries = 0) {
 function cleanContent(content) {
   let cleaned = content;
   
-  // Remove markdown code blocks if present
+  // Remove markdown code blocks
   cleaned = cleaned.replace(/```html\n?/gi, '');
   cleaned = cleaned.replace(/```\n?/gi, '');
   
-  // Remove any "Here is..." intro lines
-  cleaned = cleaned.replace(/^<p>Here is[\s\S]*?<\/p>/i, '');
-  cleaned = cleaned.replace(/^Here is[\s\S]*?\n/i, '');
+  // Remove "Here is..." intro lines
+  cleaned = cleaned.replace(/^<p>Here is[\s\S]*?<\/p>\n*/i, '');
+  cleaned = cleaned.replace(/^Here is[\s\S]*?\n\n/i, '');
+  cleaned = cleaned.replace(/^<p>I've written[\s\S]*?<\/p>\n*/i, '');
   
   // Remove metadata blocks
-  cleaned = cleaned.replace(/---METADATA[\s\S]*?---/gi, '');
+  cleaned = cleaned.replace(/---[\s\S]*?---\n*/gi, '');
   
   // Remove JSON-LD schema
   cleaned = cleaned.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
+  
+  // Remove word count mentions
+  cleaned = cleaned.replace(/\(?\d+,?\d*\s*words?\)?/gi, '');
   
   return cleaned.trim();
 }
 
 /**
- * Publish to WordPress
+ * Count words in content
  */
-async function publishToWordPress(siteConfig, title, content, scheduleDate) {
-  const { siteUrl, username, applicationPassword } = siteConfig;
+function countWords(content) {
+  const textOnly = content.replace(/<[^>]*>/g, ' ');
+  return textOnly.split(/\s+/).filter(w => w.length > 0).length;
+}
+
+/**
+ * Publish to WordPress using client's stored credentials
+ */
+async function publishToWordPress(siteId, title, content, scheduleDate) {
+  // Get WordPress site from database
+  const site = await WordPressSite.findById(siteId);
+  
+  if (!site) {
+    throw new Error('WordPress site not found');
+  }
+  
+  const { siteUrl, username, applicationPassword } = site;
   
   // Create auth header
   const auth = Buffer.from(`${username}:${applicationPassword}`).toString('base64');
@@ -259,9 +312,12 @@ async function publishToWordPress(siteConfig, title, content, scheduleDate) {
   const postData = {
     title: title,
     content: content,
-    status: scheduleDate ? 'future' : 'draft',
-    date: scheduleDate || undefined
+    status: scheduleDate ? 'future' : 'draft'
   };
+  
+  if (scheduleDate) {
+    postData.date = scheduleDate;
+  }
   
   try {
     const response = await axios.post(
@@ -284,43 +340,44 @@ async function publishToWordPress(siteConfig, title, content, scheduleDate) {
     };
   } catch (error) {
     const errorMsg = error.response?.data?.message || error.message;
-    throw new Error(`WordPress publish failed: ${errorMsg}`);
+    throw new Error(`WordPress error: ${errorMsg}`);
   }
 }
 
 /**
- * Format date and time for WordPress
+ * Format schedule date for WordPress
  */
 function formatScheduleDate(dateStr, timeStr) {
   if (!dateStr) return null;
   
-  // Parse date (supports various formats)
   let date;
+  
+  // Handle various date formats
   if (dateStr.includes('/')) {
-    // DD/MM/YYYY or MM/DD/YYYY
     const parts = dateStr.split('/');
     if (parts[0].length === 4) {
       date = new Date(dateStr);
     } else if (parseInt(parts[0]) > 12) {
       // DD/MM/YYYY
-      date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      date = new Date(`${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`);
     } else {
       // MM/DD/YYYY
-      date = new Date(`${parts[2]}-${parts[0]}-${parts[1]}`);
+      date = new Date(`${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`);
     }
+  } else if (dateStr.includes('-')) {
+    date = new Date(dateStr);
   } else {
     date = new Date(dateStr);
   }
   
-  // Add time if provided
+  // Add time
   if (timeStr) {
-    const timeParts = timeStr.split(':');
-    date.setHours(parseInt(timeParts[0]) || 0);
-    date.setMinutes(parseInt(timeParts[1]) || 0);
+    const [hours, minutes] = timeStr.split(':');
+    date.setHours(parseInt(hours) || 0);
+    date.setMinutes(parseInt(minutes) || 0);
     date.setSeconds(0);
   }
   
-  // Return ISO format for WordPress
   return date.toISOString();
 }
 
@@ -332,183 +389,189 @@ function delay(ms) {
 }
 
 /**
- * Write output CSV with published links
+ * Process a single post in a bulk import job
  */
-function writeOutputFile(results) {
-  const outputPath = path.join(process.cwd(), CONFIG.OUTPUT_FILE);
-  
-  let csvContent = 'Title,WordPress Link,Status,Word Count,Published At\n';
-  
-  for (const result of results) {
-    const row = [
-      `"${result.title.replace(/"/g, '""')}"`,
-      result.link || 'N/A',
-      result.status,
-      result.wordCount || 0,
-      result.publishedAt || 'N/A'
-    ].join(',');
-    csvContent += row + '\n';
-  }
-  
-  fs.writeFileSync(outputPath, csvContent);
-  log(`Output saved to: ${outputPath}`, 'success');
-}
-
-/**
- * Get WordPress site configuration from database or environment
- */
-async function getWordPressSiteConfig(siteId) {
-  // Try to get from database first
-  if (siteId && mongoose.connection.readyState === 1) {
-    try {
-      const WordPressSite = mongoose.model('WordPressSite');
-      const site = await WordPressSite.findById(siteId);
-      if (site) {
-        return {
-          siteUrl: site.siteUrl,
-          username: site.username,
-          applicationPassword: site.applicationPassword
-        };
-      }
-    } catch (err) {
-      log('Could not fetch site from database, using environment variables', 'warning');
-    }
-  }
-  
-  // Fallback to environment variables
-  const siteUrl = process.env.WORDPRESS_SITE_URL;
-  const username = process.env.WORDPRESS_USERNAME;
-  const applicationPassword = process.env.WORDPRESS_APP_PASSWORD;
-  
-  if (!siteUrl || !username || !applicationPassword) {
-    throw new Error('WordPress credentials not found. Set WORDPRESS_SITE_URL, WORDPRESS_USERNAME, and WORDPRESS_APP_PASSWORD in .env');
-  }
-  
-  return { siteUrl, username, applicationPassword };
-}
-
-/**
- * Main execution function
- */
-async function main() {
-  console.log('\n' + '='.repeat(60));
-  console.log('  BULK BLOG GENERATOR - Scalezix AI Platform');
-  console.log('='.repeat(60) + '\n');
-  
-  // Get command line arguments
-  const args = process.argv.slice(2);
-  const inputFile = args[0] || 'blog_data.csv';
-  const siteId = args[1] || null;
-  
-  log(`Input file: ${inputFile}`, 'info');
-  log(`WordPress site ID: ${siteId || 'Using environment variables'}`, 'info');
-  
-  const results = [];
+async function processPost(post, wordpressSiteId, jobId) {
+  const row = {
+    title: post.title,
+    hTags: post.hTags,
+    keywords: post.keywords,
+    reference: post.references,
+    eeat: post.eeat
+  };
   
   try {
-    // Read input file
-    const rows = readInputFile(inputFile);
-    log(`Found ${rows.length} blog posts to process`, 'success');
+    // Update status to generating
+    await BulkImportJob.updateOne(
+      { _id: jobId, 'posts.title': post.title },
+      { 
+        $set: { 
+          'posts.$.status': 'generating',
+          currentStep: `Generating content for: ${post.title}`
+        }
+      }
+    );
     
-    // Get WordPress config
-    let wpConfig;
-    try {
-      wpConfig = await getWordPressSiteConfig(siteId);
-      log(`WordPress site: ${wpConfig.siteUrl}`, 'success');
-    } catch (err) {
-      log(`WordPress not configured: ${err.message}`, 'warning');
-      log('Content will be generated but not published', 'warning');
-      wpConfig = null;
+    // Build prompt and generate content
+    const prompt = buildHumanPrompt(row);
+    const { content, wordCount } = await generateContent(prompt);
+    
+    // Update status to publishing
+    await BulkImportJob.updateOne(
+      { _id: jobId, 'posts.title': post.title },
+      { 
+        $set: { 
+          'posts.$.status': 'publishing',
+          'posts.$.contentLength': wordCount,
+          currentStep: `Publishing to WordPress: ${post.title}`
+        }
+      }
+    );
+    
+    // Format schedule date
+    const scheduleDate = formatScheduleDate(post.scheduleDate, post.scheduleTime);
+    
+    // Publish to WordPress
+    const result = await publishToWordPress(wordpressSiteId, post.title, content, scheduleDate);
+    
+    // Update success
+    await BulkImportJob.updateOne(
+      { _id: jobId, 'posts.title': post.title },
+      { 
+        $set: { 
+          'posts.$.status': 'published',
+          'posts.$.wordpressPostId': result.postId,
+          'posts.$.wordpressPostUrl': result.link,
+          'posts.$.publishedAt': new Date()
+        },
+        $inc: { processedPosts: 1, successfulPosts: 1 }
+      }
+    );
+    
+    console.log(`[BulkGen] ✅ Published: ${post.title} → ${result.link}`);
+    
+    return { success: true, link: result.link, wordCount };
+    
+  } catch (error) {
+    console.error(`[BulkGen] ❌ Failed: ${post.title} - ${error.message}`);
+    
+    // Update failure
+    await BulkImportJob.updateOne(
+      { _id: jobId, 'posts.title': post.title },
+      { 
+        $set: { 
+          'posts.$.status': 'failed',
+          'posts.$.error': error.message
+        },
+        $inc: { processedPosts: 1, failedPosts: 1 }
+      }
+    );
+    
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Process entire bulk import job
+ * Called from the web UI bulk import endpoint
+ */
+async function processBulkImportJob(jobId) {
+  console.log(`[BulkGen] Starting job: ${jobId}`);
+  
+  try {
+    // Get job from database
+    const job = await BulkImportJob.findById(jobId);
+    
+    if (!job) {
+      throw new Error('Job not found');
     }
     
-    // Process each row
-    for (let i = 0; i < rows.length; i++) {
-      const row = normalizeRow(rows[i]);
-      const { title, date, time } = row;
-      
-      console.log('\n' + '-'.repeat(50));
-      log(`Processing ${i + 1}/${rows.length}: "${title}"`, 'progress');
-      
-      try {
-        // Build prompt
-        const prompt = buildPrompt(row);
-        
-        // Generate content
-        const rawContent = await generateContent(prompt);
-        const content = cleanContent(rawContent);
-        
-        // Count words
-        const wordCount = content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w.length > 0).length;
-        
-        // Publish to WordPress if configured
-        let publishResult = { success: false, link: null, status: 'not_published' };
-        
-        if (wpConfig) {
-          const scheduleDate = formatScheduleDate(date, time);
-          log(`Scheduling for: ${scheduleDate || 'immediate'}`, 'info');
-          
-          publishResult = await publishToWordPress(wpConfig, title, content, scheduleDate);
-          log(`✅ Published: ${publishResult.link}`, 'success');
-        } else {
-          // Save content to file instead
-          const safeTitle = title.replace(/[^a-z0-9]/gi, '_').substring(0, 50);
-          const outputPath = path.join(process.cwd(), 'generated_posts', `${safeTitle}.html`);
-          
-          // Create directory if needed
-          if (!fs.existsSync(path.dirname(outputPath))) {
-            fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-          }
-          
-          fs.writeFileSync(outputPath, content);
-          log(`Content saved to: ${outputPath}`, 'success');
-          publishResult.status = 'saved_locally';
+    // Update job status
+    await BulkImportJob.updateOne(
+      { _id: jobId },
+      { 
+        $set: { 
+          status: 'processing',
+          startedAt: new Date()
         }
-        
-        results.push({
-          title,
-          link: publishResult.link,
-          status: publishResult.status,
-          wordCount,
-          publishedAt: new Date().toISOString()
-        });
-        
-      } catch (error) {
-        log(`❌ Error processing "${title}": ${error.message}`, 'error');
-        results.push({
-          title,
-          link: null,
-          status: 'error',
-          wordCount: 0,
-          error: error.message
-        });
+      }
+    );
+    
+    // Process each post
+    for (let i = 0; i < job.posts.length; i++) {
+      const post = job.posts[i];
+      
+      if (post.status === 'published') {
+        console.log(`[BulkGen] Skipping already published: ${post.title}`);
+        continue;
       }
       
-      // Delay between posts to avoid rate limits
-      if (i < rows.length - 1) {
-        log(`Waiting ${CONFIG.DELAY_BETWEEN_POSTS / 1000}s before next post...`, 'info');
+      console.log(`[BulkGen] Processing ${i + 1}/${job.posts.length}: ${post.title}`);
+      
+      await processPost(post, job.wordpressSiteId, jobId);
+      
+      // Delay between posts
+      if (i < job.posts.length - 1) {
         await delay(CONFIG.DELAY_BETWEEN_POSTS);
       }
     }
     
-    // Write output file
-    console.log('\n' + '='.repeat(50));
-    writeOutputFile(results);
+    // Mark job as completed
+    await BulkImportJob.updateOne(
+      { _id: jobId },
+      { 
+        $set: { 
+          status: 'completed',
+          completedAt: new Date(),
+          currentStep: 'All posts processed'
+        }
+      }
+    );
     
-    // Summary
-    const successful = results.filter(r => r.status !== 'error').length;
-    const failed = results.filter(r => r.status === 'error').length;
-    
-    console.log('\n' + '='.repeat(60));
-    log(`COMPLETED: ${successful} successful, ${failed} failed`, successful === rows.length ? 'success' : 'warning');
-    console.log('='.repeat(60) + '\n');
+    console.log(`[BulkGen] ✅ Job completed: ${jobId}`);
     
   } catch (error) {
-    log(`Fatal error: ${error.message}`, 'error');
-    process.exit(1);
+    console.error(`[BulkGen] Job failed: ${error.message}`);
+    
+    await BulkImportJob.updateOne(
+      { _id: jobId },
+      { 
+        $set: { 
+          status: 'failed',
+          currentStep: `Error: ${error.message}`
+        }
+      }
+    );
   }
 }
 
-// Run if called directly
-main().catch(console.error);
+/**
+ * Generate single post content (for API endpoint)
+ */
+async function generateSinglePost(config) {
+  const row = {
+    title: config.topic || config.title,
+    hTags: config.headings || config.hTags || '',
+    keywords: config.keywords || config.topic || config.title,
+    reference: config.references || config.reference || '',
+    eeat: config.eeat || ''
+  };
+  
+  const prompt = buildHumanPrompt(row);
+  const { content, wordCount } = await generateContent(prompt);
+  
+  return {
+    content,
+    wordCount,
+    title: row.title
+  };
+}
 
-export { generateContent, buildPrompt, cleanContent, publishToWordPress };
+export { 
+  processBulkImportJob, 
+  generateSinglePost, 
+  buildHumanPrompt, 
+  generateContent,
+  publishToWordPress,
+  CONFIG
+};

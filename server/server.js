@@ -1108,7 +1108,7 @@ function insertImagesIntoContent(htmlContent, images) {
   return result;
 }
 
-// SINGLE-STEP HUMAN CONTENT GENERATION WITH IMAGES
+// ULTIMATE HUMAN CONTENT GENERATION - 10,000+ WORDS
 app.post('/api/content/generate-human', async (req, res) => {
   try {
     console.log('[Content] generate-human endpoint called');
@@ -1121,158 +1121,195 @@ app.post('/api/content/generate-human', async (req, res) => {
 
     const topic = config.topic;
     const tone = config.tone || 'conversational';
-    const minWords = config.minWords || 3000;
+    const minWords = config.minWords || 10000; // Default to 10,000 words
     const numImages = config.numImages || 4;
     
     // Excel data fields
-    const customHeadings = config.headings || ''; // H2/H3 headings from Excel
-    const keywords = config.keywords || topic; // Keywords from Excel
-    const references = config.references || ''; // Reference URLs from Excel
-    const eeat = config.eeat || ''; // EEAT info from Excel
-    const scheduleDate = config.scheduleDate || ''; // Schedule date from Excel
-    const scheduleTime = config.scheduleTime || ''; // Schedule time from Excel
+    const customHeadings = config.headings || '';
+    const keywords = config.keywords || topic;
+    const references = config.references || '';
+    const eeat = config.eeat || '';
 
-    // Build headings instruction
-    const headingsInstruction = customHeadings 
-      ? `USE THESE EXACT HEADINGS (from Excel file):\n${customHeadings}\n\nUse these as your H2 and H3 headings exactly as provided.`
-      : `Create your own topic-specific headings that sound natural and human.`;
+    // Parse headings
+    const headings = customHeadings ? customHeadings.split(/[|\n]/).map(h => h.trim()).filter(h => h) : [];
+    const headingsList = headings.length > 0 
+      ? headings.map((h, i) => `${i + 1}. ${h}`).join('\n')
+      : 'Create 8-10 detailed section headings appropriate for this topic.';
 
-    // Build references instruction
-    const referencesInstruction = references 
-      ? `\n\nREFERENCES TO INCLUDE:\n${references}\nMention these sources naturally in the content where relevant.`
-      : '';
+    // THE ULTIMATE HUMAN CONTENT PROMPT
+    const prompt = `You are a professional human ghostwriter with 20 years of experience. Write an extremely detailed, ${minWords}-word blog post about "${topic}".
 
-    // Build EEAT instruction
-    const eeatInstruction = eeat 
-      ? `\n\nEEAT REQUIREMENTS:\n${eeat}\nIncorporate this expertise and authority naturally.`
-      : '';
+═══════════════════════════════════════════════════════════════
+STRUCTURE & HEADINGS (USE EXACTLY THESE IN ORDER)
+═══════════════════════════════════════════════════════════════
 
-    // 100% HUMAN CONTENT PROMPT - NO AI PATTERNS
-    const prompt = `Write a blog post about "${topic}".
+${headingsList}
 
-CRITICAL RULES - READ CAREFULLY:
+Format each main heading as: <h2 id="section1">Heading Text</h2>
+Format sub-headings as: <h3>Sub-heading Text</h3>
 
-1. START DIRECTLY WITH CONTENT
-   - Do NOT write "Here is..." or "Here's a comprehensive..." or any intro line
-   - Do NOT write any explanation of what you're about to write
-   - Just start with the actual blog content immediately
-   - First line should be the opening of the article itself
+After the opening paragraph, add a Table of Contents:
+<div class="toc">
+<h3>What You'll Learn</h3>
+<ul>
+<li><a href="#section1">First Heading</a></li>
+<li><a href="#section2">Second Heading</a></li>
+...
+</ul>
+</div>
 
-2. NO METADATA OR EXTRA SECTIONS
-   - Do NOT include any "---METADATA---" blocks
-   - Do NOT include JSON-LD or schema markup
-   - Do NOT include word counts or read times
-   - Just write the blog post content, nothing else
+═══════════════════════════════════════════════════════════════
+KEYWORDS (MUST INCLUDE ALL NATURALLY)
+═══════════════════════════════════════════════════════════════
 
-3. TABLE OF CONTENTS (Required)
-   - After the opening paragraph, add a Table of Contents
-   - Format: <div class="toc"><h3>Table of Contents</h3><ul><li><a href="#section1">Heading 1</a></li>...</ul></div>
-   - Link each item to its corresponding H2 section
+${keywords}
 
-4. WRITE LIKE A REAL PERSON
-   - Use simple, everyday English words
-   - Write like you're explaining to a friend
-   - Use "you" and "your" to talk directly to reader
-   - Use contractions: "don't", "won't", "it's", "you're", "they're"
-   - Keep sentences short and clear
-   - Mix short sentences with longer ones
-   - Start some sentences with "And", "But", "So", "Now"
-   - Add personal touches: "I've seen", "In my experience", "What works for me"
-   - Ask questions: "Sound familiar?", "Know what I mean?", "Ever noticed that?"
+Weave every keyword into the content naturally. Don't force them.
 
-5. WORDS TO NEVER USE (AI giveaways):
-   - "comprehensive" - say "complete" or "full"
-   - "crucial" - say "important" or "key"
-   - "leverage" - say "use"
-   - "utilize" - say "use"
-   - "implement" - say "set up" or "start"
-   - "facilitate" - say "help" or "make easier"
-   - "robust" - say "strong" or "solid"
-   - "seamless" - say "smooth" or "easy"
-   - "cutting-edge" - say "new" or "latest"
-   - "game-changer" - just describe what it does
-   - "dive deep" - say "look at" or "explore"
-   - "landscape" - say "world" or "area"
-   - "realm" - say "area" or "field"
-   - "plethora" - say "many" or "lots of"
-   - "myriad" - say "many"
-   - "delve" - say "look into"
-   - "embark" - say "start"
-   - "foster" - say "build" or "grow"
-   - "Moreover" - say "Also" or "Plus"
-   - "Furthermore" - say "And" or "Also"
-   - "However" - say "But"
-   - "Therefore" - say "So"
-   - "Nevertheless" - say "Still" or "But"
+═══════════════════════════════════════════════════════════════
+E-E-A-T AUTHORITY
+═══════════════════════════════════════════════════════════════
 
-6. STRUCTURE
-   - Opening: Hook the reader with something interesting (not "Welcome to this guide")
-   - Table of Contents: After opening paragraph
-   - Body: Use the provided headings or create natural ones
-   - Each section: 200-400 words with real information
-   - Closing: End naturally, no "In conclusion" or summary lists
+${eeat || 'Write as an industry expert with years of hands-on experience.'}
 
-${headingsInstruction}
+Show expertise through personal stories, specific examples, and insider knowledge.
 
-KEYWORDS TO USE NATURALLY: ${keywords}
-${referencesInstruction}
-${eeatInstruction}
+═══════════════════════════════════════════════════════════════
+REFERENCE MATERIAL
+═══════════════════════════════════════════════════════════════
 
-WORD COUNT: At least ${minWords} words
+${references || 'Use your knowledge to provide accurate, well-researched information.'}
 
-HTML FORMAT:
-- <h2 id="section1"> for main headings (add id for TOC links)
-- <h3> for sub-headings
-- <p> for paragraphs
-- <ul><li> for bullet lists (use sparingly)
-- <strong> for bold text
-- <a href="url"> for links
+═══════════════════════════════════════════════════════════════
+HUMAN-WRITING ENGINE (CRITICAL FOR AI DETECTION BYPASS)
+═══════════════════════════════════════════════════════════════
 
-TONE: ${tone}
+1. BURSTINESS - Vary sentence length dramatically:
+   - Write a long sentence with 25-35 words that flows naturally and covers multiple points.
+   - Then short. Like this.
+   - Then medium length, maybe 15 words or so.
+   - Mix it up constantly. Never let two sentences be the same length.
 
-Now write the blog post. Start directly with the content - no intro lines, no metadata, just the article:`;
+2. PERSONAL VOICE:
+   - Use "I" constantly: "I've seen this happen...", "In my experience...", "What I tell people is..."
+   - Use "You" to connect: "You've probably noticed...", "Here's what you need to know..."
+   - Share opinions: "Honestly, I think...", "My take on this is..."
+   - Add personality: "Look, here's the deal...", "Can I be real with you?"
+
+3. CONTRACTIONS (Always use these):
+   - don't, won't, can't, isn't, aren't, wasn't, weren't
+   - it's, that's, there's, here's, what's
+   - you're, they're, we're, I'm, I've, I'd
+   - couldn't, wouldn't, shouldn't, haven't, hasn't
+
+4. SENTENCE STARTERS (Use these often):
+   - "But here's the thing..."
+   - "And that's exactly why..."
+   - "So what does this mean?"
+   - "Now, I know what you're thinking..."
+   - "Look, I get it."
+   - "Here's what most people miss..."
+   - "The truth is..."
+   - "Honestly?"
+
+5. CASUAL PHRASES (Sprinkle throughout):
+   - "you know what I mean?"
+   - "here's the deal"
+   - "let me tell you"
+   - "trust me on this"
+   - "I've been there"
+   - "real talk"
+   - "no joke"
+
+═══════════════════════════════════════════════════════════════
+BANNED WORDS - NEVER USE THESE (AI GIVEAWAYS)
+═══════════════════════════════════════════════════════════════
+
+❌ delve → look into, dig into
+❌ realm → area, world, space
+❌ landscape → world, scene, space
+❌ robust → strong, solid, reliable
+❌ leverage → use, take advantage of
+❌ comprehensive → full, complete, thorough
+❌ game-changer → big deal, huge, changes everything
+❌ cutting-edge → new, latest, modern
+❌ seamless → smooth, easy, simple
+❌ utilize → use
+❌ implement → set up, start, put in place
+❌ facilitate → help, make easier
+❌ optimal → best, ideal
+❌ subsequently → then, after that
+❌ furthermore → also, plus, and
+❌ moreover → also, and, plus
+❌ therefore → so, that's why
+❌ nevertheless → but, still
+❌ consequently → so, as a result
+❌ paramount → important, key
+❌ plethora → many, lots of
+❌ myriad → many, countless
+❌ embark → start, begin
+❌ foster → build, grow
+❌ endeavor → try, attempt
+❌ ascertain → find out, figure out
+❌ commence → start, begin
+❌ prior to → before
+❌ in order to → to
+❌ due to the fact that → because
+
+═══════════════════════════════════════════════════════════════
+LENGTH REQUIREMENTS (NON-NEGOTIABLE)
+═══════════════════════════════════════════════════════════════
+
+TOTAL: At least ${minWords} words (this is a DEEP DIVE article)
+
+Each H2 section: 1,000-1,500 words minimum
+
+Include in each section:
+- A personal story or example (150-200 words)
+- Detailed explanation with specifics (400-500 words)
+- Practical tips or steps (200-300 words)
+- Common mistakes to avoid (150-200 words)
+- Real-world application (150-200 words)
+
+DO NOT SUMMARIZE. Go deep. Explain everything thoroughly.
+
+═══════════════════════════════════════════════════════════════
+ENDING (NO "IN CONCLUSION")
+═══════════════════════════════════════════════════════════════
+
+End with "Parting Thoughts" or "Final Words"
+- Make it personal and memorable
+- Share one last piece of advice
+- NO bullet point summaries
+- NO "In conclusion" or "To summarize"
+
+═══════════════════════════════════════════════════════════════
+HTML FORMAT
+═══════════════════════════════════════════════════════════════
+
+<h2 id="section1">Heading</h2>
+<h3>Sub-heading</h3>
+<p>Paragraph text</p>
+<ul><li>List item</li></ul>
+<strong>Bold text</strong>
+<em>Italic text</em>
+<blockquote>Important quote or callout</blockquote>
+
+═══════════════════════════════════════════════════════════════
+START WRITING NOW
+═══════════════════════════════════════════════════════════════
+
+Begin directly with an engaging opening paragraph. No "Here is..." or any meta-commentary.
+Just start the article as if you're a human expert sharing your knowledge.`;
 
     let content = null;
     let apiUsed = '';
     const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-    // Try OpenRouter first (if key exists)
-    if (OPENROUTER_API_KEY && !content) {
-      console.log('[Content] Trying OpenRouter API...');
-      try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:5173',
-            'X-Title': 'AI Marketing Platform'
-          },
-          body: JSON.stringify({
-            model: 'anthropic/claude-3-haiku',
-            messages: [{ role: 'user', content: prompt }],
-            max_tokens: 16000,
-            temperature: 0.7
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.choices?.[0]?.message?.content) {
-            content = data.choices[0].message.content;
-            apiUsed = 'OpenRouter';
-            console.log('[Content] OpenRouter success');
-          }
-        }
-      } catch (err) {
-        console.log('[Content] OpenRouter error:', err.message);
-      }
-    }
-
-    // Try Google AI (Gemini)
-    if (!content && GOOGLE_AI_KEY) {
-      console.log('[Content] Trying Google AI API...');
+    // Try Google AI first (better for long content)
+    if (GOOGLE_AI_KEY) {
+      console.log('[Content] Trying Google AI (Gemini 1.5 Flash)...');
       try {
         const googleResponse = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GOOGLE_AI_KEY}`,
@@ -1282,8 +1319,8 @@ Now write the blog post. Start directly with the content - no intro lines, no me
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 16000,
+                temperature: 0.85,
+                maxOutputTokens: 65536, // Maximum for long content
                 topP: 0.95,
                 topK: 40
               }
@@ -1305,45 +1342,75 @@ Now write the blog post. Start directly with the content - no intro lines, no me
       }
     }
 
-    // If all APIs fail, return error
+    // Fallback to OpenRouter
+    if (!content && OPENROUTER_API_KEY) {
+      console.log('[Content] Trying OpenRouter API...');
+      try {
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': process.env.FRONTEND_URL || 'http://localhost:5173',
+            'X-Title': 'AI Marketing Platform'
+          },
+          body: JSON.stringify({
+            model: 'anthropic/claude-3-haiku',
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 16000,
+            temperature: 0.85
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.choices?.[0]?.message?.content) {
+            content = data.choices[0].message.content;
+            apiUsed = 'OpenRouter';
+            console.log('[Content] OpenRouter success');
+          }
+        }
+      } catch (err) {
+        console.log('[Content] OpenRouter error:', err.message);
+      }
+    }
+
+    // If all APIs fail
     if (!content) {
       return res.status(500).json({ 
-        error: 'AI services unavailable. Please check your API keys (OPENROUTER_API_KEY or GOOGLE_AI_KEY) in your server .env file.' 
+        error: 'AI services unavailable. Please check your API keys (GOOGLE_AI_KEY or OPENROUTER_API_KEY) in your .env file.' 
       });
     }
+
+    // Clean content
+    let cleanContent = content;
+    cleanContent = cleanContent.replace(/```html\n?/gi, '');
+    cleanContent = cleanContent.replace(/```\n?/gi, '');
+    cleanContent = cleanContent.replace(/^<p>Here is[\s\S]*?<\/p>\n*/i, '');
+    cleanContent = cleanContent.replace(/^Here is[\s\S]*?\n\n/i, '');
+    cleanContent = cleanContent.replace(/---[\s\S]*?---\n*/gi, '');
+    cleanContent = cleanContent.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
+    cleanContent = cleanContent.replace(/\(?\d+,?\d*\s*words?\)?/gi, '');
+    cleanContent = cleanContent.trim();
 
     // Fetch topic-relevant images
     console.log('[Content] Fetching images for topic:', topic);
     const images = await fetchTopicImages(topic, numImages);
     
     // Insert images into content
-    const contentWithImages = insertImagesIntoContent(content, images);
+    const contentWithImages = insertImagesIntoContent(cleanContent, images);
     
-    // Generate title from topic
+    // Generate title
     const title = topic.charAt(0).toUpperCase() + topic.slice(1);
     
-    // Count words (strip HTML tags first)
+    // Count words
     const textOnly = contentWithImages.replace(/<[^>]*>/g, ' ');
     const wordCount = textOnly.split(/\s+/).filter(w => w.length > 0).length;
 
     console.log(`[Content] Generated using ${apiUsed}: ${wordCount} words, ${images.length} images`);
-    console.log('[Content] Has image markdown:', contentWithImages.includes('<img'));
-    console.log('[Content] Number of images in content:', (contentWithImages.match(/<img/g) || []).length);
-
-    // Clean content - remove any metadata blocks that AI might have added
-    let cleanContent = contentWithImages;
-    // Remove METADATA blocks if AI added them
-    cleanContent = cleanContent.replace(/---METADATA_START---[\s\S]*?---METADATA_END---/gi, '');
-    // Remove "Here is..." intro lines
-    cleanContent = cleanContent.replace(/^<p>Here is[\s\S]*?<\/p>/i, '');
-    cleanContent = cleanContent.replace(/^Here is[\s\S]*?\n/i, '');
-    // Remove JSON-LD schema if added
-    cleanContent = cleanContent.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/gi, '');
-    // Trim whitespace
-    cleanContent = cleanContent.trim();
 
     res.json({
-      content: cleanContent,
+      content: contentWithImages,
       title: title,
       wordCount: wordCount,
       topic: topic,
