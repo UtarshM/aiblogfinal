@@ -1121,8 +1121,9 @@ app.post('/api/content/generate-human', async (req, res) => {
 
     const topic = config.topic;
     const tone = config.tone || 'conversational';
-    const minWords = config.minWords || 10000; // Default to 10,000 words
-    const numImages = config.numImages || 4;
+    // Support both minWords and wordCount for backward compatibility
+    const minWords = parseInt(config.minWords) || parseInt(config.wordCount) || 5000;
+    const numImages = parseInt(config.numImages) || 4;
     
     // Excel data fields
     const customHeadings = config.headings || '';

@@ -10,11 +10,16 @@ import { X, FileText, Image, Target, Zap, BookOpen } from 'lucide-react'
 export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) {
     const [formData, setFormData] = useState({
         topic: '',
-        wordCount: '1000',
+        minWords: '5000', // Changed from wordCount to minWords, default 5000
         numImages: '4',
         tone: 'conversational',
         targetAudience: 'general',
-        includeStats: true
+        includeStats: true,
+        // Excel data fields (optional)
+        headings: '',
+        keywords: '',
+        references: '',
+        eeat: ''
     })
 
     if (!isOpen) return null
@@ -78,33 +83,65 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                     <div>
                         <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
                             <BookOpen size={20} className="text-blue-600" />
-                            Word Count *
+                            Minimum Word Count *
                         </label>
                         <div className="grid grid-cols-4 gap-2 mb-2">
-                            {['500', '1000', '1500', '2000'].map(count => (
+                            {['3000', '5000', '7500', '10000'].map(count => (
                                 <button
                                     key={count}
                                     type="button"
-                                    onClick={() => handleChange('wordCount', count)}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${formData.wordCount === count
+                                    onClick={() => handleChange('minWords', count)}
+                                    className={`px-4 py-2 rounded-lg font-medium transition-all ${formData.minWords === count
                                         ? 'bg-blue-600 text-white shadow-lg'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
-                                    {count}
+                                    {parseInt(count).toLocaleString()}
                                 </button>
                             ))}
                         </div>
                         <input
                             type="number"
-                            value={formData.wordCount}
-                            onChange={(e) => handleChange('wordCount', e.target.value)}
-                            min="500"
-                            max="3000"
-                            step="100"
+                            value={formData.minWords}
+                            onChange={(e) => handleChange('minWords', e.target.value)}
+                            min="1000"
+                            max="15000"
+                            step="500"
                             className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Choose or enter custom word count (500-3000)</p>
+                        <p className="text-xs text-gray-500 mt-1">Deep dive articles: 5,000-10,000+ words recommended</p>
+                    </div>
+
+                    {/* Custom Headings (Optional) */}
+                    <div>
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                            <FileText size={20} className="text-indigo-600" />
+                            Custom Headings (Optional)
+                        </label>
+                        <textarea
+                            value={formData.headings}
+                            onChange={(e) => handleChange('headings', e.target.value)}
+                            placeholder="Enter headings separated by | or new lines:&#10;Why This Matters | Getting Started | Advanced Tips | Parting Thoughts"
+                            rows={3}
+                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none transition-colors"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Leave empty to auto-generate headings</p>
+                    </div>
+
+                    {/* Keywords (Optional) */}
+                    <div>
+                        <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
+                            <Target size={20} className="text-orange-600" />
+                            SEO Keywords (Optional)
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.keywords}
+                            onChange={(e) => handleChange('keywords', e.target.value)}
+                            placeholder="e.g., digital marketing, SEO tips, content strategy"
+                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-orange-600 focus:outline-none transition-colors"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Comma-separated keywords to include naturally</p>
                     </div>
 
                     {/* Number of Images */}
@@ -193,10 +230,12 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                         <h3 className="font-semibold text-purple-900 mb-2">📋 Generation Summary</h3>
                         <div className="text-sm text-purple-800 space-y-1">
                             <p>• Topic: <span className="font-medium">{formData.topic || 'Not specified'}</span></p>
-                            <p>• Length: <span className="font-medium">{formData.wordCount} words</span></p>
+                            <p>• Length: <span className="font-medium">{parseInt(formData.minWords).toLocaleString()}+ words</span></p>
                             <p>• Images: <span className="font-medium">{formData.numImages} images</span></p>
                             <p>• Tone: <span className="font-medium capitalize">{formData.tone}</span></p>
                             <p>• Audience: <span className="font-medium capitalize">{formData.targetAudience.replace('-', ' ')}</span></p>
+                            {formData.headings && <p>• Custom Headings: <span className="font-medium">Yes</span></p>}
+                            {formData.keywords && <p>• Keywords: <span className="font-medium">Yes</span></p>}
                         </div>
                     </div>
 
