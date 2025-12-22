@@ -1495,33 +1495,42 @@ Your first sentence should hook the reader immediately.`;
     if (!content && OPENROUTER_API_KEY) {
       console.log('[Content] Trying OpenRouter API...');
       try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': process.env.FRONTEND_URL || 'https://aiblog.scalezix.com',
-            'X-Title': 'AI Marketing Platform'
-          },
-          body: JSON.stringify({
-            model: 'anthropic/claude-3-haiku',
-            messages: [{ role: 'user', content: prompt }],
-            max_tokens: 16000,
-            temperature: 0.92 // Higher for more human-like output
-          })
-        });
+        // Try free models first, then paid
+        const modelsToTry = [
+          'google/gemini-2.0-flash-exp:free',  // Free Gemini
+          'meta-llama/llama-3.2-3b-instruct:free', // Free Llama
+          'anthropic/claude-3-haiku' // Paid fallback
+        ];
+        
+        for (const model of modelsToTry) {
+          console.log(`[Content] Trying model: ${model}`);
+          const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': process.env.FRONTEND_URL || 'https://aiblog.scalezix.com',
+              'X-Title': 'AI Marketing Platform'
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [{ role: 'user', content: prompt }],
+              max_tokens: 4000, // Reduced to fit free tier
+              temperature: 0.92
+            })
+          });
 
-        const data = await response.json();
-        console.log('[Content] OpenRouter response status:', response.status);
-        
-        if (!response.ok) {
-          console.log('[Content] OpenRouter error:', JSON.stringify(data).substring(0, 500));
-        }
-        
-        if (data.choices?.[0]?.message?.content) {
-          content = data.choices[0].message.content;
-          apiUsed = 'OpenRouter';
-          console.log('[Content] OpenRouter success');
+          const data = await response.json();
+          console.log(`[Content] ${model} response status:`, response.status);
+          
+          if (data.choices?.[0]?.message?.content) {
+            content = data.choices[0].message.content;
+            apiUsed = `OpenRouter (${model})`;
+            console.log(`[Content] ${model} success`);
+            break; // Exit loop on success
+          } else if (data.error) {
+            console.log(`[Content] ${model} error:`, data.error.message?.substring(0, 200));
+          }
         }
       } catch (err) {
         console.log('[Content] OpenRouter error:', err.message);
