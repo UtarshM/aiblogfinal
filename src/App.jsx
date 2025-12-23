@@ -32,6 +32,8 @@ import AffiliateApply from './pages/AffiliateApply'
 import AffiliateTerms from './pages/AffiliateTerms'
 import AffiliateDashboard from './pages/AffiliateDashboard'
 import AffiliateAdmin from './pages/AffiliateAdmin'
+import SuperAdminLogin from './pages/SuperAdminLogin'
+import SuperAdminDashboard from './pages/SuperAdminDashboard'
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -62,6 +64,10 @@ function App() {
                         <Route path="/affiliate/apply" element={<AffiliateApply />} />
                         <Route path="/affiliate/terms" element={<AffiliateTerms />} />
                         <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
+
+                        {/* SuperAdmin Routes */}
+                        <Route path="/superadmin/login" element={<SuperAdminLogin />} />
+                        <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
 
                         {/* Protected Dashboard Routes */}
                         <Route path="/dashboard" element={

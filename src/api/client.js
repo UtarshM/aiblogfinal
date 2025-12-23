@@ -786,4 +786,435 @@ export const api = {
     if (!res.ok) throw new Error(result.error || 'Failed to subscribe');
     return result;
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // SUPERADMIN API
+  // ═══════════════════════════════════════════════════════════════
+
+  superAdminLogin: async (email, password) => {
+    const res = await fetch(`${API_BASE}/superadmin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Login failed');
+    return result;
+  },
+
+  getSuperAdminStats: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/stats`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load stats');
+    return result;
+  },
+
+  getSuperAdminUsers: async (filter = 'all', page = 1, limit = 20, search = '') => {
+    const token = localStorage.getItem('superAdminToken');
+    const params = new URLSearchParams({ filter, page, limit, search });
+    const res = await fetch(`${API_BASE}/superadmin/users?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load users');
+    return result;
+  },
+
+  superAdminDeleteUser: async (userId) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/${userId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to delete user');
+    return result;
+  },
+
+  superAdminVerifyUser: async (userId) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/${userId}/verify`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to verify user');
+    return result;
+  },
+
+  superAdminToggleAdmin: async (userId, isAdmin) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/${userId}/admin`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify({ isAdmin })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to update admin status');
+    return result;
+  },
+
+  suspendAffiliate: async (id, data) => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/affiliate/admin/${id}/suspend`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to suspend affiliate');
+    return result;
+  },
+
+  banAffiliate: async (id, data) => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/affiliate/admin/${id}/ban`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to ban affiliate');
+    return result;
+  },
+
+  reactivateAffiliate: async (id) => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/affiliate/admin/${id}/reactivate`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to reactivate affiliate');
+    return result;
+  },
+
+  getSuperAdminNewsletterSubscribers: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/newsletter/subscribers`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load subscribers');
+    return result;
+  },
+
+  sendSuperAdminNewsletter: async (data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/newsletter/send`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to send newsletter');
+    return result;
+  },
+
+  getSuperAdminWordPressJobs: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/wordpress/jobs`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load jobs');
+    return result;
+  },
+
+  getSuperAdminWordPressSites: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/wordpress/sites`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load sites');
+    return result;
+  },
+
+  getSuperAdminActivityLogs: async (page = 1, limit = 50) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/activity?page=${page}&limit=${limit}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load logs');
+    return result;
+  },
+
+  updateSuperAdminSettings: async (settings) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/settings`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(settings)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to update settings');
+    return result;
+  },
+
+  // SuperAdmin Affiliate Management
+  getSuperAdminAffiliates: async (status = 'all', page = 1, limit = 20, search = '') => {
+    const token = localStorage.getItem('superAdminToken');
+    const params = new URLSearchParams({ status, page, limit, search });
+    const res = await fetch(`${API_BASE}/superadmin/affiliates?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load affiliates');
+    return result;
+  },
+
+  getSuperAdminAffiliateDetails: async (id) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/affiliates/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load affiliate');
+    return result;
+  },
+
+  superAdminApproveAffiliate: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/affiliates/${id}/approve`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to approve affiliate');
+    return result;
+  },
+
+  superAdminRejectAffiliate: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/affiliates/${id}/reject`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to reject affiliate');
+    return result;
+  },
+
+  superAdminSuspendAffiliate: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/affiliates/${id}/suspend`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to suspend affiliate');
+    return result;
+  },
+
+  superAdminBanAffiliate: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/affiliates/${id}/ban`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to ban affiliate');
+    return result;
+  },
+
+  superAdminReactivateAffiliate: async (id) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/affiliates/${id}/reactivate`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to reactivate affiliate');
+    return result;
+  },
+
+  superAdminAddAffiliateEarning: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/affiliates/${id}/add-earning`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to add earning');
+    return result;
+  },
+
+  // SuperAdmin Withdrawal Management
+  getSuperAdminWithdrawals: async (status = 'all', page = 1, limit = 20) => {
+    const token = localStorage.getItem('superAdminToken');
+    const params = new URLSearchParams({ status, page, limit });
+    const res = await fetch(`${API_BASE}/superadmin/withdrawals?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load withdrawals');
+    return result;
+  },
+
+  superAdminCompleteWithdrawal: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/withdrawals/${id}/complete`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to complete withdrawal');
+    return result;
+  },
+
+  superAdminRejectWithdrawal: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/withdrawals/${id}/reject`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to reject withdrawal');
+    return result;
+  },
+
+  // SuperAdmin User Details
+  getSuperAdminUserDetails: async (id) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load user');
+    return result;
+  },
+
+  superAdminUpdateUserPlan: async (id, data) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/${id}/plan`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to update plan');
+    return result;
+  },
+
+  // SuperAdmin Analytics
+  getSuperAdminAnalytics: async (days = 30) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/analytics?days=${days}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load analytics');
+    return result;
+  },
+
+  // SuperAdmin Export
+  superAdminExportData: async (type) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/export/${type}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to export data');
+    return result;
+  },
+
+  // SuperAdmin System Info
+  getSuperAdminSystemInfo: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/system`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load system info');
+    return result;
+  },
+
+  // SuperAdmin Verify Token
+  verifySuperAdminToken: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    if (!token) return { success: false };
+    const res = await fetch(`${API_BASE}/superadmin/verify`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    return result;
+  },
+
+  // SuperAdmin Newsletter Subscriber Management
+  superAdminAddNewsletterSubscriber: async (email) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/newsletter/subscribers`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify({ email })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to add subscriber');
+    return result;
+  },
+
+  superAdminDeleteNewsletterSubscriber: async (id) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/newsletter/subscribers/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to delete subscriber');
+    return result;
+  },
 };
