@@ -1333,4 +1333,66 @@ export const api = {
     if (!res.ok) throw new Error(result.error || 'Failed to load revenue analytics');
     return result;
   },
+
+  // Block user
+  superAdminBlockUser: async (userId, reason) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/${userId}/block`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify({ reason })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to block user');
+    return result;
+  },
+
+  // Unblock user
+  superAdminUnblockUser: async (userId) => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/${userId}/unblock`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to unblock user');
+    return result;
+  },
+
+  // Get platform settings
+  getSuperAdminSettings: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/settings`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load settings');
+    return result;
+  },
+
+  // Clear activity logs
+  superAdminClearLogs: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/activity/clear`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to clear logs');
+    return result;
+  },
+
+  // Get blocked users
+  getSuperAdminBlockedUsers: async () => {
+    const token = localStorage.getItem('superAdminToken');
+    const res = await fetch(`${API_BASE}/superadmin/users/blocked`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load blocked users');
+    return result;
+  },
 };

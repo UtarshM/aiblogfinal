@@ -697,6 +697,15 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
+    // Check if user is blocked
+    if (user.isBlocked) {
+      return res.status(403).json({ 
+        error: 'Your account has been blocked. Please contact support for assistance.',
+        isBlocked: true,
+        blockedReason: user.blockedReason || 'Violation of terms of service'
+      });
+    }
+
     // Check if verified
     if (!user.isVerified) {
       return res.status(400).json({ 

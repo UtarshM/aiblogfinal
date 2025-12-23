@@ -128,6 +128,48 @@ const newsletterSubscriberSchema = new mongoose.Schema({
   unsubscribedAt: Date
 });
 
+// Platform Settings Schema - For SuperAdmin settings
+const platformSettingsSchema = new mongoose.Schema({
+  key: {
+    type: String,
+    required: true,
+    unique: true,
+    default: 'main'
+  },
+  commissionRate: {
+    type: Number,
+    default: 20,
+    min: 1,
+    max: 100
+  },
+  cookieDuration: {
+    type: Number,
+    default: 30,
+    min: 1,
+    max: 365
+  },
+  minimumWithdrawal: {
+    type: Number,
+    default: 50000 // in paise (₹500)
+  },
+  maintenanceMode: {
+    type: Boolean,
+    default: false
+  },
+  maintenanceMessage: {
+    type: String,
+    default: 'We are currently performing maintenance. Please check back soon.'
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+});
+
 export const Lead = mongoose.model('Lead', leadSchema);
 export const Content = mongoose.model('Content', contentSchema);
 export const SocialPost = mongoose.model('SocialPost', socialPostSchema);
@@ -137,5 +179,6 @@ export const ChatMessage = mongoose.model('ChatMessage', chatMessageSchema);
 export const WhiteLabelConfig = mongoose.model('WhiteLabelConfig', whiteLabelConfigSchema);
 export const SEOAnalysis = mongoose.model('SEOAnalysis', seoAnalysisSchema);
 export const NewsletterSubscriber = mongoose.model('NewsletterSubscriber', newsletterSubscriberSchema);
+export const PlatformSettings = mongoose.model('PlatformSettings', platformSettingsSchema);
 
 export default connectDB;

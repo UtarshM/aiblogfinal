@@ -476,10 +476,13 @@ function StatusBadge({ status }) {
         rejected: 'bg-red-100 text-red-700',
         suspended: 'bg-orange-100 text-orange-700',
         banned: 'bg-red-200 text-red-800',
+        blocked: 'bg-red-200 text-red-800',
         active: 'bg-green-100 text-green-700',
         completed: 'bg-green-100 text-green-700',
         requested: 'bg-blue-100 text-blue-700',
         processing: 'bg-yellow-100 text-yellow-700',
+        verified: 'bg-green-100 text-green-700',
+        unverified: 'bg-yellow-100 text-yellow-700',
     };
 
     return (
@@ -525,7 +528,7 @@ function UsersView() {
         loadUsers();
     };
 
-    const handleAction = async (userId, action) => {
+    const handleAction = async (userId, action, data = {}) => {
         try {
             if (action === 'delete') {
                 if (!confirm('Are you sure you want to delete this user?')) return;
@@ -536,6 +539,13 @@ function UsersView() {
                 await api.superAdminToggleAdmin(userId, true);
             } else if (action === 'removeAdmin') {
                 await api.superAdminToggleAdmin(userId, false);
+            } else if (action === 'block') {
+                const reason = prompt('Enter reason for blocking this user:');
+                if (reason === null) return; // User cancelled
+                await api.superAdminBlockUser(userId, reason);
+            } else if (action === 'unblock') {
+                if (!confirm('Are you sure you want to unblock this user?')) return;
+                await api.superAdminUnblockUser(userId);
             }
             loadUsers();
         } catch (error) {
@@ -554,7 +564,7 @@ function UsersView() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
-                        {['all', 'verified', 'unverified', 'admin'].map((f) => (
+                        {['all', 'verified', 'unverified', 'admin', 'blocked'].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => { setFilter(f); setPage(1); }}
@@ -604,7 +614,7 @@ function UsersView() {
                                     <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
+                                                <div className={`w-10 h-10 ${user.isBlocked ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-blue-500 to-purple-500'} rounded-full flex items-center justify-center text-white font-medium`}>
                                                     {user.name?.charAt(0) || 'U'}
                                                 </div>
                                                 <div>
@@ -614,10 +624,17 @@ function UsersView() {
                                                 {user.isAdmin && (
                                                     <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full">Admin</span>
                                                 )}
+                                                {user.isBlocked && (
+                                                    <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">Blocked</span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <StatusBadge status={user.isVerified ? 'verified' : 'unverified'} />
+                                            {user.isBlocked ? (
+                                                <StatusBadge status="blocked" />
+                                            ) : (
+                                                <StatusBadge status={user.isVerified ? 'verified' : 'unverified'} />
+                                            )}
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="capitalize text-gray-700">{user.plan || 'free'}</span>
@@ -637,7 +654,7 @@ function UsersView() {
                                                 >
                                                     <Icons.Eye />
                                                 </button>
-                                                {!user.isVerified && (
+                                                {!user.isVerified && !user.isBlocked && (
                                                     <button
                                                         onClick={() => handleAction(user._id, 'verify')}
                                                         className="p-2 hover:bg-green-100 text-green-600 rounded-lg transition-all"
@@ -661,6 +678,24 @@ function UsersView() {
                                                         title="Remove Admin"
                                                     >
                                                         <Icons.X />
+                                                    </button>
+                                                )}
+                                                {/* Block/Unblock Button */}
+                                                {user.isBlocked ? (
+                                                    <button
+                                                        onClick={() => handleAction(user._id, 'unblock')}
+                                                        className="p-2 hover:bg-green-100 text-green-600 rounded-lg transition-all"
+                                                        title="Unblock User"
+                                                    >
+                                                        <Icons.Refresh />
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleAction(user._id, 'block')}
+                                                        className="p-2 hover:bg-yellow-100 text-yellow-600 rounded-lg transition-all"
+                                                        title="Block User"
+                                                    >
+                                                        <Icons.Clock />
                                                     </button>
                                                 )}
                                                 <button
@@ -2070,6 +2105,29 @@ function SettingsView() {
         maintenanceMode: false
     });
     const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadSettings();
+    }, []);
+
+    const loadSettings = async () => {
+        try {
+            const data = await api.getSuperAdminSettings();
+            if (data.settings) {
+                setSettings({
+                    commissionRate: data.settings.commissionRate || 20,
+                    cookieDuration: data.settings.cookieDuration || 30,
+                    minimumWithdrawal: data.settings.minimumWithdrawal || 50000,
+                    maintenanceMode: data.settings.maintenanceMode || false
+                });
+            }
+        } catch (error) {
+            console.error('Failed to load settings:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSave = async () => {
         setSaving(true);
@@ -2082,6 +2140,24 @@ function SettingsView() {
             setSaving(false);
         }
     };
+
+    const handleClearLogs = async () => {
+        if (!confirm('Are you sure you want to clear all activity logs? This cannot be undone.')) return;
+        try {
+            await api.superAdminClearLogs();
+            alert('Activity logs cleared successfully!');
+        } catch (error) {
+            alert('Failed to clear logs: ' + error.message);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="animate-spin w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full" />
+            </div>
+        );
+    }
 
     return (
         <motion.div
@@ -2117,7 +2193,7 @@ function SettingsView() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Withdrawal (₹)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Withdrawal (₹ in paise)</label>
                         <input
                             type="number"
                             value={settings.minimumWithdrawal}
@@ -2125,6 +2201,7 @@ function SettingsView() {
                             min="1000"
                             className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
                         />
+                        <p className="text-xs text-gray-500 mt-1">Current: ₹{(settings.minimumWithdrawal / 100).toLocaleString()}</p>
                     </div>
                 </div>
             </div>
@@ -2178,9 +2255,37 @@ function SettingsView() {
                             <p className="font-medium text-red-900">Clear All Logs</p>
                             <p className="text-sm text-red-700">Permanently delete all activity logs</p>
                         </div>
-                        <button className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all">
+                        <button
+                            onClick={handleClearLogs}
+                            className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all"
+                        >
                             Clear Logs
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Help Section - Explain Suspend vs Ban */}
+            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4">📚 Help: User & Affiliate Status Guide</h3>
+                <div className="space-y-4 text-sm">
+                    <div className="bg-white rounded-xl p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">👤 User Statuses</h4>
+                        <ul className="space-y-2 text-gray-700">
+                            <li><span className="font-medium text-green-600">Verified:</span> User has confirmed their email and can use all features</li>
+                            <li><span className="font-medium text-yellow-600">Unverified:</span> User hasn't confirmed email yet</li>
+                            <li><span className="font-medium text-red-600">Blocked:</span> User cannot login until you unblock them. Use for temporary issues or violations.</li>
+                        </ul>
+                    </div>
+                    <div className="bg-white rounded-xl p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">🤝 Affiliate Statuses</h4>
+                        <ul className="space-y-2 text-gray-700">
+                            <li><span className="font-medium text-yellow-600">Pending:</span> New application waiting for your review</li>
+                            <li><span className="font-medium text-green-600">Approved:</span> Active affiliate who can earn commissions</li>
+                            <li><span className="font-medium text-red-600">Rejected:</span> Application was declined</li>
+                            <li><span className="font-medium text-orange-600">Suspended:</span> Temporarily paused - affiliate can't earn but can be reactivated. Use for warnings or investigations.</li>
+                            <li><span className="font-medium text-red-800">Banned:</span> Permanently removed - cannot be reactivated. Use for serious violations or fraud.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -2520,8 +2625,8 @@ function PerformanceView() {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${parseFloat(aff.conversionRate) > 5 ? 'bg-green-100 text-green-700' :
-                                                parseFloat(aff.conversionRate) > 2 ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-gray-100 text-gray-700'
+                                            parseFloat(aff.conversionRate) > 2 ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-gray-100 text-gray-700'
                                             }`}>
                                             {aff.conversionRate}%
                                         </span>

@@ -13,7 +13,7 @@ import { User, OTP } from './authModels.js';
 import { Affiliate, AffiliateClick, InternalEarning, Withdrawal, AffiliateAuditLog } from './affiliateModels.js';
 import { WordPressSite, BulkImportJob } from './wordpressModels.js';
 import { ConnectedAccount, ScheduledPost } from './socialModels.js';
-import { NewsletterSubscriber, Lead, Content, Campaign } from './database.js';
+import { NewsletterSubscriber, Lead, Content, Campaign, PlatformSettings } from './database.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -249,6 +249,7 @@ router.get('/users', authenticateSuperAdmin, async (req, res) => {
     if (filter === 'verified') query.isVerified = true;
     else if (filter === 'unverified') query.isVerified = false;
     else if (filter === 'admin') query.isAdmin = true;
+    else if (filter === 'blocked') query.isBlocked = true;
     
     if (search) {
       query.$or = [
@@ -420,6 +421,93 @@ router.put('/users/:id/plan', authenticateSuperAdmin, async (req, res) => {
   } catch (error) {
     console.error('[SuperAdmin] Update plan error:', error);
     res.status(500).json({ error: 'Failed to update plan' });
+  }
+});
+
+// Block user - Prevents user from logging in
+router.put('/users/:id/block', authenticateSuperAdmin, async (req, res) => {
+  try {
+    const { reason } = req.body;
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Prevent blocking SuperAdmin
+    if (user.email.toLowerCase() === SUPERADMIN_EMAIL.toLowerCase()) {
+      return res.status(400).json({ error: 'Cannot block SuperAdmin account' });
+    }
+    
+    user.isBlocked = true;
+    user.blockedAt = new Date();
+    user.blockedReason = reason || 'Blocked by SuperAdmin';
+    await user.save();
+    
+    console.log(`[SuperAdmin] User blocked: ${user.email} - Reason: ${reason || 'No reason provided'}`);
+    
+    // Send block notification email
+    try {
+      const { sendEmail } = await import('./emailService.js');
+      await sendEmail(
+        user.email,
+        'Account Blocked - Scalezix AI Tool',
+        `<p>Dear ${user.name},</p>
+        <p>Your account has been blocked by the administrator.</p>
+        <p><strong>Reason:</strong> ${reason || 'Violation of terms of service'}</p>
+        <p>If you believe this is a mistake, please contact support at support@scalezix.com</p>
+        <p>Best regards,<br>Scalezix Team</p>`
+      );
+    } catch (emailErr) {
+      console.error('[SuperAdmin] Block email error:', emailErr.message);
+    }
+    
+    res.json({ success: true, message: 'User blocked successfully' });
+  } catch (error) {
+    console.error('[SuperAdmin] Block user error:', error);
+    res.status(500).json({ error: 'Failed to block user' });
+  }
+});
+
+// Unblock user - Allows user to login again
+router.put('/users/:id/unblock', authenticateSuperAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    if (!user.isBlocked) {
+      return res.status(400).json({ error: 'User is not blocked' });
+    }
+    
+    user.isBlocked = false;
+    user.blockedAt = null;
+    user.blockedReason = null;
+    await user.save();
+    
+    console.log(`[SuperAdmin] User unblocked: ${user.email}`);
+    
+    // Send unblock notification email
+    try {
+      const { sendEmail } = await import('./emailService.js');
+      await sendEmail(
+        user.email,
+        'Account Unblocked - Scalezix AI Tool',
+        `<p>Dear ${user.name},</p>
+        <p>Great news! Your account has been unblocked and you can now login again.</p>
+        <p>We appreciate your patience and understanding.</p>
+        <p>Best regards,<br>Scalezix Team</p>`
+      );
+    } catch (emailErr) {
+      console.error('[SuperAdmin] Unblock email error:', emailErr.message);
+    }
+    
+    res.json({ success: true, message: 'User unblocked successfully' });
+  } catch (error) {
+    console.error('[SuperAdmin] Unblock user error:', error);
+    res.status(500).json({ error: 'Failed to unblock user' });
   }
 });
 
@@ -1706,5 +1794,115 @@ router.get('/revenue-analytics', authenticateSuperAdmin, async (req, res) => {
   } catch (error) {
     console.error('[SuperAdmin] Revenue analytics error:', error);
     res.status(500).json({ error: 'Failed to load revenue analytics' });
+  }
+});
+
+
+// ═══════════════════════════════════════════════════════════════
+// PLATFORM SETTINGS MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+
+// Get platform settings
+router.get('/settings', authenticateSuperAdmin, async (req, res) => {
+  try {
+    let settings = await PlatformSettings.findOne({ key: 'main' });
+    
+    // Create default settings if not exists
+    if (!settings) {
+      settings = await PlatformSettings.create({
+        key: 'main',
+        commissionRate: 20,
+        cookieDuration: 30,
+        minimumWithdrawal: 50000,
+        maintenanceMode: false,
+        maintenanceMessage: 'We are currently performing maintenance. Please check back soon.'
+      });
+    }
+    
+    res.json({ settings });
+  } catch (error) {
+    console.error('[SuperAdmin] Get settings error:', error);
+    res.status(500).json({ error: 'Failed to load settings' });
+  }
+});
+
+// Update platform settings
+router.put('/settings', authenticateSuperAdmin, async (req, res) => {
+  try {
+    const { commissionRate, cookieDuration, minimumWithdrawal, maintenanceMode, maintenanceMessage } = req.body;
+    
+    let settings = await PlatformSettings.findOne({ key: 'main' });
+    
+    if (!settings) {
+      settings = new PlatformSettings({ key: 'main' });
+    }
+    
+    // Update fields if provided
+    if (commissionRate !== undefined) {
+      if (commissionRate < 1 || commissionRate > 100) {
+        return res.status(400).json({ error: 'Commission rate must be between 1 and 100' });
+      }
+      settings.commissionRate = commissionRate;
+    }
+    
+    if (cookieDuration !== undefined) {
+      if (cookieDuration < 1 || cookieDuration > 365) {
+        return res.status(400).json({ error: 'Cookie duration must be between 1 and 365 days' });
+      }
+      settings.cookieDuration = cookieDuration;
+    }
+    
+    if (minimumWithdrawal !== undefined) {
+      if (minimumWithdrawal < 1000) {
+        return res.status(400).json({ error: 'Minimum withdrawal must be at least ₹10 (1000 paise)' });
+      }
+      settings.minimumWithdrawal = minimumWithdrawal;
+    }
+    
+    if (maintenanceMode !== undefined) {
+      settings.maintenanceMode = maintenanceMode;
+    }
+    
+    if (maintenanceMessage !== undefined) {
+      settings.maintenanceMessage = maintenanceMessage;
+    }
+    
+    settings.updatedAt = new Date();
+    settings.updatedBy = req.superAdmin._id;
+    
+    await settings.save();
+    
+    console.log(`[SuperAdmin] Settings updated by ${req.superAdmin.email}`);
+    
+    res.json({ success: true, message: 'Settings saved successfully', settings });
+  } catch (error) {
+    console.error('[SuperAdmin] Update settings error:', error);
+    res.status(500).json({ error: 'Failed to save settings' });
+  }
+});
+
+// Clear activity logs
+router.delete('/activity/clear', authenticateSuperAdmin, async (req, res) => {
+  try {
+    const result = await AffiliateAuditLog.deleteMany({});
+    console.log(`[SuperAdmin] Cleared ${result.deletedCount} activity logs`);
+    res.json({ success: true, message: `Cleared ${result.deletedCount} activity logs` });
+  } catch (error) {
+    console.error('[SuperAdmin] Clear logs error:', error);
+    res.status(500).json({ error: 'Failed to clear logs' });
+  }
+});
+
+// Get blocked users
+router.get('/users/blocked', authenticateSuperAdmin, async (req, res) => {
+  try {
+    const blockedUsers = await User.find({ isBlocked: true })
+      .select('name email blockedAt blockedReason createdAt')
+      .sort({ blockedAt: -1 });
+    
+    res.json({ users: blockedUsers, count: blockedUsers.length });
+  } catch (error) {
+    console.error('[SuperAdmin] Get blocked users error:', error);
+    res.status(500).json({ error: 'Failed to load blocked users' });
   }
 });
