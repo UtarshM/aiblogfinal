@@ -1,17 +1,20 @@
 /**
  * Affiliate Admin Management Page
+ * SUPERADMIN ONLY - Access restricted to users with isAdmin: true
  * @author Scalezix Venture PVT LTD
  * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
     Users, DollarSign, TrendingUp, Clock, CheckCircle, XCircle,
-    Eye, RefreshCw, AlertCircle, Wallet, ArrowUpRight, Plus
+    Eye, RefreshCw, AlertCircle, Wallet, ArrowUpRight, Plus, ShieldX, Lock
 } from 'lucide-react'
 import { api } from '../api/client'
 
 export default function AffiliateAdmin() {
+    const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState('overview')
     const [stats, setStats] = useState(null)
     const [affiliates, setAffiliates] = useState([])
@@ -22,14 +25,41 @@ export default function AffiliateAdmin() {
     const [showAddEarningModal, setShowAddEarningModal] = useState(false)
     const [earningForm, setEarningForm] = useState({ affiliateId: '', revenueAmount: '', description: '' })
     const [error, setError] = useState('')
+    const [accessDenied, setAccessDenied] = useState(false)
     const [showSimulatePurchaseModal, setShowSimulatePurchaseModal] = useState(false)
     const [purchaseForm, setPurchaseForm] = useState({ userEmail: '', planName: 'Premium', amount: '99999' })
 
     useEffect(() => {
-        loadData()
-    }, [activeTab, statusFilter])
+        checkAdminAccess()
+    }, [])
+
+    useEffect(() => {
+        if (!accessDenied && !loading) {
+            loadData()
+        }
+    }, [activeTab, statusFilter, accessDenied])
+
+    const checkAdminAccess = async () => {
+        setLoading(true)
+        try {
+            // Try to load stats - if it fails with 403, user is not admin
+            const statsData = await api.getAffiliateStats()
+            setStats(statsData)
+            setAccessDenied(false)
+        } catch (err) {
+            console.error('Admin access check:', err.message)
+            if (err.message.includes('403') || err.message.includes('Admin') || err.message.includes('permission')) {
+                setAccessDenied(true)
+            } else {
+                setError(err.message)
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const loadData = async () => {
+        if (accessDenied) return
         setLoading(true)
         setError('')
         try {
@@ -45,10 +75,46 @@ export default function AffiliateAdmin() {
             }
         } catch (err) {
             console.error(err)
-            setError(err.message || 'Failed to load data. Please try logging out and back in.')
+            if (err.message.includes('403') || err.message.includes('Admin') || err.message.includes('permission')) {
+                setAccessDenied(true)
+            } else {
+                setError(err.message || 'Failed to load data.')
+            }
         } finally {
             setLoading(false)
         }
+    }
+
+    // ACCESS DENIED SCREEN
+    if (accessDenied) {
+        return (
+            <div className="min-h-[80vh] flex items-center justify-center p-4">
+                <div className="max-w-md w-full text-center">
+                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <ShieldX className="text-red-600" size={40} />
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+                    <p className="text-gray-600 mb-6">
+                        You don't have permission to access this page. This area is restricted to SuperAdmins only.
+                    </p>
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+                        <div className="flex items-center gap-2 text-red-700 mb-2">
+                            <Lock size={18} />
+                            <span className="font-medium">Restricted Area</span>
+                        </div>
+                        <p className="text-sm text-red-600">
+                            If you believe you should have access, please contact the system administrator.
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => navigate('/dashboard')}
+                        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                    >
+                        Go to Dashboard
+                    </button>
+                </div>
+            </div>
+        )
     }
 
     const formatCurrency = (paise) => `₹${(paise / 100).toLocaleString('en-IN')}`
