@@ -3,13 +3,12 @@
  * 
  * Processes Excel/CSV files uploaded by clients through the web UI.
  * Uses client's WordPress sites stored in database.
- * Generates 10,000+ word human-like content using Gemini 1.5 Flash.
+ * Generates 10,000+ word human-like content using advanced prompts.
  * 
  * @author Scalezix Venture PVT LTD
  * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import axios from 'axios';
 import { WordPressSite, BulkImportJob } from './wordpressModels.js';
 
@@ -22,144 +21,187 @@ const CONFIG = {
 };
 
 /**
- * THE ULTIMATE HUMAN CONTENT PROMPT
- * Designed to generate 10,000+ words that pass AI detection
+ * THE ULTIMATE HUMAN CONTENT PROMPT - PROFESSIONAL JOURNALIST STYLE
+ * Designed to generate content that passes AI detection
  */
 function buildHumanPrompt(row) {
   const { title, hTags, keywords, reference, eeat } = row;
   
   // Parse H-tags (separated by | or newlines)
   const headings = hTags ? hTags.split(/[|\n]/).map(h => h.trim()).filter(h => h) : [];
-  const headingsList = headings.map((h, i) => `${i + 1}. ${h}`).join('\n');
+  const headingsList = headings.length > 0 
+    ? headings.map((h, i) => `${i + 1}. ${h}`).join('\n')
+    : 'Create 8-12 detailed section headings appropriate for this topic. Make them specific and actionable.';
   
-  return `You are a professional human ghostwriter with 20 years of experience. Write an extremely detailed, 10,000-word blog post about "${title}".
+  return `<system_instructions>
+Act as a high-level technical journalist and field researcher with 20 years of experience. Your voice is defined by skepticism, blunt honesty, and a profound distaste for corporate jargon and "clean" AI-style writing. You do not explain basic concepts; you write for professional peers who value nuance and evidence-based field experience. You never identify as an AI and you do not use the supportive, helpful, or balanced tone common in synthetic outputs.
+
+<mandatory_stylistic_constraints>
+1. ACTIVE VOICE ONLY: Never say "The meeting was canceled." Say "Management canceled the meeting".
+2. DIRECT ADDRESS: Speak directly to the reader using "you" and "your".
+3. NO FLUFF: Avoid marketing language like "cutting-edge" or "unparalleled results." Use plain and simple English.
+4. CONTRACTIONS: Use contractions (don't, it's, can't, won't, you're, they're, I've, I'd) consistently to mirror natural speech.
+5. PUNCTUATION FRICTION: Use em-dashes (—) and ellipses (...) sparingly to create conversational flow. Avoid semicolons entirely.
+6. SENTENCE VARIETY (BURSTINESS): You MUST manually vary sentence length without repeating patterns. Start a paragraph with a 3-word sentence. Follow it with a 45-word complex period with multiple dependent clauses. Then use a 12-word declarative sentence. Use fragments for emphasis.
+7. NO RULE OF THREE: AI lists exactly three items for rhythmic effect. You MUST list two or four items, but NEVER exactly three.
+</mandatory_stylistic_constraints>
+
+<forbidden_vocabulary>
+DO NOT use ANY of these high-frequency AI markers:
+- delve, tapestry, unlock, realm, pivotal, landscape, testament, vibrant, bustling
+- comprehensive, meticulous, foster, integrate, streamline
+- furthermore, moreover, additionally, in conclusion, it is important to note, crucial to understand
+- navigating the complexities, leverage, utilize, implement, facilitate
+- robust, seamless, cutting-edge, game-changer, optimal, subsequently
+- paramount, plethora, myriad, endeavor, ascertain, commence
+- prior to, in order to, due to the fact that, it goes without saying
+- at the end of the day, when all is said and done, needless to say
+- first and foremost, last but not least, in today's world
+- revolutionize, transform, empower, elevate, enhance
+- synergy, holistic, paradigm, ecosystem, scalable
+</forbidden_vocabulary>
+
+<content_requirements>
+1. EEAT INJECTION: Inject specific, niche "anecdotal data." Describe a specific, fictional but realistic scenario from the winter of 2024. Use sensory details (smell, touch, sight). Reference real companies, real tools, real numbers.
+
+2. ANSWER-FIRST STRUCTURE: Open EVERY section with a direct, concise answer (under 50 words). Then expand with context. Don't build up to the point—start with it.
+
+3. HIGH PERPLEXITY: Use unexpected synonyms and non-standard syntactic arrangements. Avoid the most predictable word choices.
+
+4. OPINION INJECTION: State opinions boldly. "I think X is overrated." "Most experts get this wrong." "Here's what nobody tells you."
+
+5. IMPERFECTION MARKERS: Include natural speech patterns like "Look," "Here's the thing," "I mean," "Honestly," "Real talk."
+</content_requirements>
+</system_instructions>
+
+<context>
+Topic: ${title}
+Target Keyword: ${keywords || title}
+Word Count: 10,000+ words (this is a DEEP DIVE article)
+Formatting: Use H1 for title, H2 for main sections, H3 for sub-questions.
+</context>
+
+You are a professional human ghostwriter with 20 years of experience. Write an extremely detailed, 10,000-word blog post about "${title}".
 
 ═══════════════════════════════════════════════════════════════
 STRUCTURE & HEADINGS (USE EXACTLY THESE IN ORDER)
 ═══════════════════════════════════════════════════════════════
 
-${headingsList || 'Create 8-10 detailed section headings appropriate for this topic.'}
+${headingsList}
 
 Format each main heading as: <h2 id="section1">Heading Text</h2>
 Format sub-headings as: <h3>Sub-heading Text</h3>
 
 After the opening paragraph, add a Table of Contents:
 <div class="toc">
-<h3>What You'll Learn</h3>
+<h3>What's Inside</h3>
 <ul>
 <li><a href="#section1">First Heading</a></li>
 <li><a href="#section2">Second Heading</a></li>
-...
+...continue for all sections...
 </ul>
 </div>
 
 ═══════════════════════════════════════════════════════════════
-KEYWORDS (MUST INCLUDE ALL NATURALLY)
+KEYWORDS TO WEAVE NATURALLY
 ═══════════════════════════════════════════════════════════════
 
 ${keywords || title}
 
-Weave every keyword into the content naturally. Don't force them. Use variations and related terms.
+Don't force keywords. Let them appear where they make sense.
 
 ═══════════════════════════════════════════════════════════════
-E-E-A-T AUTHORITY
+E-E-A-T AUTHORITY SIGNALS
 ═══════════════════════════════════════════════════════════════
 
-${eeat || 'Write as an industry expert with years of hands-on experience.'}
+${eeat || 'Write as a field researcher who has spent years testing, failing, and learning. Reference specific dates, specific tools, specific outcomes. "In November 2024, I tested X and found Y."'}
 
-Show expertise through:
-- Personal stories and experiences
-- Specific examples with real details
-- Industry insider knowledge
-- Practical tips only an expert would know
+Include:
+- Specific dates and timeframes
+- Named tools, products, or companies
+- Quantified results ("37% improvement" not "significant improvement")
+- Personal failures and lessons learned
+- Contrarian takes that challenge conventional wisdom
 
 ═══════════════════════════════════════════════════════════════
 REFERENCE MATERIAL
 ═══════════════════════════════════════════════════════════════
 
-${reference || 'Use your knowledge to provide accurate, well-researched information.'}
+${reference || 'Draw from your expertise. Cite specific studies, tools, or industry reports where relevant.'}
 
 ═══════════════════════════════════════════════════════════════
-HUMAN-WRITING ENGINE (THIS IS CRITICAL)
+BURSTINESS ENGINE (CRITICAL FOR HUMAN DETECTION)
 ═══════════════════════════════════════════════════════════════
 
-1. BURSTINESS - Vary sentence length dramatically:
-   - Write a long sentence with 25-35 words that flows naturally and covers multiple points.
-   - Then short. Like this.
-   - Then medium length, maybe 15 words or so.
-   - Mix it up constantly. Never let two sentences be the same length.
+Your sentence rhythm MUST follow this pattern throughout:
 
-2. PERSONAL VOICE:
-   - Use "I" constantly: "I've seen this happen...", "In my experience...", "What I tell people is..."
-   - Use "You" to connect: "You've probably noticed...", "Here's what you need to know..."
-   - Share opinions: "Honestly, I think...", "My take on this is..."
-   - Add personality: "Look, here's the deal...", "Can I be real with you?"
+SHORT (3-7 words): "This changes everything."
+LONG (35-50 words): "When I first encountered this problem back in 2023, I spent three weeks testing every solution on the market, burning through my budget, losing sleep, and ultimately discovering that the answer was simpler than anyone in the industry wanted to admit."
+MEDIUM (12-20 words): "The solution wasn't complicated. It just required abandoning what everyone else was doing."
+FRAGMENT: "Counterintuitive? Absolutely."
 
-3. CONTRACTIONS (Always use these):
-   - don't, won't, can't, isn't, aren't, wasn't, weren't
-   - it's, that's, there's, here's, what's
-   - you're, they're, we're, I'm, I've, I'd
-   - couldn't, wouldn't, shouldn't, haven't, hasn't
-
-4. SENTENCE STARTERS (Use these often):
-   - "But here's the thing..."
-   - "And that's exactly why..."
-   - "So what does this mean?"
-   - "Now, I know what you're thinking..."
-   - "Look, I get it."
-   - "Here's what most people miss..."
-   - "The truth is..."
-   - "Honestly?"
-
-5. CASUAL PHRASES (Sprinkle throughout):
-   - "you know what I mean?"
-   - "here's the deal"
-   - "let me tell you"
-   - "trust me on this"
-   - "I've been there"
-   - "real talk"
-   - "no joke"
-   - "seriously though"
+Repeat this rhythm variation throughout. Never let two consecutive sentences have similar length.
 
 ═══════════════════════════════════════════════════════════════
-BANNED WORDS - NEVER USE THESE (AI GIVEAWAYS)
+VOICE MARKERS (USE THROUGHOUT)
 ═══════════════════════════════════════════════════════════════
 
-❌ NEVER USE          → ✅ USE INSTEAD
-─────────────────────────────────────────
-delve                → look into, dig into, explore
-realm                → area, world, space, field
-landscape            → world, scene, space
-robust               → strong, solid, reliable
-leverage             → use, take advantage of
-comprehensive        → full, complete, thorough
-game-changer         → big deal, huge, changes everything
-cutting-edge         → new, latest, modern
-seamless             → smooth, easy, simple
-utilize              → use
-implement            → set up, start, put in place
-facilitate           → help, make easier
-optimal              → best, ideal
-subsequently         → then, after that, later
-furthermore          → also, plus, and
-moreover             → also, and, plus
-therefore            → so, that's why
-nevertheless         → but, still, even so
-consequently         → so, as a result
-paramount            → important, key, crucial
-plethora             → many, lots of, tons of
-myriad               → many, countless
-embark               → start, begin
-foster               → build, grow, develop
-endeavor             → try, attempt, effort
-ascertain            → find out, figure out
-commence             → start, begin
-terminate            → end, stop
-prior to             → before
-in order to          → to
-at this point in time → now
-in the event that    → if
-due to the fact that → because
+Sentence starters to use:
+- "Look, here's what nobody tells you..."
+- "I've tested this. Multiple times."
+- "The industry gets this wrong."
+- "Real talk:"
+- "Here's the uncomfortable truth..."
+- "Most guides skip this part."
+- "You've probably heard X. It's wrong."
+- "I made this mistake. Cost me Y."
+- "Forget what you've read elsewhere."
+
+Opinion markers:
+- "In my experience..."
+- "I think..."
+- "What I've found is..."
+- "My take:"
+- "Unpopular opinion:"
+
+Hedging (shows human uncertainty):
+- "probably"
+- "might"
+- "seems like"
+- "from what I've seen"
+- "could be"
+
+═══════════════════════════════════════════════════════════════
+SECTION STRUCTURE (EACH H2)
+═══════════════════════════════════════════════════════════════
+
+Each section MUST follow this pattern:
+
+1. ANSWER FIRST (50 words max): State the key point immediately. No buildup.
+
+2. CONTEXT & EVIDENCE (300-500 words): Expand with specifics, data, examples.
+
+3. ANECDOTE (150-250 words): A specific story—yours or observed. Include sensory details.
+
+4. CONTRARIAN TAKE (100-150 words): Challenge conventional wisdom.
+
+5. PRACTICAL APPLICATION (200-300 words): Concrete steps. Not generic advice.
+
+6. COMMON MISTAKES (100-200 words): What people get wrong. Be specific.
+
+Total per section: 900-1,400 words minimum.
+
+═══════════════════════════════════════════════════════════════
+LISTS RULE (CRITICAL - NO RULE OF THREE)
+═══════════════════════════════════════════════════════════════
+
+NEVER list exactly 3 items. AI loves the rule of three.
+
+Always list 2 items, 4 items, 5 items, or 7 items.
+
+Bad: "Three key factors: A, B, and C."
+Good: "Four factors matter here: A, B, C, and D."
+Good: "Two things drive this: A and B."
 
 ═══════════════════════════════════════════════════════════════
 LENGTH REQUIREMENTS (NON-NEGOTIABLE)
@@ -169,26 +211,17 @@ TOTAL: At least 10,000 words (this is a DEEP DIVE article)
 
 Each H2 section: 1,000-1,500 words minimum
 
-Include in each section:
-- A personal story or example (150-200 words)
-- Detailed explanation with specifics (400-500 words)
-- Practical tips or steps (200-300 words)
-- Common mistakes to avoid (150-200 words)
-- Real-world application (150-200 words)
-
 DO NOT SUMMARIZE. Go deep. Explain everything thoroughly.
-Pretend you're writing a mini-book chapter for each section.
 
 ═══════════════════════════════════════════════════════════════
 ENDING (NO "IN CONCLUSION")
 ═══════════════════════════════════════════════════════════════
 
-End with a section called "Parting Thoughts" or "Final Words"
+End with "Parting Thoughts" or "Final Words" or "Where This Leaves You"
 - Make it personal and memorable
-- Share one last piece of advice
-- End with an encouraging statement
+- Share one last piece of hard-won advice
 - NO bullet point summaries
-- NO "In conclusion" or "To summarize"
+- NO "In conclusion" or "To summarize" or "In summary"
 
 ═══════════════════════════════════════════════════════════════
 HTML FORMAT
@@ -203,58 +236,265 @@ HTML FORMAT
 <blockquote>Important quote or callout</blockquote>
 
 ═══════════════════════════════════════════════════════════════
+SELF-AUDIT BEFORE SUBMITTING
+═══════════════════════════════════════════════════════════════
+
+Before finalizing, evaluate your draft:
+1. Find sections that feel too "smooth" or predictable
+2. Add friction: a qualifying remark, changed word order, or short staccato sentence
+3. Check for forbidden vocabulary—replace any that slipped through
+4. Verify no section has three-item lists
+5. Confirm sentence length varies dramatically
+
+═══════════════════════════════════════════════════════════════
 START WRITING NOW
 ═══════════════════════════════════════════════════════════════
 
 Begin directly with an engaging opening paragraph. No "Here is..." or any meta-commentary.
-Just start the article as if you're a human expert sharing your knowledge.`;
+Just start the article as if you're a seasoned journalist sharing hard-won knowledge.
+Your first sentence should hook the reader immediately.`;
 }
 
 /**
- * Generate content using Gemini 1.5 Flash
+ * Forbidden AI word replacements - post-processing to remove AI markers
+ */
+const FORBIDDEN_REPLACEMENTS = {
+  'delve': 'dig into',
+  'delving': 'digging into',
+  'delved': 'dug into',
+  'tapestry': 'mix',
+  'realm': 'area',
+  'realms': 'areas',
+  'landscape': 'scene',
+  'landscapes': 'scenes',
+  'robust': 'solid',
+  'leverage': 'use',
+  'leveraging': 'using',
+  'leveraged': 'used',
+  'comprehensive': 'complete',
+  'seamless': 'smooth',
+  'seamlessly': 'smoothly',
+  'cutting-edge': 'latest',
+  'game-changer': 'big shift',
+  'game-changing': 'significant',
+  'utilize': 'use',
+  'utilizing': 'using',
+  'utilized': 'used',
+  'utilization': 'use',
+  'implement': 'set up',
+  'implementing': 'setting up',
+  'implemented': 'set up',
+  'implementation': 'setup',
+  'facilitate': 'help',
+  'facilitating': 'helping',
+  'facilitated': 'helped',
+  'optimal': 'best',
+  'optimally': 'ideally',
+  'paramount': 'critical',
+  'plethora': 'many',
+  'myriad': 'countless',
+  'furthermore': 'plus',
+  'moreover': 'also',
+  'subsequently': 'then',
+  'nevertheless': 'still',
+  'consequently': 'so',
+  'endeavor': 'effort',
+  'endeavors': 'efforts',
+  'ascertain': 'find out',
+  'commence': 'start',
+  'commencing': 'starting',
+  'commenced': 'started',
+  'prior to': 'before',
+  'in order to': 'to',
+  'due to the fact that': 'because',
+  'at the end of the day': 'ultimately',
+  'it is important to note': 'note that',
+  'it goes without saying': '',
+  'needless to say': '',
+  'first and foremost': 'first',
+  'last but not least': 'finally',
+  'in today\'s world': 'now',
+  'in today\'s digital age': 'today',
+  'vibrant': 'lively',
+  'bustling': 'busy',
+  'meticulous': 'careful',
+  'meticulously': 'carefully',
+  'streamline': 'simplify',
+  'streamlined': 'simplified',
+  'streamlining': 'simplifying',
+  'synergy': 'teamwork',
+  'synergies': 'combined efforts',
+  'holistic': 'complete',
+  'holistically': 'completely',
+  'paradigm': 'model',
+  'paradigms': 'models',
+  'ecosystem': 'system',
+  'ecosystems': 'systems',
+  'scalable': 'growable',
+  'pivotal': 'key',
+  'testament': 'proof',
+  'foster': 'build',
+  'fostering': 'building',
+  'fostered': 'built',
+  'integrate': 'combine',
+  'integrating': 'combining',
+  'integrated': 'combined',
+  'embark': 'start',
+  'embarking': 'starting',
+  'embarked': 'started',
+  'revolutionize': 'change',
+  'revolutionizing': 'changing',
+  'revolutionized': 'changed',
+  'transform': 'change',
+  'transforming': 'changing',
+  'transformed': 'changed',
+  'empower': 'enable',
+  'empowering': 'enabling',
+  'empowered': 'enabled',
+  'elevate': 'raise',
+  'elevating': 'raising',
+  'elevated': 'raised',
+  'enhance': 'improve',
+  'enhancing': 'improving',
+  'enhanced': 'improved'
+};
+
+/**
+ * Clean forbidden AI words from content
+ */
+function cleanForbiddenWords(content) {
+  let cleaned = content;
+  
+  for (const [forbidden, replacement] of Object.entries(FORBIDDEN_REPLACEMENTS)) {
+    const regex = new RegExp(`\\b${forbidden}\\b`, 'gi');
+    cleaned = cleaned.replace(regex, replacement);
+  }
+  
+  // Remove "In conclusion" type endings
+  cleaned = cleaned.replace(/<h2[^>]*>In Conclusion<\/h2>/gi, '<h2 id="final-words">Parting Thoughts</h2>');
+  cleaned = cleaned.replace(/<h2[^>]*>Conclusion<\/h2>/gi, '<h2 id="final-words">Parting Thoughts</h2>');
+  cleaned = cleaned.replace(/<h2[^>]*>To Summarize<\/h2>/gi, '<h2 id="final-words">Final Words</h2>');
+  cleaned = cleaned.replace(/<h2[^>]*>Summary<\/h2>/gi, '<h2 id="final-words">Where This Leaves You</h2>');
+  cleaned = cleaned.replace(/In conclusion,?\s*/gi, '');
+  cleaned = cleaned.replace(/To summarize,?\s*/gi, '');
+  cleaned = cleaned.replace(/In summary,?\s*/gi, '');
+  
+  return cleaned;
+}
+
+/**
+ * Generate content using Google AI (Gemini 2.0) with OpenRouter fallback
+ * Uses the same API logic as server.js for consistency
  */
 async function generateContent(prompt, retries = 0) {
   const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
+  const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
   
-  if (!GOOGLE_AI_KEY) {
-    throw new Error('GOOGLE_AI_KEY not configured');
-  }
-  
-  try {
-    const genAI = new GoogleGenerativeAI(GOOGLE_AI_KEY);
-    const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
-      generationConfig: {
-        temperature: 0.85, // Higher for more human-like variation
-        maxOutputTokens: 65536, // Maximum tokens for long content
-        topP: 0.95,
-        topK: 40
+  let content = null;
+  let apiUsed = '';
+
+  // Try Google AI first (Gemini 2.0 Flash)
+  if (GOOGLE_AI_KEY) {
+    console.log('[BulkGen] Trying Google AI (Gemini 2.0 Flash)...');
+    try {
+      const googleResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_AI_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.92, // Higher for more creative/human output
+              maxOutputTokens: 8192, // Safe limit for Gemini 2.0
+              topP: 0.95,
+              topK: 40
+            }
+          })
+        }
+      );
+
+      const googleData = await googleResponse.json();
+      
+      if (googleData.candidates?.[0]?.content?.parts?.[0]?.text) {
+        content = googleData.candidates[0].content.parts[0].text;
+        apiUsed = 'Google AI (Gemini 2.0)';
+        console.log('[BulkGen] Google AI success');
+      } else {
+        console.log('[BulkGen] Google AI response:', JSON.stringify(googleData).substring(0, 500));
       }
-    });
-    
-    console.log('[BulkGen] Calling Gemini 1.5 Flash...');
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let content = response.text();
-    
-    // Clean the content
-    content = cleanContent(content);
-    
-    // Count words
-    const wordCount = countWords(content);
-    console.log(`[BulkGen] Generated ${wordCount} words`);
-    
-    return { content, wordCount };
-  } catch (error) {
-    console.error('[BulkGen] Gemini error:', error.message);
-    
+    } catch (err) {
+      console.log('[BulkGen] Google AI error:', err.message);
+    }
+  }
+
+  // Fallback to OpenRouter with free models
+  if (!content && OPENROUTER_API_KEY) {
+    console.log('[BulkGen] Trying OpenRouter API...');
+    try {
+      // Try free models first, then paid
+      const modelsToTry = [
+        'google/gemini-2.0-flash-exp:free',  // Free Gemini
+        'meta-llama/llama-3.2-3b-instruct:free', // Free Llama
+        'anthropic/claude-3-haiku' // Paid fallback
+      ];
+      
+      for (const model of modelsToTry) {
+        console.log(`[BulkGen] Trying model: ${model}`);
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': process.env.FRONTEND_URL || 'https://aiblog.scalezix.com',
+            'X-Title': 'AI Marketing Platform - Bulk Generator'
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 4000, // Reduced to fit free tier
+            temperature: 0.92
+          })
+        });
+
+        const data = await response.json();
+        console.log(`[BulkGen] ${model} response status:`, response.status);
+        
+        if (data.choices?.[0]?.message?.content) {
+          content = data.choices[0].message.content;
+          apiUsed = `OpenRouter (${model})`;
+          console.log(`[BulkGen] ${model} success`);
+          break; // Exit loop on success
+        } else if (data.error) {
+          console.log(`[BulkGen] ${model} error:`, data.error.message?.substring(0, 200));
+        }
+      }
+    } catch (err) {
+      console.log('[BulkGen] OpenRouter error:', err.message);
+    }
+  }
+
+  // If all APIs fail, retry or throw error
+  if (!content) {
     if (retries < CONFIG.MAX_RETRIES) {
-      console.log(`[BulkGen] Retrying (${retries + 1}/${CONFIG.MAX_RETRIES})...`);
-      await delay(2000);
+      console.log(`[BulkGen] All APIs failed, retrying (${retries + 1}/${CONFIG.MAX_RETRIES})...`);
+      await delay(3000);
       return generateContent(prompt, retries + 1);
     }
-    throw error;
+    throw new Error('AI services unavailable. Please check your API keys (GOOGLE_AI_KEY or OPENROUTER_API_KEY).');
   }
+
+  // Clean the content
+  content = cleanContent(content);
+  
+  // Remove forbidden AI words (critical for human detection)
+  content = cleanForbiddenWords(content);
+  
+  // Count words
+  const wordCount = countWords(content);
+  console.log(`[BulkGen] Generated ${wordCount} words using ${apiUsed}`);
+  
+  return { content, wordCount, apiUsed };
 }
 
 /**
