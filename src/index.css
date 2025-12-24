@@ -1,43 +1,188 @@
+/**
+ * Global Styles - MacBook UI/UX Design
+ * Primary Color: #52b2bf
+ * 
+ * @author Scalezix Venture PVT LTD
+ * @copyright 2025 All Rights Reserved
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --primary: #52b2bf;
+  --primary-light: #7dd0da;
+  --primary-dark: #3299a8;
+  --primary-50: #eef9fa;
+  --primary-100: #d5f0f3;
+  --primary-200: #afe3e9;
+  --primary-900: #244552;
+  --glass-white: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --shadow-color: rgba(82, 178, 191, 0.1);
+}
+
 /* Smooth Scrolling */
 html {
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #2563eb, #06b6d4);
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #1d4ed8, #0891b2);
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4ecf7 100%);
+  min-height: 100vh;
 }
 
 /* FORCE LIGHT MODE ONLY */
 html, body {
-  background-color: #f9fafb !important;
-  color: #111827 !important;
+  background-color: #f5f7fa !important;
+  color: #1a1a2e !important;
 }
 
-/* Remove any dark class if it exists */
-html.dark, html.dark body {
-  background-color: #f9fafb !important;
-  color: #111827 !important;
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM SCROLLBAR - MacBook Style
+   ═══════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Toast Animation */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--primary-light) 0%, var(--primary) 100%);
+  background-clip: padding-box;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASSMORPHISM UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@layer utilities {
+  .glass {
+    background: var(--glass-white);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(82, 178, 191, 0.1);
+  }
+
+  .glass-dark {
+    background: rgba(26, 26, 46, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-animated {
+    background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Button hover effects */
+  .btn-hover-lift {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px -10px var(--shadow-color);
+  }
+
+  .btn-hover-lift:active {
+    transform: translateY(0);
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgba(82, 178, 191, 0.2);
+  }
+
+  /* Glow effect */
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(82, 178, 191, 0.3);
+  }
+
+  .glow-primary-hover:hover {
+    box-shadow: 0 0 30px rgba(82, 178, 191, 0.5);
+  }
+
+  /* Mac-style input focus */
+  .input-mac {
+    transition: all 0.2s ease;
+    border: 1px solid #e5e7eb;
+  }
+
+  .input-mac:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(82, 178, 191, 0.2);
+    outline: none;
+  }
+
+  /* Shimmer loading effect */
+  .shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 @keyframes slide-in-right {
   from {
     transform: translateX(100%);
@@ -49,6 +194,192 @@ html.dark, html.dark body {
   }
 }
 
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out;
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-out-right {
+  animation: slide-out-right 0.3s ease-in forwards;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Primary Button */
+.btn-primary {
+  @apply px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white font-medium rounded-xl;
+  @apply transition-all duration-300 ease-smooth;
+  @apply hover:from-primary-500 hover:to-primary-600 hover:shadow-lg hover:-translate-y-0.5;
+  @apply active:translate-y-0 active:shadow-md;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  @apply px-6 py-3 bg-white text-primary-500 font-medium rounded-xl border border-primary-200;
+  @apply transition-all duration-300 ease-smooth;
+  @apply hover:bg-primary-50 hover:border-primary-300 hover:shadow-md hover:-translate-y-0.5;
+  @apply active:translate-y-0;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2;
+}
+
+/* Ghost Button */
+.btn-ghost {
+  @apply px-6 py-3 text-gray-600 font-medium rounded-xl;
+  @apply transition-all duration-300 ease-smooth;
+  @apply hover:bg-gray-100 hover:text-gray-900;
+  @apply active:bg-gray-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-gray-300;
+}
+
+/* Card Styles */
+.card {
+  @apply bg-white rounded-2xl shadow-soft border border-gray-100;
+  @apply transition-all duration-300 ease-smooth;
+}
+
+.card-interactive {
+  @apply card cursor-pointer;
+  @apply hover:shadow-soft-lg hover:-translate-y-1 hover:border-primary-200;
+}
+
+/* Input Styles */
+.input {
+  @apply w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl;
+  @apply transition-all duration-200;
+  @apply focus:bg-white focus:border-primary-400 focus:ring-2 focus:ring-primary-100 focus:outline-none;
+  @apply placeholder:text-gray-400;
+}
+
+/* Badge Styles */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply badge bg-primary-100 text-primary-700;
+}
+
+.badge-success {
+  @apply badge bg-green-100 text-green-700;
+}
+
+.badge-warning {
+  @apply badge bg-yellow-100 text-yellow-700;
+}
+
+.badge-error {
+  @apply badge bg-red-100 text-red-700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOAST NOTIFICATION STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast-container > * {
+  pointer-events: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-50;
+  @apply flex items-center justify-center p-4;
+}
+
+.modal-content {
+  @apply bg-white rounded-3xl shadow-mac max-w-lg w-full;
+  @apply animate-bounce-in;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+.sidebar {
+  @apply bg-white/90 backdrop-blur-xl border-r border-gray-200/50;
+}
+
+.sidebar-item {
+  @apply flex items-center gap-3 px-4 py-3 rounded-xl;
+  @apply transition-all duration-200 ease-smooth;
+  @apply text-gray-600 hover:bg-primary-50 hover:text-primary-600;
+}
+
+.sidebar-item-active {
+  @apply bg-gradient-to-r from-primary-400 to-primary-500 text-white shadow-md;
+  @apply hover:from-primary-500 hover:to-primary-600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SELECTION STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+::selection {
+  background: rgba(82, 178, 191, 0.3);
+  color: #1a1a2e;
+}
+
+::-moz-selection {
+  background: rgba(82, 178, 191, 0.3);
+  color: #1a1a2e;
+}
+
+/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

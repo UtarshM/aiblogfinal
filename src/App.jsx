@@ -1,5 +1,6 @@
 /**
  * AI Marketing Platform - Main Application
+ * MacBook-style UI/UX with Primary Color #52b2bf
  * 
  * @author Scalezix Venture PVT LTD
  * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
@@ -9,6 +10,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { PlanProvider } from './context/PlanContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { ToastProvider } from './context/ToastContext'
+import { ModalProvider } from './components/Modal'
 import Layout from './components/Layout'
 import PlanSelector from './components/PlanSelector'
 import LandingPage from './pages/LandingPage'
@@ -46,100 +49,104 @@ function App() {
     return (
         <ThemeProvider>
             <PlanProvider>
-                <Router
-                    future={{
-                        v7_startTransition: true,
-                        v7_relativeSplatPath: true
-                    }}
-                >
-                    <Routes>
-                        {/* Public Routes */}
-                        <Route path="/" element={<LandingPage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/signup" element={<SignupPage />} />
-                        <Route path="/oauth/callback" element={<OAuthCallback />} />
+                <ToastProvider>
+                    <ModalProvider>
+                        <Router
+                            future={{
+                                v7_startTransition: true,
+                                v7_relativeSplatPath: true
+                            }}
+                        >
+                            <Routes>
+                                {/* Public Routes */}
+                                <Route path="/" element={<LandingPage />} />
+                                <Route path="/login" element={<LoginPage />} />
+                                <Route path="/signup" element={<SignupPage />} />
+                                <Route path="/oauth/callback" element={<OAuthCallback />} />
 
-                        {/* Affiliate Routes */}
-                        <Route path="/affiliate/login" element={<AffiliateLogin />} />
-                        <Route path="/affiliate/apply" element={<AffiliateApply />} />
-                        <Route path="/affiliate/terms" element={<AffiliateTerms />} />
-                        <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
+                                {/* Affiliate Routes */}
+                                <Route path="/affiliate/login" element={<AffiliateLogin />} />
+                                <Route path="/affiliate/apply" element={<AffiliateApply />} />
+                                <Route path="/affiliate/terms" element={<AffiliateTerms />} />
+                                <Route path="/affiliate/dashboard" element={<AffiliateDashboard />} />
 
-                        {/* SuperAdmin Routes */}
-                        <Route path="/superadmin/login" element={<SuperAdminLogin />} />
-                        <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+                                {/* SuperAdmin Routes */}
+                                <Route path="/superadmin/login" element={<SuperAdminLogin />} />
+                                <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
 
-                        {/* Protected Dashboard Routes */}
-                        <Route path="/dashboard" element={
-                            <ProtectedRoute>
-                                <PlanSelector />
-                                <Layout>
-                                    <Home />
-                                </Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/content-creation" element={
-                            <ProtectedRoute>
-                                <Layout><ContentCreation /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/client-reporting" element={
-                            <ProtectedRoute>
-                                <Layout><ClientReporting /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/seo-automation" element={
-                            <ProtectedRoute>
-                                <Layout><SEOAutomation /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/campaign-optimization" element={
-                            <ProtectedRoute>
-                                <Layout><CampaignOptimization /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/client-onboarding" element={
-                            <ProtectedRoute>
-                                <Layout><ClientOnboarding /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/social-media" element={
-                            <ProtectedRoute>
-                                <Layout><SocialMediaPro /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/job-history" element={
-                            <ProtectedRoute>
-                                <Layout><JobHistory /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/pricing" element={
-                            <ProtectedRoute>
-                                <Layout><Pricing /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/profile" element={
-                            <ProtectedRoute>
-                                <Layout><Profile /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/settings" element={
-                            <ProtectedRoute>
-                                <Layout><Settings /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/policies" element={
-                            <ProtectedRoute>
-                                <Layout><Policies /></Layout>
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/tools/affiliate-admin" element={
-                            <ProtectedRoute>
-                                <Layout><AffiliateAdmin /></Layout>
-                            </ProtectedRoute>
-                        } />
-                    </Routes>
-                </Router>
+                                {/* Protected Dashboard Routes */}
+                                <Route path="/dashboard" element={
+                                    <ProtectedRoute>
+                                        <PlanSelector />
+                                        <Layout>
+                                            <Home />
+                                        </Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/content-creation" element={
+                                    <ProtectedRoute>
+                                        <Layout><ContentCreation /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/client-reporting" element={
+                                    <ProtectedRoute>
+                                        <Layout><ClientReporting /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/seo-automation" element={
+                                    <ProtectedRoute>
+                                        <Layout><SEOAutomation /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/campaign-optimization" element={
+                                    <ProtectedRoute>
+                                        <Layout><CampaignOptimization /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/client-onboarding" element={
+                                    <ProtectedRoute>
+                                        <Layout><ClientOnboarding /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/social-media" element={
+                                    <ProtectedRoute>
+                                        <Layout><SocialMediaPro /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/job-history" element={
+                                    <ProtectedRoute>
+                                        <Layout><JobHistory /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/pricing" element={
+                                    <ProtectedRoute>
+                                        <Layout><Pricing /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/profile" element={
+                                    <ProtectedRoute>
+                                        <Layout><Profile /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/settings" element={
+                                    <ProtectedRoute>
+                                        <Layout><Settings /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/policies" element={
+                                    <ProtectedRoute>
+                                        <Layout><Policies /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/tools/affiliate-admin" element={
+                                    <ProtectedRoute>
+                                        <Layout><AffiliateAdmin /></Layout>
+                                    </ProtectedRoute>
+                                } />
+                            </Routes>
+                        </Router>
+                    </ModalProvider>
+                </ToastProvider>
             </PlanProvider>
         </ThemeProvider>
     )

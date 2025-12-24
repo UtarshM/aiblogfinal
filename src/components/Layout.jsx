@@ -1,31 +1,30 @@
 /**
- * AI Marketing Platform
+ * Layout Component - MacBook Style UI/UX
+ * Primary Color: #52b2bf
+ * Glassmorphism design with smooth animations
  * 
  * @author Scalezix Venture PVT LTD
  * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
- * @license Proprietary - All rights reserved to Scalezix Venture PVT LTD
- * @version 1.0.0
- * 
- * This software is the exclusive property of Scalezix Venture PVT LTD.
- * Unauthorized copying, modification, distribution, or use of this software,
- * via any medium, is strictly prohibited without explicit written permission
- * from Scalezix Venture PVT LTD.
- * 
- * For licensing inquiries, contact: Scalezix Venture PVT LTD
  */
 
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, FileText, BarChart3, Search, TrendingUp, UserPlus, Share2, ChevronLeft, ChevronRight, DollarSign, User, Settings, LogOut, HelpCircle, History, Users } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+    Menu, X, FileText, BarChart3, Search, TrendingUp,
+    UserPlus, Share2, ChevronLeft, ChevronRight, DollarSign,
+    User, Settings, LogOut, HelpCircle, History, Users,
+    Home, Sparkles
+} from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 import { usePlan } from '../context/PlanContext'
+import { useToast } from '../context/ToastContext'
 import axios from 'axios'
 
-// API URL from environment
 const API_URL = import.meta.env.VITE_API_URL ||
     (import.meta.env.PROD ? 'https://blogapi.scalezix.com/api' : 'http://localhost:3001/api')
 
-// Copyright: Scalezix Venture PVT LTD - All Rights Reserved
 const tools = [
+    { name: 'Dashboard', path: '/dashboard', icon: Home },
     { name: 'Content Creation', path: '/tools/content-creation', icon: FileText },
     { name: 'Job History', path: '/tools/job-history', icon: History },
     { name: 'Client Reporting', path: '/tools/client-reporting', icon: BarChart3 },
@@ -36,30 +35,27 @@ const tools = [
     { name: 'Pricing', path: '/pricing', icon: DollarSign },
 ]
 
-// Admin-only tools
 const adminTools = [
     { name: 'Affiliate Admin', path: '/tools/affiliate-admin', icon: Users },
 ]
 
-// Developed by: Scalezix Venture PVT LTD
 export default function Layout({ children }) {
     const navigate = useNavigate()
+    const location = useLocation()
+    const toast = useToast()
+    const { currentPlan } = usePlan()
+    const dropdownRef = useRef(null)
+
     const [sidebarOpen, setSidebarOpen] = useState(true)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
-    const location = useLocation()
-    const { currentPlan } = usePlan()
-    const dropdownRef = useRef(null)
     const [userName, setUserName] = useState('User')
     const [userInitials, setUserInitials] = useState('U')
     const [userProfileImage, setUserProfileImage] = useState(null)
     const [isAdmin, setIsAdmin] = useState(false)
 
-    // Load user data on mount and when profile is updated
     useEffect(() => {
         loadUserData()
-
-        // Listen for profile updates
         window.addEventListener('profileUpdated', loadUserData)
         return () => window.removeEventListener('profileUpdated', loadUserData)
     }, [])
@@ -67,43 +63,29 @@ export default function Layout({ children }) {
     const loadUserData = async () => {
         try {
             const token = localStorage.getItem('token')
-            if (!token) {
-                // No token, redirect to login
-                navigate('/login')
-                return
-            }
-
+            if (!token) { navigate('/login'); return }
             const response = await axios.get(`${API_URL}/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-
             if (response.data) {
-                // Get name from profile or user data
                 const firstName = response.data.profile?.firstName || response.data.name?.split(' ')[0] || 'User'
                 const lastName = response.data.profile?.lastName || response.data.name?.split(' ')[1] || ''
-                const fullName = `${firstName} ${lastName}`.trim()
-
-                setUserName(fullName)
+                setUserName(`${firstName} ${lastName}`.trim())
                 setUserInitials(`${firstName[0]}${lastName[0] || ''}`.toUpperCase())
                 setUserProfileImage(response.data.profile?.profileImage || null)
                 setIsAdmin(response.data.isAdmin || false)
             }
         } catch (error) {
-            console.error('Load user data error:', error)
-
-            // If 403 (invalid token), 401 (unauthorized), or 404 (user not found), logout and redirect
-            if (error.response && (error.response.status === 403 || error.response.status === 401 || error.response.status === 404)) {
-                console.log('Invalid token or user not found - logging out')
+            if (error.response && [403, 401, 404].includes(error.response.status)) {
                 localStorage.clear()
                 navigate('/login')
             }
         }
     }
 
-    // Close dropdown when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
                 setProfileDropdownOpen(false)
             }
         }
@@ -111,303 +93,173 @@ export default function Layout({ children }) {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-    // Creator: Scalezix Venture PVT LTD
+    const handleLogout = () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        setProfileDropdownOpen(false)
+        toast.success('Logged out successfully')
+        navigate('/')
+    }
+
     return (
-        <div className="min-h-screen bg-gray-50 flex">
-            {/* Desktop Sidebar - Created by Scalezix Venture PVT LTD */}
-            <aside
-                className={`hidden md:flex flex-col bg-white border-r transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'
-                    }`}
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 flex">
+            {/* Desktop Sidebar */}
+            <motion.aside
+                initial={false}
+                animate={{ width: sidebarOpen ? 280 : 80 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="hidden md:flex flex-col fixed left-0 top-0 h-full bg-white/80 backdrop-blur-xl border-r border-gray-200/50 z-40 shadow-soft"
             >
-                {/* Logo & Toggle */}
-                <div className="h-16 flex items-center justify-between px-4 border-b">
+                <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
                     {sidebarOpen && (
-                        <Link to="/" className="text-xl font-bold text-blue-600">
-                            AI Marketing
-                        </Link>
-                    )}
-                    <button
-                        onClick={() => setSidebarOpen(!sidebarOpen)}
-                        className="p-2 hover:bg-gray-100 rounded-lg text-gray-700"
-                    >
-                        {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-                    </button>
-                </div>
-
-                {/* Navigation */}
-                <nav className="flex-1 overflow-y-auto py-4">
-                    <div className="space-y-1 px-2">
-                        {tools.map((tool) => {
-                            const Icon = tool.icon
-                            const isActive = location.pathname === tool.path
-                            return (
-                                <Link
-                                    key={tool.path}
-                                    to={tool.path}
-                                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
-                                    title={!sidebarOpen ? tool.name : ''}
-                                >
-                                    <Icon size={20} className="flex-shrink-0" />
-                                    {sidebarOpen && (
-                                        <span className="text-sm font-medium">{tool.name}</span>
-                                    )}
-                                </Link>
-                            )
-                        })}
-                        {/* Admin-only tools */}
-                        {isAdmin && adminTools.map((tool) => {
-                            const Icon = tool.icon
-                            const isActive = location.pathname === tool.path
-                            return (
-                                <Link
-                                    key={tool.path}
-                                    to={tool.path}
-                                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-purple-50 text-purple-700'
-                                        : 'text-purple-600 hover:bg-purple-50'
-                                        }`}
-                                    title={!sidebarOpen ? tool.name : ''}
-                                >
-                                    <Icon size={20} className="flex-shrink-0" />
-                                    {sidebarOpen && (
-                                        <span className="text-sm font-medium">{tool.name}</span>
-                                    )}
-                                </Link>
-                            )
-                        })}
-                    </div>
-                </nav>
-
-                {/* Profile Section - Desktop */}
-                <div className="p-4 border-t relative" ref={dropdownRef}>
-                    {sidebarOpen ? (
-                        <div>
-                            <button
-                                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                                className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold overflow-hidden">
-                                    {userProfileImage ? (
-                                        <img src={userProfileImage} alt="Profile" className="w-full h-full object-cover" />
-                                    ) : (
-                                        userInitials
-                                    )}
-                                </div>
-                                <div className="flex-1 text-left">
-                                    <p className="text-sm font-semibold text-gray-900">{userName}</p>
-                                    <p className="text-xs text-gray-500 uppercase">{currentPlan} Plan</p>
-                                </div>
-                            </button>
-
-                            {/* Dropdown Menu */}
-                            {profileDropdownOpen && (
-                                <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-lg shadow-xl border py-2 z-50">
-                                    <Link
-                                        to="/profile"
-                                        onClick={() => setProfileDropdownOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <User size={18} className="text-gray-600" />
-                                        <span className="text-sm font-medium">Profile</span>
-                                    </Link>
-                                    <Link
-                                        to="/settings"
-                                        onClick={() => setProfileDropdownOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <Settings size={18} className="text-gray-600" />
-                                        <span className="text-sm font-medium">Settings</span>
-                                    </Link>
-                                    <Link
-                                        to="/pricing"
-                                        onClick={() => setProfileDropdownOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <DollarSign size={18} className="text-gray-600" />
-                                        <span className="text-sm font-medium">Upgrade Plan</span>
-                                    </Link>
-                                    <div className="border-t my-2"></div>
-                                    <Link
-                                        to="/policies"
-                                        onClick={() => setProfileDropdownOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors"
-                                    >
-                                        <HelpCircle size={18} className="text-gray-600" />
-                                        <span className="text-sm font-medium">Help & Policies</span>
-                                    </Link>
-                                    <button
-                                        onClick={() => {
-                                            // Clear authentication data
-                                            localStorage.removeItem('token')
-                                            localStorage.removeItem('user')
-                                            setProfileDropdownOpen(false)
-                                            // Redirect to home page
-                                            navigate('/')
-                                        }}
-                                        className="w-full flex items-center gap-3 px-4 py-2 hover:bg-red-50 transition-colors text-red-600"
-                                    >
-                                        <LogOut size={18} />
-                                        <span className="text-sm font-medium">Logout</span>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <button
-                            onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                            className="w-full flex justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                        >
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">
-                                JD
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+                            <div className="w-9 h-9 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-400/30">
+                                <Sparkles className="w-5 h-5 text-white" />
                             </div>
-                        </button>
+                            <span className="font-bold text-gray-900">Scalezix AI</span>
+                        </motion.div>
                     )}
-                </div>
-            </aside>
-
-            {/* Mobile Sidebar Overlay */}
-            {
-                mobileMenuOpen && (
-                    <div
-                        className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-                        onClick={() => setMobileMenuOpen(false)}
-                    />
-                )
-            }
-
-            {/* Mobile Sidebar - Developed by Scalezix Venture PVT LTD */}
-            <aside
-                className={`md:hidden fixed left-0 top-0 bottom-0 w-64 bg-white border-r z-50 transform transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-                    }`}
-            >
-                {/* Logo & Close */}
-                <div className="h-16 flex items-center justify-between px-4 border-b">
-                    <Link
-                        to="/"
-                        className="text-xl font-bold text-blue-600"
-                        onClick={() => setMobileMenuOpen(false)}
-                    >
-                        AI Marketing
-                    </Link>
-                    <button
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="p-2 hover:bg-gray-100 rounded-lg text-gray-700"
-                    >
-                        <X size={20} />
-                    </button>
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-gray-100 rounded-xl text-gray-500">
+                        {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+                    </motion.button>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 overflow-y-auto py-4">
-                    <div className="space-y-1 px-2">
+                <nav className="flex-1 overflow-y-auto py-4 px-3">
+                    <div className="space-y-1">
                         {tools.map((tool) => {
                             const Icon = tool.icon
                             const isActive = location.pathname === tool.path
                             return (
-                                <Link
-                                    key={tool.path}
-                                    to={tool.path}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-blue-50 text-blue-700'
-                                        : 'text-gray-700 hover:bg-gray-100'
-                                        }`}
-                                >
-                                    <Icon size={20} />
-                                    <span className="text-sm font-medium">{tool.name}</span>
+                                <Link key={tool.path} to={tool.path} title={!sidebarOpen ? tool.name : ''}
+                                    className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group ${isActive ? 'bg-gradient-to-r from-primary-400 to-primary-500 text-white shadow-lg shadow-primary-400/30' : 'text-gray-600 hover:bg-primary-50 hover:text-primary-600'}`}>
+                                    <Icon size={20} className="flex-shrink-0" />
+                                    {sidebarOpen && <span className="text-sm font-medium">{tool.name}</span>}
                                 </Link>
                             )
                         })}
-                        {/* Admin-only tools */}
-                        {isAdmin && adminTools.map((tool) => {
-                            const Icon = tool.icon
-                            const isActive = location.pathname === tool.path
-                            return (
-                                <Link
-                                    key={tool.path}
-                                    to={tool.path}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${isActive
-                                        ? 'bg-purple-50 text-purple-700'
-                                        : 'text-purple-600 hover:bg-purple-50'
-                                        }`}
-                                >
-                                    <Icon size={20} />
-                                    <span className="text-sm font-medium">{tool.name}</span>
-                                </Link>
-                            )
-                        })}
+                        {isAdmin && (
+                            <>
+                                <div className="pt-4 pb-2">{sidebarOpen && <span className="px-3 text-xs font-semibold text-gray-400 uppercase">Admin</span>}</div>
+                                {adminTools.map((tool) => {
+                                    const Icon = tool.icon
+                                    const isActive = location.pathname === tool.path
+                                    return (
+                                        <Link key={tool.path} to={tool.path} title={!sidebarOpen ? tool.name : ''}
+                                            className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${isActive ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' : 'text-purple-600 hover:bg-purple-50'}`}>
+                                            <Icon size={20} className="flex-shrink-0" />
+                                            {sidebarOpen && <span className="text-sm font-medium">{tool.name}</span>}
+                                        </Link>
+                                    )
+                                })}
+                            </>
+                        )}
                     </div>
                 </nav>
 
-                {/* Footer - Copyright Scalezix Venture PVT LTD */}
-                <div className="p-4 border-t">
-                    <div className="text-xs text-gray-500">
-                        <p className="font-semibold mb-1">AI Marketing Platform</p>
-                        <p className="mb-2">Powered by AI</p>
-                        <div className="pt-2 border-t border-gray-200">
-                            <p className="font-semibold text-gray-700">© 2025 Scalezix Venture PVT LTD</p>
-                            <p className="text-[10px] mt-1">All Rights Reserved</p>
+                <div className="p-3 border-t border-gray-100" ref={dropdownRef}>
+                    <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                        className={`w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-all ${sidebarOpen ? '' : 'justify-center'}`}>
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold overflow-hidden shadow-lg shadow-primary-400/30">
+                            {userProfileImage ? <img src={userProfileImage} alt="Profile" className="w-full h-full object-cover" /> : userInitials}
                         </div>
-                    </div>
+                        {sidebarOpen && (
+                            <div className="flex-1 text-left">
+                                <p className="text-sm font-semibold text-gray-900 truncate">{userName}</p>
+                                <p className="text-xs text-primary-500 uppercase font-medium">{currentPlan} Plan</p>
+                            </div>
+                        )}
+                    </motion.button>
+                    <AnimatePresence>
+                        {profileDropdownOpen && (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                                className="absolute bottom-full left-3 right-3 mb-2 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50">
+                                <Link to="/profile" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"><User size={18} className="text-gray-500" /><span className="text-sm font-medium text-gray-700">Profile</span></Link>
+                                <Link to="/settings" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"><Settings size={18} className="text-gray-500" /><span className="text-sm font-medium text-gray-700">Settings</span></Link>
+                                <Link to="/pricing" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"><DollarSign size={18} className="text-gray-500" /><span className="text-sm font-medium text-gray-700">Upgrade Plan</span></Link>
+                                <div className="border-t border-gray-100 my-2"></div>
+                                <Link to="/policies" onClick={() => setProfileDropdownOpen(false)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"><HelpCircle size={18} className="text-gray-500" /><span className="text-sm font-medium text-gray-700">Help & Policies</span></Link>
+                                <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 text-red-600"><LogOut size={18} /><span className="text-sm font-medium">Logout</span></button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
-            </aside>
+            </motion.aside>
+
+            {/* Mobile Overlay */}
+            <AnimatePresence>
+                {mobileMenuOpen && <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={() => setMobileMenuOpen(false)} />}
+            </AnimatePresence>
+
+            {/* Mobile Sidebar */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.aside initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                        className="md:hidden fixed left-0 top-0 bottom-0 w-72 bg-white/95 backdrop-blur-xl border-r z-50 shadow-2xl">
+                        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-100">
+                            <div className="flex items-center gap-2">
+                                <div className="w-9 h-9 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center"><Sparkles className="w-5 h-5 text-white" /></div>
+                                <span className="font-bold text-gray-900">Scalezix AI</span>
+                            </div>
+                            <button onClick={() => setMobileMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-xl text-gray-500"><X size={20} /></button>
+                        </div>
+                        <nav className="flex-1 overflow-y-auto py-4 px-3">
+                            {tools.map((tool) => {
+                                const Icon = tool.icon
+                                const isActive = location.pathname === tool.path
+                                return (
+                                    <Link key={tool.path} to={tool.path} onClick={() => setMobileMenuOpen(false)}
+                                        className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${isActive ? 'bg-gradient-to-r from-primary-400 to-primary-500 text-white shadow-lg' : 'text-gray-600 hover:bg-primary-50'}`}>
+                                        <Icon size={20} /><span className="text-sm font-medium">{tool.name}</span>
+                                    </Link>
+                                )
+                            })}
+                        </nav>
+                        <div className="p-4 border-t border-gray-100 text-xs text-gray-500">
+                            <p className="font-semibold text-gray-700">© 2025 Scalezix Venture PVT LTD</p>
+                            <p className="mt-1">All Rights Reserved</p>
+                        </div>
+                    </motion.aside>
+                )}
+            </AnimatePresence>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-h-screen">
+            <div className="flex-1 flex flex-col min-h-screen md:ml-[280px]" style={{ marginLeft: typeof window !== 'undefined' && window.innerWidth >= 768 ? (sidebarOpen ? 280 : 80) : 0 }}>
                 {/* Mobile Header */}
-                <header className="md:hidden h-16 bg-white border-b flex items-center justify-between px-4">
-                    <button
-                        onClick={() => setMobileMenuOpen(true)}
-                        className="p-2 hover:bg-gray-100 rounded-lg text-gray-700"
-                    >
-                        <Menu size={24} />
-                    </button>
-                    <Link to="/" className="text-xl font-bold text-blue-600">
-                        AI Marketing
-                    </Link>
-                    <Link to="/profile" className="p-1">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
-                            JD
-                        </div>
-                    </Link>
+                <header className="md:hidden h-16 bg-white/80 backdrop-blur-xl border-b flex items-center justify-between px-4 sticky top-0 z-30">
+                    <motion.button whileTap={{ scale: 0.95 }} onClick={() => setMobileMenuOpen(true)} className="p-2 hover:bg-gray-100 rounded-xl text-gray-600"><Menu size={24} /></motion.button>
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center"><Sparkles className="w-4 h-4 text-white" /></div>
+                        <span className="font-bold text-gray-900">Scalezix AI</span>
+                    </div>
+                    <Link to="/profile"><div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">{userInitials}</div></Link>
                 </header>
 
-                {/* Page Content - Built by Scalezix Venture PVT LTD */}
-                <main className="flex-1 overflow-auto">{children}</main>
+                <main className="flex-1 overflow-auto">
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>{children}</motion.div>
+                </main>
 
-                {/* Main Footer - Copyright Scalezix Venture PVT LTD */}
-                <footer className="bg-white border-t py-6 px-6">
+                <footer className="bg-white/80 backdrop-blur-xl border-t py-6 px-6">
                     <div className="max-w-7xl mx-auto">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-                            <div className="text-sm text-gray-600">
-                                <span className="font-semibold">AI Marketing Platform</span> - Powered by Advanced AI
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                <Sparkles className="w-4 h-4 text-primary-500" />
+                                <span className="font-semibold">Scalezix AI Tool</span>
+                                <span className="text-gray-400">•</span>
+                                <span>Powered by Advanced AI</span>
                             </div>
-                            <div className="flex gap-4 text-sm">
-                                <Link to="/profile" className="text-gray-600 hover:text-blue-600">Profile</Link>
-                                <Link to="/settings" className="text-gray-600 hover:text-blue-600">Settings</Link>
-                                <Link to="/policies" className="text-gray-600 hover:text-blue-600">Policies</Link>
-                                <Link to="/pricing" className="text-gray-600 hover:text-blue-600">Pricing</Link>
+                            <div className="flex gap-6 text-sm">
+                                <Link to="/profile" className="text-gray-500 hover:text-primary-500 transition-colors">Profile</Link>
+                                <Link to="/settings" className="text-gray-500 hover:text-primary-500 transition-colors">Settings</Link>
+                                <Link to="/policies" className="text-gray-500 hover:text-primary-500 transition-colors">Policies</Link>
+                                <Link to="/pricing" className="text-gray-500 hover:text-primary-500 transition-colors">Pricing</Link>
                             </div>
                         </div>
-                        <div className="text-center text-sm text-gray-700 border-t pt-4">
-                            <span className="font-semibold">© 2025 Scalezix Venture PVT LTD</span>
-                            <span className="mx-2">•</span>
-                            <span>All Rights Reserved</span>
+                        <div className="text-center text-sm text-gray-500 border-t border-gray-100 pt-4">
+                            <span className="font-semibold">© 2025 Scalezix Venture PVT LTD</span> • All Rights Reserved
                         </div>
                     </div>
                 </footer>
             </div>
-        </div >
+        </div>
     )
 }
-
-/* 
- * End of file
- * Copyright © 2025 Scalezix Venture PVT LTD
- * All Rights Reserved
- * Unauthorized use, reproduction, or distribution is prohibited
- */
