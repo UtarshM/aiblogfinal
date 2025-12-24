@@ -30,7 +30,7 @@ export default function AffiliateDashboard() {
     })
     const [withdrawing, setWithdrawing] = useState(false)
     const [error, setError] = useState('')
-    const toast = useToast() = useState('')
+    const toast = useToast()
 
     useEffect(() => {
         const token = localStorage.getItem('affiliateToken')
