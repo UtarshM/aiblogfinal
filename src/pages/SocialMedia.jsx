@@ -25,7 +25,7 @@ export default function SocialMedia() {
     const platforms = [
         { id: 'twitter', name: 'Twitter', icon: Twitter, color: 'bg-blue-400', connected: false },
         { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'bg-pink-500', connected: false },
-        { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'bg-blue-600', connected: false }
+        { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'bg-primary-400', connected: false }
     ]
 
     useEffect(() => {
@@ -247,7 +247,7 @@ export default function SocialMedia() {
                                         ) : (
                                             <button
                                                 onClick={() => handleConnectAccount(platform)}
-                                                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                                className="text-sm text-primary-500 hover:text-blue-700 font-medium"
                                             >
                                                 Connect
                                             </button>
@@ -367,7 +367,7 @@ export default function SocialMedia() {
                             <button
                                 onClick={postNow}
                                 disabled={loading || !postContent || selectedPlatforms.length === 0}
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 font-medium"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 font-medium"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
                                 Post Now
@@ -478,13 +478,13 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
     const getOAuthButtonStyle = () => {
         switch (platform.id) {
             case 'twitter':
-                return 'bg-blue-400 hover:bg-blue-500'
+                return 'bg-blue-400 hover:bg-primary-400'
             case 'instagram':
                 return 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600'
             case 'facebook':
-                return 'bg-blue-600 hover:bg-blue-700'
+                return 'bg-primary-400 hover:bg-primary-500'
             default:
-                return 'bg-blue-600 hover:bg-blue-700'
+                return 'bg-primary-400 hover:bg-primary-500'
         }
     }
 
@@ -507,7 +507,7 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
                         type="button"
                         onClick={() => setAuthMethod('oauth')}
                         className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${authMethod === 'oauth'
-                            ? 'bg-white text-blue-600 shadow-sm'
+                            ? 'bg-white text-primary-500 shadow-sm'
                             : 'text-gray-600 hover:text-gray-900'
                             }`}
                     >
@@ -517,7 +517,7 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
                         type="button"
                         onClick={() => setAuthMethod('credentials')}
                         className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${authMethod === 'credentials'
-                            ? 'bg-white text-blue-600 shadow-sm'
+                            ? 'bg-white text-primary-500 shadow-sm'
                             : 'text-gray-600 hover:text-gray-900'
                             }`}
                     >
@@ -528,7 +528,7 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
                 {/* OAuth Method */}
                 {authMethod === 'oauth' && (
                     <div className="space-y-4">
-                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="p-4 bg-primary-50 rounded-lg border border-blue-200">
                             <p className="text-sm text-blue-900 mb-3">
                                 <strong>Recommended:</strong> Connect securely using {platform.name}'s official login.
                                 You'll be redirected to {platform.name} to authorize access.

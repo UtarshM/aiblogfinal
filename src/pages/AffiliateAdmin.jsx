@@ -113,7 +113,7 @@ export default function AffiliateAdmin() {
                     </div>
                     <button
                         onClick={() => navigate('/dashboard')}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                        className="bg-primary-400 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-500 transition"
                     >
                         Go to Dashboard
                     </button>
@@ -225,7 +225,7 @@ export default function AffiliateAdmin() {
                     </button>
                     <button
                         onClick={() => setShowAddEarningModal(true)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                        className="bg-primary-400 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-500"
                     >
                         <Plus size={20} /> Add Earning
                     </button>
@@ -239,7 +239,7 @@ export default function AffiliateAdmin() {
                         key={tab}
                         onClick={() => { setActiveTab(tab); setStatusFilter(''); }}
                         className={`px-4 py-3 font-medium capitalize border-b-2 transition ${activeTab === tab
-                            ? 'border-blue-600 text-blue-600'
+                            ? 'border-primary-400 text-primary-500'
                             : 'border-transparent text-gray-500 hover:text-gray-700'
                             }`}
                     >
@@ -338,7 +338,7 @@ export default function AffiliateAdmin() {
                                                                 </button>
                                                             </>
                                                         )}
-                                                        <button onClick={() => setSelectedAffiliate(aff)} className="text-blue-600 hover:bg-blue-50 p-1 rounded" title="View">
+                                                        <button onClick={() => setSelectedAffiliate(aff)} className="text-primary-500 hover:bg-primary-50 p-1 rounded" title="View">
                                                             <Eye size={18} />
                                                         </button>
                                                     </div>
@@ -468,7 +468,7 @@ export default function AffiliateAdmin() {
                                 <button type="button" onClick={() => setShowAddEarningModal(false)} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50">
                                     Cancel
                                 </button>
-                                <button type="submit" className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                <button type="submit" className="flex-1 bg-primary-400 text-white px-4 py-2 rounded-lg hover:bg-primary-500">
                                     Add Earning
                                 </button>
                             </div>
@@ -496,7 +496,7 @@ export default function AffiliateAdmin() {
                             <div><span className="text-gray-500">Withdrawn:</span> <span className="font-medium">{formatCurrency(selectedAffiliate.withdrawnBalance || 0)}</span></div>
                             <div><span className="text-gray-500">Clicks:</span> <span className="font-medium">{selectedAffiliate.totalClicks || 0}</span></div>
                             <div><span className="text-gray-500">Conversions:</span> <span className="font-medium">{selectedAffiliate.totalConversions || 0}</span></div>
-                            {selectedAffiliate.website && <div><span className="text-gray-500">Website:</span> <a href={selectedAffiliate.website} target="_blank" className="text-blue-600 hover:underline">{selectedAffiliate.website}</a></div>}
+                            {selectedAffiliate.website && <div><span className="text-gray-500">Website:</span> <a href={selectedAffiliate.website} target="_blank" className="text-primary-500 hover:underline">{selectedAffiliate.website}</a></div>}
                             {selectedAffiliate.promotionMethod && <div><span className="text-gray-500">Promotion:</span> <span className="font-medium">{selectedAffiliate.promotionMethod}</span></div>}
                         </div>
                     </div>
@@ -569,10 +569,10 @@ export default function AffiliateAdmin() {
 // Helper Components
 function StatCard({ icon: Icon, label, value, color }) {
     const colors = {
-        blue: 'bg-blue-100 text-blue-600',
+        blue: 'bg-primary-100 text-primary-500',
         green: 'bg-green-100 text-green-600',
         yellow: 'bg-yellow-100 text-yellow-600',
-        purple: 'bg-purple-100 text-purple-600',
+        purple: 'bg-purple-100 text-primary-500',
         orange: 'bg-orange-100 text-orange-600'
     }
 
@@ -594,7 +594,7 @@ function StatusBadge({ status }) {
         rejected: 'bg-red-100 text-red-700',
         suspended: 'bg-gray-100 text-gray-700',
         requested: 'bg-yellow-100 text-yellow-700',
-        processing: 'bg-blue-100 text-blue-700',
+        processing: 'bg-primary-100 text-blue-700',
         completed: 'bg-green-100 text-green-700'
     }
 

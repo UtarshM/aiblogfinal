@@ -53,7 +53,7 @@ const plans = [
         ],
         popular: true,
         buttonText: 'Start Advanced Plan',
-        buttonStyle: 'bg-blue-600 text-white hover:bg-blue-700'
+        buttonStyle: 'bg-primary-500 text-white hover:bg-primary-600'
     },
     {
         name: 'Premium',
@@ -73,7 +73,7 @@ const plans = [
         ],
         popular: false,
         buttonText: 'Start Premium Plan',
-        buttonStyle: 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700'
+        buttonStyle: 'bg-gradient-to-r from-primary-400 to-primary-500 text-white hover:from-primary-500 hover:to-primary-600'
     }
 ]
 
@@ -104,7 +104,7 @@ export default function Pricing() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-mesh py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
@@ -114,8 +114,8 @@ export default function Pricing() {
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                         Choose the perfect plan for your business. All plans include core AI features with no hidden fees.
                     </p>
-                    <div className="mt-6 inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold">
-                        <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
+                    <div className="mt-6 inline-flex items-center gap-2 bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold">
+                        <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
                         Special Launch Pricing - Save up to 40%
                     </div>
                 </div>
@@ -125,11 +125,11 @@ export default function Pricing() {
                     {plans.map((plan, index) => (
                         <div
                             key={plan.name}
-                            className={`relative bg-white rounded-2xl shadow-lg overflow-hidden transition-transform hover:scale-105 ${plan.popular ? 'ring-2 ring-blue-600 transform scale-105' : ''
+                            className={`relative bg-white rounded-2xl shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:-translate-y-1 ${plan.popular ? 'ring-2 ring-primary-400 transform scale-105' : ''
                                 }`}
                         >
                             {plan.popular && (
-                                <div className="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
+                                <div className="absolute top-0 right-0 bg-primary-400 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
                                     Most Popular
                                 </div>
                             )}

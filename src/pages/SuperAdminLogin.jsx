@@ -40,8 +40,8 @@ export default function SuperAdminLogin() {
         <div className="min-h-screen bg-[#f5f5f7] flex items-center justify-center p-4">
             {/* Background Pattern */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl" />
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-3xl" />
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary-400/10 to-primary-500/10 rounded-full blur-3xl" />
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-primary-300/10 to-primary-400/10 rounded-full blur-3xl" />
             </div>
 
             <motion.div
@@ -90,7 +90,7 @@ export default function SuperAdminLogin() {
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-900 placeholder-gray-400"
+                                className="input"
                                 placeholder="admin@scalezix.com"
                                 required
                             />
@@ -102,7 +102,7 @@ export default function SuperAdminLogin() {
                                 type="password"
                                 value={formData.password}
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-gray-900 placeholder-gray-400"
+                                className="input"
                                 placeholder="••••••••"
                                 required
                             />

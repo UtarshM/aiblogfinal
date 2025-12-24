@@ -177,7 +177,7 @@ export default function Settings() {
 
             // Show visual feedback
             const toast = document.createElement('div')
-            toast.className = 'fixed top-4 right-4 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce'
+            toast.className = 'fixed top-4 right-4 bg-primary-400 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce'
             toast.innerHTML = `✅ ${key}: ${newValue ? 'ON' : 'OFF'}`
             document.body.appendChild(toast)
             setTimeout(() => toast.remove(), 2000)
@@ -261,7 +261,7 @@ export default function Settings() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-left ${activeTab === tab.id
-                                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                                        ? 'bg-primary-50 text-primary-500 font-semibold'
                                         : 'text-gray-700 hover:bg-gray-50'
                                         }`}
                                 >
@@ -287,7 +287,7 @@ export default function Settings() {
                                         <select
                                             value={settings.language}
                                             onChange={(e) => updateSetting('language', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option value="English">English</option>
                                             <option value="Hindi">Hindi</option>
@@ -301,7 +301,7 @@ export default function Settings() {
                                         <select
                                             value={settings.timezone}
                                             onChange={(e) => updateSetting('timezone', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
                                             <option value="America/New_York">America/New York (EST)</option>
@@ -315,7 +315,7 @@ export default function Settings() {
                                         <select
                                             value={settings.dateFormat}
                                             onChange={(e) => updateSetting('dateFormat', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                                             <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -328,7 +328,7 @@ export default function Settings() {
                                         <select
                                             value={settings.timeFormat}
                                             onChange={(e) => updateSetting('timeFormat', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option value="12-hour">12-hour</option>
                                             <option value="24-hour">24-hour</option>
@@ -340,7 +340,7 @@ export default function Settings() {
                                         <select
                                             value={settings.currency}
                                             onChange={(e) => updateSetting('currency', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option value="INR">INR - ₹ (Indian Rupee)</option>
                                             <option value="USD">USD - $ (US Dollar)</option>
@@ -359,7 +359,7 @@ export default function Settings() {
                                 <h2 className="text-2xl font-bold mb-6">Appearance</h2>
 
                                 <div className="space-y-6">
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
                                         <p className="text-sm text-blue-900 font-semibold">
                                             ☀️ Light Mode Active
                                         </p>
@@ -372,8 +372,8 @@ export default function Settings() {
                                         <label className="block text-sm font-semibold text-gray-700 mb-3">Color Scheme</label>
                                         <div className="flex gap-4">
                                             {[
-                                                { name: 'blue', color: 'bg-blue-600' },
-                                                { name: 'purple', color: 'bg-purple-600' },
+                                                { name: 'blue', color: 'bg-primary-400' },
+                                                { name: 'purple', color: 'bg-primary-400' },
                                                 { name: 'green', color: 'bg-green-600' },
                                                 { name: 'orange', color: 'bg-orange-600' }
                                             ].map(({ name, color }) => (
@@ -393,7 +393,7 @@ export default function Settings() {
                                         <select
                                             value={settings.fontSize}
                                             onChange={(e) => updateSetting('fontSize', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option value="Small">Small (14px)</option>
                                             <option value="Medium">Medium (16px)</option>
@@ -408,7 +408,7 @@ export default function Settings() {
                                         </div>
                                         <button
                                             onClick={() => toggleSetting('compactMode')}
-                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.compactMode ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.compactMode ? 'bg-primary-400' : 'bg-gray-300'}`}
                                         >
                                             <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings.compactMode ? 'translate-x-7' : 'translate-x-0'}`} />
                                         </button>
@@ -421,7 +421,7 @@ export default function Settings() {
                                         </div>
                                         <button
                                             onClick={() => toggleSetting('animations')}
-                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.animations ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.animations ? 'bg-primary-400' : 'bg-gray-300'}`}
                                         >
                                             <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings.animations ? 'translate-x-7' : 'translate-x-0'}`} />
                                         </button>
@@ -460,7 +460,7 @@ export default function Settings() {
                                                 </div>
                                                 <button
                                                     onClick={() => toggleSetting(item.key)}
-                                                    className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings[item.key] ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                                    className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings[item.key] ? 'bg-primary-400' : 'bg-gray-300'}`}
                                                 >
                                                     <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings[item.key] ? 'translate-x-7' : 'translate-x-0'}`} />
                                                 </button>
@@ -499,7 +499,7 @@ export default function Settings() {
                                             type="number"
                                             value={settings.sessionTimeout}
                                             onChange={(e) => updateSetting('sessionTimeout', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         />
                                     </div>
 
@@ -516,7 +516,7 @@ export default function Settings() {
                                             </div>
                                             <button
                                                 onClick={() => toggleSetting(item.key)}
-                                                className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings[item.key] ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                                className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings[item.key] ? 'bg-primary-400' : 'bg-gray-300'}`}
                                             >
                                                 <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings[item.key] ? 'translate-x-7' : 'translate-x-0'}`} />
                                             </button>
@@ -607,7 +607,7 @@ export default function Settings() {
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                                         <div className="flex items-center gap-3">
-                                            <Database className="text-blue-600" size={20} />
+                                            <Database className="text-primary-500" size={20} />
                                             <div>
                                                 <p className="font-semibold">Auto Backup</p>
                                                 <p className="text-sm text-gray-600">Automatic data backup</p>
@@ -615,7 +615,7 @@ export default function Settings() {
                                         </div>
                                         <button
                                             onClick={() => toggleSetting('autoBackup')}
-                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.autoBackup ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.autoBackup ? 'bg-primary-400' : 'bg-gray-300'}`}
                                         >
                                             <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings.autoBackup ? 'translate-x-7' : 'translate-x-0'}`} />
                                         </button>
@@ -626,7 +626,7 @@ export default function Settings() {
                                         <select
                                             value={settings.backupFrequency}
                                             onChange={(e) => updateSetting('backupFrequency', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option>daily</option>
                                             <option>weekly</option>
@@ -640,7 +640,7 @@ export default function Settings() {
                                             type="number"
                                             value={settings.dataRetention}
                                             onChange={(e) => updateSetting('dataRetention', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         />
                                     </div>
 
@@ -649,7 +649,7 @@ export default function Settings() {
                                         <select
                                             value={settings.exportFormat}
                                             onChange={(e) => updateSetting('exportFormat', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         >
                                             <option>PDF</option>
                                             <option>CSV</option>
@@ -661,7 +661,7 @@ export default function Settings() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <button
                                             onClick={handleExportData}
-                                            className="flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all hover:shadow-lg"
+                                            className="flex items-center justify-center gap-2 bg-primary-400 text-white py-3 rounded-lg font-semibold hover:bg-primary-500 transition-all hover:shadow-lg"
                                         >
                                             <Download size={20} /> Export Data
                                         </button>
@@ -694,7 +694,7 @@ export default function Settings() {
                                         </div>
                                         <button
                                             onClick={() => toggleSetting('apiAccess')}
-                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.apiAccess ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.apiAccess ? 'bg-primary-400' : 'bg-gray-300'}`}
                                         >
                                             <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings.apiAccess ? 'translate-x-7' : 'translate-x-0'}`} />
                                         </button>
@@ -707,7 +707,7 @@ export default function Settings() {
                                         </div>
                                         <button
                                             onClick={() => toggleSetting('webhooksEnabled')}
-                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.webhooksEnabled ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                            className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings.webhooksEnabled ? 'bg-primary-400' : 'bg-gray-300'}`}
                                         >
                                             <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings.webhooksEnabled ? 'translate-x-7' : 'translate-x-0'}`} />
                                         </button>
@@ -719,11 +719,11 @@ export default function Settings() {
                                             type="number"
                                             value={settings.rateLimitPerHour}
                                             onChange={(e) => updateSetting('rateLimitPerHour', e.target.value)}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-white text-gray-900"
                                         />
                                     </div>
 
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
                                         <p className="font-semibold text-blue-900 mb-2">API Key</p>
                                         <div className="flex gap-2">
                                             <input
@@ -736,7 +736,7 @@ export default function Settings() {
                                                 onClick={copyApiKey}
                                                 className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${apiKeyCopied
                                                     ? 'bg-green-600 text-white'
-                                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                                    : 'bg-primary-400 text-white hover:bg-primary-500'
                                                     }`}
                                             >
                                                 {apiKeyCopied ? (
@@ -771,7 +771,7 @@ export default function Settings() {
                                             </div>
                                             <button
                                                 onClick={() => toggleSetting(item.key)}
-                                                className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings[item.key] ? 'bg-blue-600' : 'bg-gray-300'}`}
+                                                className={`relative w-14 h-7 rounded-full transition-all duration-300 ${settings[item.key] ? 'bg-primary-400' : 'bg-gray-300'}`}
                                             >
                                                 <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${settings[item.key] ? 'translate-x-7' : 'translate-x-0'}`} />
                                             </button>
@@ -796,7 +796,7 @@ export default function Settings() {
                                 onClick={handleSave}
                                 className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${saveStatus === 'success'
                                     ? 'bg-green-600 text-white'
-                                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg'
+                                    : 'bg-gradient-to-r from-primary-400 to-primary-500 text-white hover:shadow-lg'
                                     }`}
                             >
                                 {saveStatus === 'success' ? (

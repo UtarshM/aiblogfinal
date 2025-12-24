@@ -142,13 +142,13 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
 
                     {/* Logo */}
                     <div className="flex justify-center mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-500 rounded-xl flex items-center justify-center shadow-lg">
                             <span className="text-white text-2xl font-bold">AI</span>
                         </div>
                     </div>
 
                     {/* Title */}
-                    <h2 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                    <h2 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text text-transparent">
                         {mode === 'login' && 'Welcome Back'}
                         {mode === 'signup' && 'Create Account'}
                         {mode === 'verify' && 'Verify Email'}
@@ -190,7 +190,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-400 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
                                     placeholder="John Doe"
                                 />
                             </div>
@@ -202,7 +202,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-400 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
                                     placeholder="john@example.com"
                                 />
                             </div>
@@ -215,7 +215,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                     onChange={handleChange}
                                     required
                                     minLength={6}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-400 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -224,7 +224,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                                className="w-full py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                             >
                                 {loading ? 'Creating Account...' : 'Sign Up'}
                             </motion.button>
@@ -241,7 +241,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-400 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
                                     placeholder="john@example.com"
                                 />
                             </div>
@@ -253,7 +253,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                     value={formData.password}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-400 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -262,7 +262,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                                className="w-full py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                             >
                                 {loading ? 'Logging in...' : 'Login'}
                             </motion.button>
@@ -280,7 +280,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                     onChange={handleChange}
                                     required
                                     maxLength={6}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none text-center text-2xl tracking-widest font-bold"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-400 focus:ring-2 focus:ring-blue-200 transition-all duration-300 outline-none text-center text-2xl tracking-widest font-bold"
                                     placeholder="000000"
                                 />
                             </div>
@@ -289,7 +289,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                                className="w-full py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                             >
                                 {loading ? 'Verifying...' : 'Verify Email'}
                             </motion.button>
@@ -297,7 +297,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                 type="button"
                                 onClick={handleResendOTP}
                                 disabled={loading}
-                                className="w-full text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors duration-300"
+                                className="w-full text-primary-500 hover:text-blue-700 font-medium text-sm transition-colors duration-300"
                             >
                                 Resend OTP
                             </button>
@@ -311,7 +311,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                 Don't have an account?{' '}
                                 <button
                                     onClick={() => setMode('signup')}
-                                    className="text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-300"
+                                    className="text-primary-500 hover:text-blue-700 font-semibold transition-colors duration-300"
                                 >
                                     Sign Up
                                 </button>
@@ -321,7 +321,7 @@ export default function AuthModal({ mode: initialMode, onClose, onSuccess }) {
                                 Already have an account?{' '}
                                 <button
                                     onClick={() => setMode('login')}
-                                    className="text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-300"
+                                    className="text-primary-500 hover:text-blue-700 font-semibold transition-colors duration-300"
                                 >
                                     Login
                                 </button>

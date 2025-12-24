@@ -256,7 +256,7 @@ export default function ClientOnboarding() {
             <div className="mb-8">
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary-400 to-primary-500 bg-clip-text text-transparent">
                             Client Onboarding Automation
                         </h1>
                         <p className="text-gray-600 text-lg">Streamline your client onboarding with intelligent workflows</p>
@@ -275,7 +275,7 @@ export default function ClientOnboarding() {
                     <button
                         onClick={() => setViewMode('onboard')}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all ${viewMode === 'onboard'
-                            ? 'bg-blue-600 text-white shadow-lg'
+                            ? 'bg-primary-400 text-white shadow-lg'
                             : 'bg-white text-gray-700 border hover:bg-gray-50'
                             }`}
                     >
@@ -288,7 +288,7 @@ export default function ClientOnboarding() {
                             setClients(JSON.parse(localStorage.getItem('onboardedClients') || '[]'))
                         }}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all ${viewMode === 'list'
-                            ? 'bg-blue-600 text-white shadow-lg'
+                            ? 'bg-primary-400 text-white shadow-lg'
                             : 'bg-white text-gray-700 border hover:bg-gray-50'
                             }`}
                     >
@@ -313,7 +313,7 @@ export default function ClientOnboarding() {
                                         key={status}
                                         onClick={() => setStatusFilter(status)}
                                         className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${statusFilter === status
-                                            ? 'bg-blue-600 text-white shadow-md'
+                                            ? 'bg-primary-400 text-white shadow-md'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
@@ -332,7 +332,7 @@ export default function ClientOnboarding() {
                             <p className="text-gray-500 mb-6">Start by onboarding your first client</p>
                             <button
                                 onClick={() => setViewMode('onboard')}
-                                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
+                                className="px-6 py-3 bg-primary-400 text-white rounded-lg font-semibold hover:bg-primary-500"
                             >
                                 Onboard New Client
                             </button>
@@ -354,7 +354,7 @@ export default function ClientOnboarding() {
                                             <div className="flex items-center gap-3">
                                                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${client.status === 'In Progress' || client.status === 'Active' ? 'bg-green-100 text-green-700' :
                                                     client.status === 'On Hold' || client.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                        client.status === 'Delivered' || client.status === 'Completed' ? 'bg-blue-100 text-blue-700' :
+                                                        client.status === 'Delivered' || client.status === 'Completed' ? 'bg-primary-100 text-blue-700' :
                                                             'bg-gray-100 text-gray-700'
                                                     }`}>
                                                     {(client.status === 'In Progress' || client.status === 'Active') && '🟢 '}
@@ -364,7 +364,7 @@ export default function ClientOnboarding() {
                                                 </span>
                                                 <button
                                                     onClick={() => handleEditClient(client)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-2 text-primary-500 hover:bg-primary-50 rounded-lg transition-colors"
                                                     title="Edit Client"
                                                 >
                                                     <Edit size={20} />
@@ -382,7 +382,7 @@ export default function ClientOnboarding() {
                                         <div className="grid md:grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <p className="text-sm text-gray-500">Website</p>
-                                                <p className="font-semibold text-blue-600">
+                                                <p className="font-semibold text-primary-500">
                                                     <a href={client.website} target="_blank" rel="noopener noreferrer">
                                                         {client.website}
                                                     </a>
@@ -414,7 +414,7 @@ export default function ClientOnboarding() {
                                             <p className="text-sm text-gray-500 mb-2">Goals</p>
                                             <div className="flex flex-wrap gap-2">
                                                 {client.goals.map((goal, idx) => (
-                                                    <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                                                    <span key={idx} className="px-3 py-1 bg-primary-100 text-blue-700 rounded-full text-sm">
                                                         {goal}
                                                     </span>
                                                 ))}
@@ -437,12 +437,12 @@ export default function ClientOnboarding() {
                     {/* Feature Overview Cards */}
                     <div className="grid md:grid-cols-3 gap-6 mb-8">
                         <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-                            <Users className="text-blue-600 mb-3" size={32} />
+                            <Users className="text-primary-500 mb-3" size={32} />
                             <h3 className="font-semibold text-gray-900 mb-2">Smart Forms</h3>
                             <p className="text-sm text-gray-600">Collect client information efficiently with validation</p>
                         </div>
                         <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
-                            <FileText className="text-purple-600 mb-3" size={32} />
+                            <FileText className="text-primary-500 mb-3" size={32} />
                             <h3 className="font-semibold text-gray-900 mb-2">Bulk Upload</h3>
                             <p className="text-sm text-gray-600">Upload multiple clients via CSV with error tracking</p>
                         </div>
@@ -463,7 +463,7 @@ export default function ClientOnboarding() {
                                             className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step.number < currentStep
                                                 ? 'bg-green-600 text-white'
                                                 : step.number === currentStep
-                                                    ? 'bg-blue-600 text-white'
+                                                    ? 'bg-primary-400 text-white'
                                                     : 'bg-gray-200 text-gray-600'
                                                 }`}
                                         >
@@ -593,8 +593,8 @@ export default function ClientOnboarding() {
                                     </div>
                                 </div>
 
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
-                                    <AlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+                                <div className="bg-primary-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+                                    <AlertCircle className="text-primary-500 flex-shrink-0 mt-0.5" size={20} />
                                     <div>
                                         <p className="text-sm text-blue-900 font-semibold">Required Fields</p>
                                         <p className="text-sm text-blue-700">Fields marked with * are mandatory for onboarding</p>
@@ -619,14 +619,14 @@ export default function ClientOnboarding() {
                                                     key={goal}
                                                     onClick={() => toggleGoal(goal)}
                                                     className={`p-4 border-2 rounded-lg text-left transition-all ${formData.goals.includes(goal)
-                                                        ? 'border-blue-600 bg-blue-50'
+                                                        ? 'border-primary-400 bg-primary-50'
                                                         : 'border-gray-200 hover:border-gray-300'
                                                         }`}
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <div
                                                             className={`w-5 h-5 rounded border-2 flex items-center justify-center ${formData.goals.includes(goal)
-                                                                ? 'bg-blue-600 border-blue-600'
+                                                                ? 'bg-primary-400 border-primary-400'
                                                                 : 'border-gray-300'
                                                                 }`}
                                                         >
@@ -768,7 +768,7 @@ export default function ClientOnboarding() {
 
                                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 mt-6">
                                         <div className="flex items-start gap-4">
-                                            <Sparkles className="text-blue-600 flex-shrink-0 mt-1" size={24} />
+                                            <Sparkles className="text-primary-500 flex-shrink-0 mt-1" size={24} />
                                             <div>
                                                 <h4 className="font-semibold text-blue-900 mb-2">AI-Powered Insights</h4>
                                                 <p className="text-sm text-blue-700 mb-3">
@@ -865,7 +865,7 @@ export default function ClientOnboarding() {
                             {currentStep < 4 ? (
                                 <button
                                     onClick={nextStep}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
                                 >
                                     Next Step
                                     <ChevronRight size={20} />
@@ -907,7 +907,7 @@ export default function ClientOnboarding() {
                                     {!uploadResults ? (
                                         <div className="space-y-6">
                                             {/* Instructions */}
-                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                            <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
                                                 <h3 className="font-semibold text-blue-900 mb-2">Instructions:</h3>
                                                 <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
                                                     <li>Download the CSV template below</li>
@@ -920,14 +920,14 @@ export default function ClientOnboarding() {
                                             {/* Download Template */}
                                             <button
                                                 onClick={downloadTemplate}
-                                                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                                                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
                                             >
                                                 <Download size={20} />
                                                 Download CSV Template
                                             </button>
 
                                             {/* Upload Area */}
-                                            <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-blue-500 transition-colors">
+                                            <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-primary-400 transition-colors">
                                                 <Upload className="mx-auto text-gray-400 mb-4" size={48} />
                                                 <p className="text-gray-700 font-semibold mb-2">Drop your CSV file here or click to browse</p>
                                                 <p className="text-gray-500 text-sm mb-4">Maximum file size: 5MB</p>
@@ -940,7 +940,7 @@ export default function ClientOnboarding() {
                                                 />
                                                 <label
                                                     htmlFor="csv-upload"
-                                                    className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold cursor-pointer hover:bg-blue-700 transition-colors"
+                                                    className="inline-block px-6 py-3 bg-primary-400 text-white rounded-lg font-semibold cursor-pointer hover:bg-primary-500 transition-colors"
                                                 >
                                                     Select CSV File
                                                 </label>
@@ -960,8 +960,8 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                         <div className="space-y-6">
                                             {/* Results Summary */}
                                             <div className="grid md:grid-cols-3 gap-4">
-                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                                                    <p className="text-3xl font-bold text-blue-600">{uploadResults.total}</p>
+                                                <div className="bg-primary-50 border border-blue-200 rounded-lg p-4 text-center">
+                                                    <p className="text-3xl font-bold text-primary-500">{uploadResults.total}</p>
                                                     <p className="text-sm text-gray-600">Total Records</p>
                                                 </div>
                                                 <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
@@ -1044,7 +1044,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             <div className="flex gap-3">
                                                 <button
                                                     onClick={() => setUploadResults(null)}
-                                                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                                                    className="flex-1 px-6 py-3 bg-primary-400 text-white rounded-lg font-semibold hover:bg-primary-500 transition-colors"
                                                 >
                                                     Upload Another File
                                                 </button>
@@ -1074,7 +1074,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
             {editingClient && editFormData && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 flex justify-between items-center">
+                        <div className="sticky top-0 bg-gradient-to-r from-primary-400 to-primary-500 text-white p-6 flex justify-between items-center">
                             <div>
                                 <h2 className="text-2xl font-bold">Edit Client</h2>
                                 <p className="text-white/90">Update client information</p>
@@ -1101,7 +1101,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="text"
                                             value={editFormData.companyName || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, companyName: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                     <div>
@@ -1110,7 +1110,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="text"
                                             value={editFormData.industry || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, industry: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                     <div>
@@ -1119,7 +1119,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="url"
                                             value={editFormData.website || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, website: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                     <div>
@@ -1128,7 +1128,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="email"
                                             value={editFormData.companyEmail || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, companyEmail: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                     <div>
@@ -1137,7 +1137,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="tel"
                                             value={editFormData.companyPhone || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, companyPhone: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                 </div>
@@ -1153,7 +1153,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="text"
                                             value={editFormData.contactName || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, contactName: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                     <div>
@@ -1162,7 +1162,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="email"
                                             value={editFormData.contactEmail || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, contactEmail: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                     <div>
@@ -1171,7 +1171,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                             type="tel"
                                             value={editFormData.contactPhone || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, contactPhone: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         />
                                     </div>
                                 </div>
@@ -1185,7 +1185,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                     <select
                                         value={editFormData.status || 'In Progress'}
                                         onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
-                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                     >
                                         <option value="In Progress">In Progress</option>
                                         <option value="On Hold">On Hold</option>
@@ -1208,7 +1208,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                         <select
                                             value={editFormData.budget || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, budget: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         >
                                             <option value="">Select budget range...</option>
                                             <option>₹25,000 - ₹50,000</option>
@@ -1223,7 +1223,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                         <select
                                             value={editFormData.timeline || ''}
                                             onChange={(e) => setEditFormData({ ...editFormData, timeline: e.target.value })}
-                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                         >
                                             <option value="">Select timeline...</option>
                                             <option>1-3 months</option>
@@ -1249,7 +1249,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                 </button>
                                 <button
                                     onClick={handleSaveEdit}
-                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
                                 >
                                     Save Changes
                                 </button>

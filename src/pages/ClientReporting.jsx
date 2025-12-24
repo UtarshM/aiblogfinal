@@ -190,7 +190,7 @@ export default function ClientReporting() {
                 <button
                     onClick={exportReport}
                     className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${canAccessReporting
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg'
+                        ? 'bg-primary-400 text-white hover:bg-primary-500 hover:shadow-lg'
                         : 'bg-gray-300 text-gray-600 cursor-not-allowed hover:bg-gray-400'
                         }`}
                 >
@@ -225,7 +225,7 @@ export default function ClientReporting() {
                             <div className="space-y-3">
                                 <a
                                     href="/pricing"
-                                    className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transition-all"
+                                    className="block w-full bg-gradient-to-r from-primary-400 to-primary-500 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transition-all"
                                 >
                                     View Pricing Plans
                                 </a>
@@ -273,7 +273,7 @@ export default function ClientReporting() {
                     <h2 className="text-xl font-semibold mb-4">Traffic Over Time</h2>
                     <div className="h-64 flex items-end justify-between gap-2">
                         {[32, 45, 38, 52, 48, 61, 55, 68, 72, 65, 78, 82, 75, 88].map((height, i) => (
-                            <div key={i} className="flex-1 bg-blue-600 rounded-t hover:bg-blue-700 transition-colors"
+                            <div key={i} className="flex-1 bg-primary-400 rounded-t hover:bg-primary-500 transition-colors"
                                 style={{ height: `${height}%` }}
                                 title={`Day ${i + 1}: ${Math.floor(height * 100)} visitors`} />
                         ))}
@@ -295,7 +295,7 @@ export default function ClientReporting() {
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
-                                        className="bg-blue-600 h-2 rounded-full"
+                                        className="bg-primary-400 h-2 rounded-full"
                                         style={{ width: `${item.percentage}%` }}
                                     />
                                 </div>

@@ -253,7 +253,7 @@ export default function Profile() {
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="flex items-center justify-center h-64">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-400 mx-auto mb-4"></div>
                         <p className="text-gray-600">Loading profile...</p>
                     </div>
                 </div>
@@ -264,7 +264,7 @@ export default function Profile() {
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 mb-6 text-white relative overflow-hidden">
+            <div className="bg-gradient-to-r from-primary-400 to-primary-500 rounded-2xl p-8 mb-6 text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute inset-0" style={{
                         backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px)'
@@ -281,7 +281,7 @@ export default function Profile() {
                                 <span>{(profile.firstName || 'U')[0]}{(profile.lastName || 'ser')[0]}</span>
                             )}
                         </div>
-                        <label className="absolute bottom-0 right-0 bg-white text-blue-600 p-2 rounded-full shadow-lg hover:scale-110 transition-transform cursor-pointer">
+                        <label className="absolute bottom-0 right-0 bg-white text-primary-500 p-2 rounded-full shadow-lg hover:scale-110 transition-transform cursor-pointer">
                             <Camera size={20} />
                             <input
                                 type="file"
@@ -342,7 +342,7 @@ export default function Profile() {
             <div className="grid md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-white p-6 rounded-xl shadow-sm border">
                     <div className="flex items-center justify-between mb-2">
-                        <Target className="text-blue-600" size={24} />
+                        <Target className="text-primary-500" size={24} />
                         <span className="text-2xl font-bold">{profile.projectsCompleted}</span>
                     </div>
                     <p className="text-gray-600 text-sm">Projects Completed</p>
@@ -356,7 +356,7 @@ export default function Profile() {
                 </div>
                 <div className="bg-white p-6 rounded-xl shadow-sm border">
                     <div className="flex items-center justify-between mb-2">
-                        <User className="text-purple-600" size={24} />
+                        <User className="text-primary-500" size={24} />
                         <span className="text-2xl font-bold">{profile.clientsServed}</span>
                     </div>
                     <p className="text-gray-600 text-sm">Clients Served</p>
@@ -380,7 +380,7 @@ export default function Profile() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap ${activeTab === tab.id
-                                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                                    ? 'text-primary-500 border-b-2 border-primary-400 bg-primary-50'
                                     : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
@@ -672,9 +672,9 @@ export default function Profile() {
                                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="font-semibold text-gray-900">Projects Completed</h3>
-                                        <Target className="text-blue-600" size={24} />
+                                        <Target className="text-primary-500" size={24} />
                                     </div>
-                                    <p className="text-4xl font-bold text-blue-600 mb-2">{profile.projectsCompleted}</p>
+                                    <p className="text-4xl font-bold text-primary-500 mb-2">{profile.projectsCompleted}</p>
                                     <p className="text-sm text-gray-600">+12 this month</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
@@ -688,9 +688,9 @@ export default function Profile() {
                                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="font-semibold text-gray-900">Clients Served</h3>
-                                        <User className="text-purple-600" size={24} />
+                                        <User className="text-primary-500" size={24} />
                                     </div>
-                                    <p className="text-4xl font-bold text-purple-600 mb-2">{profile.clientsServed}</p>
+                                    <p className="text-4xl font-bold text-primary-500 mb-2">{profile.clientsServed}</p>
                                     <p className="text-sm text-gray-600">+3 this month</p>
                                 </div>
                                 <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl border border-orange-200">

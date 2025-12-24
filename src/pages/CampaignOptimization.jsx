@@ -19,8 +19,8 @@ export default function CampaignOptimization() {
             <div className="grid md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-blue-100 rounded">
-                            <DollarSign className="text-blue-600" size={20} />
+                        <div className="p-2 bg-primary-100 rounded">
+                            <DollarSign className="text-primary-500" size={20} />
                         </div>
                         <p className="text-sm text-gray-600">Total Spend</p>
                     </div>
@@ -42,7 +42,7 @@ export default function CampaignOptimization() {
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-purple-100 rounded">
-                            <Users className="text-purple-600" size={20} />
+                            <Users className="text-primary-500" size={20} />
                         </div>
                         <p className="text-sm text-gray-600">Conversions</p>
                     </div>
@@ -89,7 +89,7 @@ export default function CampaignOptimization() {
                                     <div className="mt-3">
                                         <div className="w-full bg-gray-200 rounded-full h-2">
                                             <div
-                                                className="bg-blue-600 h-2 rounded-full"
+                                                className="bg-primary-400 h-2 rounded-full"
                                                 style={{ width: `${(campaign.roi / 5) * 100}%` }}
                                             />
                                         </div>
@@ -105,7 +105,7 @@ export default function CampaignOptimization() {
                             <div className="border rounded-lg p-4">
                                 <div className="flex justify-between items-center mb-2">
                                     <h3 className="font-semibold">Variant A</h3>
-                                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">Control</span>
+                                    <span className="text-xs px-2 py-1 bg-primary-100 text-blue-700 rounded">Control</span>
                                 </div>
                                 <p className="text-2xl font-bold mb-1">3.2%</p>
                                 <p className="text-sm text-gray-600">Conversion Rate</p>
@@ -154,7 +154,7 @@ export default function CampaignOptimization() {
                                 </select>
                             </div>
 
-                            <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
+                            <button className="w-full bg-primary-400 text-white py-2 rounded-md hover:bg-primary-500">
                                 Apply Optimization
                             </button>
                         </div>
@@ -163,7 +163,7 @@ export default function CampaignOptimization() {
                     <div className="bg-white p-6 rounded-lg shadow-sm border">
                         <h2 className="text-xl font-semibold mb-4">Recommendations</h2>
                         <div className="space-y-3">
-                            <div className="p-3 bg-blue-50 rounded-lg">
+                            <div className="p-3 bg-primary-50 rounded-lg">
                                 <p className="text-sm font-medium text-blue-900">Increase budget for Product Launch</p>
                                 <p className="text-xs text-blue-700 mt-1">High ROI potential detected</p>
                             </div>

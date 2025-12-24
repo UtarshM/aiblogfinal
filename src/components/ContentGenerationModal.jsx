@@ -47,7 +47,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
             {/* Modal */}
             <div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 rounded-t-2xl">
+                <div className="sticky top-0 bg-gradient-to-r from-primary-400 to-primary-500 text-white p-6 rounded-t-2xl">
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-2xl font-bold">Human-Style Content Generator</h2>
@@ -83,7 +83,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                     {/* Topic */}
                     <div>
                         <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
-                            <FileText size={20} className="text-purple-600" />
+                            <FileText size={20} className="text-primary-500" />
                             Content Topic *
                         </label>
                         <input
@@ -100,7 +100,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                     {/* Word Count */}
                     <div>
                         <label className="flex items-center gap-2 text-gray-700 font-semibold mb-2">
-                            <BookOpen size={20} className="text-blue-600" />
+                            <BookOpen size={20} className="text-primary-500" />
                             Minimum Word Count *
                         </label>
                         <div className="grid grid-cols-4 gap-2 mb-2">
@@ -110,7 +110,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                                     type="button"
                                     onClick={() => handleChange('minWords', count)}
                                     className={`px-4 py-2 rounded-lg font-medium transition-all ${formData.minWords === count
-                                        ? 'bg-blue-600 text-white shadow-lg'
+                                        ? 'bg-primary-400 text-white shadow-lg'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
@@ -125,7 +125,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                             min="1000"
                             max="15000"
                             step="500"
-                            className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:outline-none"
+                            className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-primary-400 focus:outline-none"
                         />
                         <p className="text-xs text-gray-500 mt-1">Deep dive articles: 5,000-10,000+ words recommended for authority</p>
                     </div>
@@ -199,7 +199,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                     <button
                         type="button"
                         onClick={() => setShowAdvanced(!showAdvanced)}
-                        className="w-full py-2 text-purple-600 font-medium hover:bg-purple-50 rounded-lg transition-colors"
+                        className="w-full py-2 text-primary-500 font-medium hover:bg-purple-50 rounded-lg transition-colors"
                     >
                         {showAdvanced ? '▼ Hide Advanced Options' : '▶ Show Advanced Options (Custom Headings, Keywords, E-E-A-T)'}
                     </button>
@@ -296,7 +296,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                         <button
                             type="submit"
                             disabled={!formData.topic.trim()}
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+                            className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
                         >
                             Generate Human Content
                         </button>

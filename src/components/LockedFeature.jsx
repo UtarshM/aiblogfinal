@@ -39,7 +39,7 @@ export default function LockedFeature({
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border-2 border-blue-200 transform scale-90 group-hover:scale-100 transition-transform duration-300">
                         <div className="flex items-center gap-2">
-                            <Lock className="text-blue-600" size={20} />
+                            <Lock className="text-primary-500" size={20} />
                             <span className="font-semibold text-gray-900">Click to Unlock</span>
                             <Crown className="text-yellow-500" size={20} />
                         </div>
@@ -103,7 +103,7 @@ export default function LockedFeature({
                             <div className="flex items-center justify-center gap-2 mb-6 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-200 rounded-xl p-4">
                                 <Sparkles className="text-yellow-600 animate-pulse" size={24} />
                                 <span className="text-lg font-bold text-gray-900">
-                                    Available in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">{requiredPlan}</span> Plan
+                                    Available in <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-500">{requiredPlan}</span> Plan
                                 </span>
                                 <Crown className="text-yellow-600 animate-pulse" size={24} />
                             </div>
@@ -156,7 +156,7 @@ export default function LockedFeature({
                                         <span className="text-green-600">●</span> Secure Payment
                                     </span>
                                     <span className="flex items-center gap-1">
-                                        <span className="text-blue-600">●</span> GST Compliant
+                                        <span className="text-primary-500">●</span> GST Compliant
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <span className="text-orange-600">●</span> Made in India

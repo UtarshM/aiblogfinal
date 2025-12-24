@@ -1,8 +1,9 @@
 /**
- * AI Marketing Platform - Plan Selector (For Demo/Testing)
+ * Plan Selector - MacBook Style Premium UI 2025
+ * Primary Color: #52B2BF
  * 
  * @author Scalezix Venture PVT LTD
- * @copyright 2025 Scalezix Venture PVT LTD. All Rights Reserved.
+ * @copyright 2025 All Rights Reserved
  */
 
 import { usePlan, PLANS } from '../context/PlanContext'
@@ -12,7 +13,7 @@ export default function PlanSelector() {
     const { currentPlan, setCurrentPlan } = usePlan()
 
     return (
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 shadow-lg">
+        <div className="bg-gradient-to-r from-primary-400 to-primary-500 text-white py-3 px-4 shadow-lg">
             <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-2">
                     <Crown size={20} />
@@ -30,8 +31,8 @@ export default function PlanSelector() {
                                 key={plan}
                                 onClick={() => setCurrentPlan(plan)}
                                 className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-all ${currentPlan === plan
-                                    ? 'bg-white text-blue-600 shadow-lg'
-                                    : 'bg-white/10 hover:bg-white/20'
+                                        ? 'bg-white text-primary-600 shadow-lg'
+                                        : 'bg-white/10 hover:bg-white/20'
                                     }`}
                             >
                                 {plan.charAt(0).toUpperCase() + plan.slice(1)}
@@ -43,5 +44,3 @@ export default function PlanSelector() {
         </div>
     )
 }
-
-/* Copyright © 2025 Scalezix Venture PVT LTD - All Rights Reserved */

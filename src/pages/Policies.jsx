@@ -36,7 +36,7 @@ export default function Policies() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors whitespace-nowrap ${activeTab === tab.id
-                                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                                    ? 'text-primary-500 border-b-2 border-primary-400 bg-primary-50'
                                     : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
@@ -217,7 +217,7 @@ export default function Policies() {
                                 <section>
                                     <h3 className="text-2xl font-semibold mb-3">Types of Cookies We Use</h3>
                                     <div className="space-y-4">
-                                        <div className="bg-blue-50 p-4 rounded-lg">
+                                        <div className="bg-primary-50 p-4 rounded-lg">
                                             <h4 className="font-semibold text-blue-900 mb-2">Essential Cookies</h4>
                                             <p className="text-gray-700 text-sm">Required for the website to function properly. Cannot be disabled.</p>
                                         </div>
@@ -263,7 +263,7 @@ export default function Policies() {
                                         const Icon = item.icon
                                         return (
                                             <div key={i} className="bg-gray-50 p-6 rounded-lg border">
-                                                <Icon className="text-blue-600 mb-3" size={32} />
+                                                <Icon className="text-primary-500 mb-3" size={32} />
                                                 <h4 className="font-semibold text-gray-900 mb-2">{item.title}</h4>
                                                 <p className="text-gray-600 text-sm">{item.desc}</p>
                                             </div>
@@ -304,8 +304,8 @@ export default function Policies() {
                                             { title: 'Right to Object', desc: 'Object to processing of your data' },
                                             { title: 'Right to Withdraw Consent', desc: 'Withdraw consent at any time' }
                                         ].map((right, i) => (
-                                            <div key={i} className="flex items-start gap-3 p-4 bg-blue-50 rounded-lg">
-                                                <CheckCircle className="text-blue-600 flex-shrink-0 mt-1" size={20} />
+                                            <div key={i} className="flex items-start gap-3 p-4 bg-primary-50 rounded-lg">
+                                                <CheckCircle className="text-primary-500 flex-shrink-0 mt-1" size={20} />
                                                 <div>
                                                     <h4 className="font-semibold text-gray-900">{right.title}</h4>
                                                     <p className="text-gray-600 text-sm">{right.desc}</p>

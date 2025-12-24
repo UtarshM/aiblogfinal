@@ -189,7 +189,7 @@ export default function JobHistory() {
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold flex items-center gap-3">
-                        <History className="text-purple-600" />
+                        <History className="text-primary-500" />
                         Job History & Management
                     </h1>
                     <p className="text-gray-600 mt-2">View and manage all your bulk import jobs and published posts</p>
@@ -197,7 +197,7 @@ export default function JobHistory() {
                 <button
                     onClick={loadJobs}
                     disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary-400 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
                 >
                     <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
                     Refresh
@@ -206,7 +206,7 @@ export default function JobHistory() {
 
             {loading ? (
                 <div className="flex items-center justify-center py-20">
-                    <Loader2 className="animate-spin text-purple-600" size={48} />
+                    <Loader2 className="animate-spin text-primary-500" size={48} />
                 </div>
             ) : jobs.length === 0 ? (
                 <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
@@ -223,7 +223,7 @@ export default function JobHistory() {
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            {job.status === 'processing' && <Loader2 className="animate-spin text-blue-600" size={24} />}
+                                            {job.status === 'processing' && <Loader2 className="animate-spin text-primary-500" size={24} />}
                                             {job.status === 'completed' && <CheckCircle className="text-green-600" size={24} />}
                                             {job.status === 'failed' && <XCircle className="text-red-600" size={24} />}
                                             {job.status === 'pending' && <Clock className="text-yellow-600" size={24} />}
@@ -247,7 +247,7 @@ export default function JobHistory() {
                                                 <span className="font-medium">{job.failedPosts}</span>
                                             </span>
                                             {job.status === 'processing' && (
-                                                <span className="flex items-center gap-1 text-blue-600">
+                                                <span className="flex items-center gap-1 text-primary-500">
                                                     <Clock size={16} />
                                                     <span className="font-medium">Processing...</span>
                                                 </span>
@@ -314,7 +314,7 @@ export default function JobHistory() {
                                                         href={post.wordpressPostUrl}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                                                        className="flex items-center gap-1 px-3 py-1 bg-primary-400 text-white rounded hover:bg-primary-500 text-sm"
                                                     >
                                                         <ExternalLink size={14} />
                                                         View
@@ -395,7 +395,7 @@ export default function JobHistory() {
                                 </p>
                                 <button
                                     onClick={() => selectAllPosts(selectedJob)}
-                                    className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+                                    className="text-sm text-primary-500 hover:text-purple-700 font-medium"
                                 >
                                     {selectedPosts.length === selectedJob.posts.filter(p => p.status === 'published').length
                                         ? 'Deselect All'
@@ -412,7 +412,7 @@ export default function JobHistory() {
                                             type="checkbox"
                                             checked={selectedPosts.includes(idx)}
                                             onChange={() => togglePostSelection(idx)}
-                                            className="w-4 h-4 text-purple-600"
+                                            className="w-4 h-4 text-primary-500"
                                         />
                                         <div className="flex-1">
                                             <p className="font-medium text-gray-900">{post.title}</p>

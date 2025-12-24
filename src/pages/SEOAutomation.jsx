@@ -213,7 +213,7 @@ export default function SEOAutomation() {
                 <div className="fixed top-4 right-4 z-50 animate-slide-in">
                     <div className={`px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 ${toastType === 'success' ? 'bg-green-600 text-white' :
                         toastType === 'error' ? 'bg-red-600 text-white' :
-                            'bg-blue-600 text-white'
+                            'bg-primary-400 text-white'
                         }`}>
                         {toastType === 'success' && <CheckCircle size={20} />}
                         {toastType === 'error' && <XCircle size={20} />}
@@ -244,7 +244,7 @@ export default function SEOAutomation() {
                         <button
                             onClick={() => setActiveTab('keywords')}
                             className={`px-6 py-3 font-medium whitespace-nowrap ${activeTab === 'keywords'
-                                ? 'border-b-2 border-blue-600 text-blue-600'
+                                ? 'border-b-2 border-primary-400 text-primary-500'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
@@ -254,7 +254,7 @@ export default function SEOAutomation() {
                         <button
                             onClick={() => setActiveTab('onpage')}
                             className={`px-6 py-3 font-medium whitespace-nowrap ${activeTab === 'onpage'
-                                ? 'border-b-2 border-blue-600 text-blue-600'
+                                ? 'border-b-2 border-primary-400 text-primary-500'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
@@ -264,7 +264,7 @@ export default function SEOAutomation() {
                         <button
                             onClick={() => setActiveTab('competitor')}
                             className={`px-6 py-3 font-medium whitespace-nowrap ${activeTab === 'competitor'
-                                ? 'border-b-2 border-blue-600 text-blue-600'
+                                ? 'border-b-2 border-primary-400 text-primary-500'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
@@ -274,7 +274,7 @@ export default function SEOAutomation() {
                         <button
                             onClick={() => setActiveTab('history')}
                             className={`px-6 py-3 font-medium whitespace-nowrap ${activeTab === 'history'
-                                ? 'border-b-2 border-blue-600 text-blue-600'
+                                ? 'border-b-2 border-primary-400 text-primary-500'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
@@ -296,13 +296,13 @@ export default function SEOAutomation() {
                                             onChange={e => setKeyword(e.target.value)}
                                             onKeyDown={e => e.key === 'Enter' && analyzeKeywords()}
                                             placeholder="e.g., digital marketing, SEO tools, content strategy"
-                                            className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                                             disabled={loading}
                                         />
                                         <button
                                             onClick={analyzeKeywords}
                                             disabled={loading}
-                                            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            className="flex items-center gap-2 px-6 py-2 bg-primary-400 text-white rounded-md hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                         >
                                             {loading ? <Loader2 className="animate-spin" size={16} /> : <Search size={16} />}
                                             {loading ? 'Analyzing...' : 'Analyze'}
@@ -336,7 +336,7 @@ export default function SEOAutomation() {
                                                         <tr key={i} className="hover:bg-gray-50 transition-colors">
                                                             <td className="px-4 py-3 font-medium">{kw.term}</td>
                                                             <td className="px-4 py-3">
-                                                                <span className="text-blue-600 font-semibold">{kw.volume.toLocaleString()}</span>
+                                                                <span className="text-primary-500 font-semibold">{kw.volume.toLocaleString()}</span>
                                                                 <span className="text-gray-500 text-sm">/month</span>
                                                             </td>
                                                             <td className="px-4 py-3">
@@ -373,7 +373,7 @@ export default function SEOAutomation() {
                                             </table>
                                         </div>
 
-                                        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                        <div className="mt-6 p-4 bg-primary-50 rounded-lg border border-blue-200">
                                             <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
                                                 <Zap size={18} />
                                                 Keyword Insights
@@ -402,13 +402,13 @@ export default function SEOAutomation() {
                                             onChange={e => setUrl(e.target.value)}
                                             onKeyDown={e => e.key === 'Enter' && analyzePage()}
                                             placeholder="https://example.com/page"
-                                            className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                                             disabled={loading}
                                         />
                                         <button
                                             onClick={analyzePage}
                                             disabled={loading}
-                                            className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                                            className="flex items-center gap-2 px-6 py-2 bg-primary-400 text-white rounded-md hover:bg-primary-500 disabled:opacity-50 transition-colors"
                                         >
                                             {loading ? <Loader2 className="animate-spin" size={16} /> : <TrendingUp size={16} />}
                                             {loading ? 'Analyzing...' : 'Analyze'}
@@ -421,7 +421,7 @@ export default function SEOAutomation() {
                                             value={keyword}
                                             onChange={e => setKeyword(e.target.value)}
                                             placeholder="e.g., digital marketing"
-                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                                             disabled={loading}
                                         />
                                     </div>
@@ -469,7 +469,7 @@ export default function SEOAutomation() {
                                             <ExternalLink size={20} className="text-gray-600" />
                                             <div className="flex-1">
                                                 <p className="text-sm text-gray-600">Analyzed URL</p>
-                                                <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium break-all">
+                                                <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline font-medium break-all">
                                                     {url}
                                                 </a>
                                             </div>
@@ -481,7 +481,7 @@ export default function SEOAutomation() {
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                                 <div className="p-4 bg-white border rounded-lg">
                                                     <div className="flex items-center gap-2 mb-2">
-                                                        <FileText size={18} className="text-blue-600" />
+                                                        <FileText size={18} className="text-primary-500" />
                                                         <span className="text-sm text-gray-600">Word Count</span>
                                                     </div>
                                                     <div className="text-2xl font-bold">{results.seo.details.wordCount || 0}</div>
@@ -498,7 +498,7 @@ export default function SEOAutomation() {
                                                 </div>
                                                 <div className="p-4 bg-white border rounded-lg">
                                                     <div className="flex items-center gap-2 mb-2">
-                                                        <LinkIcon size={18} className="text-purple-600" />
+                                                        <LinkIcon size={18} className="text-primary-500" />
                                                         <span className="text-sm text-gray-600">Internal Links</span>
                                                     </div>
                                                     <div className="text-2xl font-bold">{results.seo.details.internalLinks || 0}</div>
@@ -580,7 +580,7 @@ export default function SEOAutomation() {
 
                                         {/* Recommendations */}
                                         {results.seo.recommendations && results.seo.recommendations.length > 0 && (
-                                            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                            <div className="bg-primary-50 p-6 rounded-lg border border-blue-200">
                                                 <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
                                                     <Zap size={20} />
                                                     Action Items to Improve SEO
@@ -588,7 +588,7 @@ export default function SEOAutomation() {
                                                 <ul className="space-y-2">
                                                     {results.seo.recommendations.map((rec, i) => (
                                                         <li key={i} className="flex items-start gap-2 text-blue-800">
-                                                            <span className="text-blue-600 font-bold flex-shrink-0">{i + 1}.</span>
+                                                            <span className="text-primary-500 font-bold flex-shrink-0">{i + 1}.</span>
                                                             <span>{rec}</span>
                                                         </li>
                                                     ))}
@@ -611,7 +611,7 @@ export default function SEOAutomation() {
                                             value={url}
                                             onChange={e => setUrl(e.target.value)}
                                             placeholder="https://yourwebsite.com"
-                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                                             disabled={loading}
                                         />
                                     </div>
@@ -622,7 +622,7 @@ export default function SEOAutomation() {
                                             value={competitorUrl}
                                             onChange={e => setCompetitorUrl(e.target.value)}
                                             placeholder="https://competitor.com"
-                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                                             disabled={loading}
                                         />
                                     </div>
@@ -633,14 +633,14 @@ export default function SEOAutomation() {
                                             value={keyword}
                                             onChange={e => setKeyword(e.target.value)}
                                             placeholder="e.g., digital marketing"
-                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                                             disabled={loading}
                                         />
                                     </div>
                                     <button
                                         onClick={analyzeCompetitor}
                                         disabled={loading}
-                                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary-400 text-white rounded-md hover:bg-primary-500 disabled:opacity-50 transition-colors"
                                     >
                                         {loading ? <Loader2 className="animate-spin" size={16} /> : <Globe size={16} />}
                                         {loading ? 'Comparing...' : 'Compare Websites'}
@@ -657,7 +657,7 @@ export default function SEOAutomation() {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="p-4 bg-white rounded-lg border">
                                                     <div className="text-sm text-gray-600 mb-1">Your Website</div>
-                                                    <div className="text-lg font-semibold text-blue-600 break-all">{url}</div>
+                                                    <div className="text-lg font-semibold text-primary-500 break-all">{url}</div>
                                                 </div>
                                                 <div className="p-4 bg-white rounded-lg border">
                                                     <div className="text-sm text-gray-600 mb-1">Competitor</div>
@@ -684,7 +684,7 @@ export default function SEOAutomation() {
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
                                                         <div className="text-sm text-gray-600">Your Score</div>
-                                                        <div className="text-3xl font-bold text-blue-600">{results.comparison.seoScore.yours}</div>
+                                                        <div className="text-3xl font-bold text-primary-500">{results.comparison.seoScore.yours}</div>
                                                     </div>
                                                     <div>
                                                         <div className="text-sm text-gray-600">Competitor Score</div>
@@ -712,7 +712,7 @@ export default function SEOAutomation() {
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
                                                         <div className="text-sm text-gray-600">Your Word Count</div>
-                                                        <div className="text-3xl font-bold text-blue-600">{results.comparison.wordCount.yours}</div>
+                                                        <div className="text-3xl font-bold text-primary-500">{results.comparison.wordCount.yours}</div>
                                                     </div>
                                                     <div>
                                                         <div className="text-sm text-gray-600">Competitor Word Count</div>
@@ -735,7 +735,7 @@ export default function SEOAutomation() {
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
                                                         <div className="text-sm text-gray-600">Your Internal Links</div>
-                                                        <div className="text-3xl font-bold text-blue-600">{results.comparison.internalLinks.yours}</div>
+                                                        <div className="text-3xl font-bold text-primary-500">{results.comparison.internalLinks.yours}</div>
                                                     </div>
                                                     <div>
                                                         <div className="text-sm text-gray-600">Competitor Internal Links</div>
@@ -753,7 +753,7 @@ export default function SEOAutomation() {
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div>
                                                             <div className="text-sm text-gray-600">Your Density</div>
-                                                            <div className="text-3xl font-bold text-blue-600">{results.comparison.keywordDensity.yours}%</div>
+                                                            <div className="text-3xl font-bold text-primary-500">{results.comparison.keywordDensity.yours}%</div>
                                                         </div>
                                                         <div>
                                                             <div className="text-sm text-gray-600">Competitor Density</div>
@@ -802,8 +802,8 @@ export default function SEOAutomation() {
                                             <div key={i} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                                                 <div className="flex items-center gap-3">
                                                     {item.type === 'keyword' ? (
-                                                        <div className="p-2 bg-blue-100 rounded-lg">
-                                                            <Search size={20} className="text-blue-600" />
+                                                        <div className="p-2 bg-primary-100 rounded-lg">
+                                                            <Search size={20} className="text-primary-500" />
                                                         </div>
                                                     ) : (
                                                         <div className="p-2 bg-green-100 rounded-lg">

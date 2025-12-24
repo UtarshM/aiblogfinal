@@ -18,7 +18,7 @@ export default function AffiliateTerms() {
                         Back to Application
                     </Link>
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gradient-to-r from-primary-400 to-primary-500 rounded-xl flex items-center justify-center">
                             <DollarSign className="text-white" size={28} />
                         </div>
                         <div>
@@ -113,7 +113,7 @@ export default function AffiliateTerms() {
                     <section>
                         <h2 className="text-xl font-bold mb-3">9. Contact</h2>
                         <p className="text-gray-600 leading-relaxed">
-                            For questions about the affiliate program, contact us at <a href="mailto:affiliates@scalezix.com" className="text-blue-600 hover:underline">affiliates@scalezix.com</a>
+                            For questions about the affiliate program, contact us at <a href="mailto:affiliates@scalezix.com" className="text-primary-500 hover:underline">affiliates@scalezix.com</a>
                         </p>
                     </section>
 
@@ -128,7 +128,7 @@ export default function AffiliateTerms() {
                 <div className="text-center mt-8">
                     <Link
                         to="/affiliate/apply"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition"
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-400 to-primary-500 text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition"
                     >
                         Apply Now <DollarSign size={20} />
                     </Link>

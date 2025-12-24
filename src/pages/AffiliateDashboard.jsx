@@ -117,7 +117,7 @@ export default function AffiliateDashboard() {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
-                    <RefreshCw className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+                    <RefreshCw className="w-8 h-8 animate-spin text-primary-500 mx-auto mb-4" />
                     <p className="text-gray-600">Loading dashboard...</p>
                 </div>
             </div>
@@ -134,7 +134,7 @@ export default function AffiliateDashboard() {
             <header className="bg-white border-b sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gradient-to-r from-primary-400 to-primary-500 rounded-lg flex items-center justify-center">
                             <DollarSign className="text-white" size={24} />
                         </div>
                         <div>
@@ -155,7 +155,7 @@ export default function AffiliateDashboard() {
 
             <div className="max-w-7xl mx-auto px-4 py-6">
                 {/* Referral Link Card */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 mb-6 text-white">
+                <div className="bg-gradient-to-r from-primary-400 to-primary-500 rounded-2xl p-6 mb-6 text-white">
                     <h2 className="text-lg font-semibold mb-2">Your Referral Link</h2>
                     <div className="flex items-center gap-3 bg-white/20 rounded-lg p-3">
                         <input
@@ -166,7 +166,7 @@ export default function AffiliateDashboard() {
                         />
                         <button
                             onClick={copyReferralLink}
-                            className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-blue-50 transition"
+                            className="bg-white text-primary-500 px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-primary-50 transition"
                         >
                             {copied ? <Check size={18} /> : <Copy size={18} />}
                             {copied ? 'Copied!' : 'Copy'}
@@ -191,8 +191,8 @@ export default function AffiliateDashboard() {
 
                     <div className="bg-white rounded-xl p-5 border shadow-sm">
                         <div className="flex items-center justify-between mb-3">
-                            <Wallet className="text-blue-600" size={24} />
-                            <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Available</span>
+                            <Wallet className="text-primary-500" size={24} />
+                            <span className="text-xs text-primary-500 bg-primary-50 px-2 py-1 rounded-full">Available</span>
                         </div>
                         <p className="text-2xl font-bold">{formatCurrency(aff.availableBalance || 0)}</p>
                         <p className="text-sm text-gray-500">Available Balance</p>
@@ -200,7 +200,7 @@ export default function AffiliateDashboard() {
 
                     <div className="bg-white rounded-xl p-5 border shadow-sm">
                         <div className="flex items-center justify-between mb-3">
-                            <MousePointer className="text-purple-600" size={24} />
+                            <MousePointer className="text-primary-500" size={24} />
                         </div>
                         <p className="text-2xl font-bold">{(aff.totalClicks || 0).toLocaleString()}</p>
                         <p className="text-sm text-gray-500">Total Clicks</p>
@@ -222,7 +222,7 @@ export default function AffiliateDashboard() {
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`px-4 py-2 rounded-lg font-medium capitalize whitespace-nowrap transition ${activeTab === tab
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-primary-400 text-white'
                                 : 'bg-white text-gray-600 hover:bg-gray-100'
                                 }`}
                         >
@@ -264,7 +264,7 @@ export default function AffiliateDashboard() {
                                     <button
                                         onClick={() => setShowWithdrawModal(true)}
                                         disabled={(aff.availableBalance || 0) < minWithdrawal * 100}
-                                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="w-full bg-primary-400 text-white py-3 rounded-lg font-semibold hover:bg-primary-500 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         <ArrowUpRight size={20} />
                                         Request Withdrawal
@@ -396,7 +396,7 @@ export default function AffiliateDashboard() {
                                     min={minWithdrawal}
                                     max={(aff.availableBalance || 0) / 100}
                                     required
-                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-400"
                                     placeholder={`Min ₹${minWithdrawal.toLocaleString()}`}
                                 />
                             </div>
@@ -414,7 +414,7 @@ export default function AffiliateDashboard() {
                                             type="button"
                                             onClick={() => setWithdrawForm({ ...withdrawForm, paymentMethod: method.id })}
                                             className={`p-3 border rounded-lg flex flex-col items-center gap-1 transition ${withdrawForm.paymentMethod === method.id
-                                                ? 'border-blue-600 bg-blue-50 text-blue-600'
+                                                ? 'border-primary-400 bg-primary-50 text-primary-500'
                                                 : 'hover:bg-gray-50'
                                                 }`}
                                         >
@@ -519,7 +519,7 @@ export default function AffiliateDashboard() {
                                 <button
                                     type="submit"
                                     disabled={withdrawing}
-                                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    className="flex-1 bg-primary-400 text-white px-4 py-2 rounded-lg hover:bg-primary-500 disabled:opacity-50"
                                 >
                                     {withdrawing ? 'Processing...' : 'Submit Request'}
                                 </button>
@@ -581,7 +581,7 @@ function WithdrawalsTab({ formatCurrency }) {
                                 <td className="px-4 py-3 text-center">
                                     <span className={`text-xs px-2 py-1 rounded-full ${w.status === 'completed' ? 'bg-green-100 text-green-700' :
                                         w.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                            w.status === 'processing' ? 'bg-blue-100 text-blue-700' :
+                                            w.status === 'processing' ? 'bg-primary-100 text-primary-700' :
                                                 'bg-yellow-100 text-yellow-700'
                                         }`}>
                                         {w.status}
@@ -681,7 +681,7 @@ function SettingsTab({ affiliate, onUpdate }) {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        className="w-full bg-primary-400 text-white py-2 rounded-lg hover:bg-primary-500 disabled:opacity-50"
                     >
                         {saving ? 'Saving...' : 'Save Changes'}
                     </button>

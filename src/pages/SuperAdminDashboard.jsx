@@ -358,7 +358,7 @@ function DashboardView({ stats, loading }) {
     }
 
     const statCards = [
-        { label: 'Total Users', value: stats?.totalUsers || 0, icon: Icons.Users, color: 'from-blue-500 to-blue-600', change: '+12%' },
+        { label: 'Total Users', value: stats?.totalUsers || 0, icon: Icons.Users, color: 'from-primary-400 to-primary-500', change: '+12%' },
         { label: 'Verified Users', value: stats?.verifiedUsers || 0, icon: Icons.Check, color: 'from-green-500 to-green-600', change: '+8%' },
         { label: 'Total Affiliates', value: stats?.totalAffiliates || 0, icon: Icons.Affiliates, color: 'from-purple-500 to-purple-600', change: '+15%' },
         { label: 'Pending Applications', value: stats?.pendingAffiliates || 0, icon: Icons.Clock, color: 'from-orange-500 to-orange-600', change: '' },
@@ -430,7 +430,7 @@ function DashboardView({ stats, loading }) {
                         {(stats?.recentUsers || []).slice(0, 5).map((user, i) => (
                             <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-500 rounded-full flex items-center justify-center text-white font-medium">
                                         {user.name?.charAt(0) || 'U'}
                                     </div>
                                     <div>
@@ -481,7 +481,7 @@ function StatusBadge({ status }) {
         blocked: 'bg-red-200 text-red-800',
         active: 'bg-green-100 text-green-700',
         completed: 'bg-green-100 text-green-700',
-        requested: 'bg-blue-100 text-blue-700',
+        requested: 'bg-primary-100 text-primary-700',
         processing: 'bg-yellow-100 text-yellow-700',
         verified: 'bg-green-100 text-green-700',
         unverified: 'bg-yellow-100 text-yellow-700',
@@ -626,7 +626,7 @@ function UsersView() {
                                     <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-10 h-10 ${user.isBlocked ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-blue-500 to-purple-500'} rounded-full flex items-center justify-center text-white font-medium`}>
+                                                <div className={`w-10 h-10 ${user.isBlocked ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-primary-400 to-primary-500'} rounded-full flex items-center justify-center text-white font-medium`}>
                                                     {user.name?.charAt(0) || 'U'}
                                                 </div>
                                                 <div>
@@ -785,7 +785,7 @@ function UserDetailModal({ user, onClose, onRefresh }) {
                 </div>
                 <div className="p-6 space-y-6">
                     <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center text-white text-3xl font-semibold">
+                        <div className="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-500 rounded-2xl flex items-center justify-center text-white text-3xl font-semibold">
                             {user.name?.charAt(0) || 'U'}
                         </div>
                         <div>
@@ -953,7 +953,7 @@ function AffiliatesView() {
                                                 <div>
                                                     <p className="font-medium text-gray-900">{aff.name}</p>
                                                     <p className="text-sm text-gray-500">{aff.email}</p>
-                                                    <p className="text-xs text-blue-600">{aff.slug}</p>
+                                                    <p className="text-xs text-primary-500">{aff.slug}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -1098,7 +1098,7 @@ function AffiliateDetailModal({ affiliate, onClose }) {
                             <p className="text-gray-500">{affiliate.email}</p>
                             <div className="flex items-center gap-2 mt-2">
                                 <StatusBadge status={affiliate.status} />
-                                <span className="text-sm text-blue-600">Code: {affiliate.slug}</span>
+                                <span className="text-sm text-primary-500">Code: {affiliate.slug}</span>
                             </div>
                         </div>
                     </div>
@@ -1142,7 +1142,7 @@ function AffiliateDetailModal({ affiliate, onClose }) {
                         {affiliate.twitter && <InfoCard label="Twitter" value={affiliate.twitter} />}
                     </div>
 
-                    <div className="bg-blue-50 rounded-xl p-4">
+                    <div className="bg-primary-50 rounded-xl p-4">
                         <p className="text-sm text-blue-700">
                             <strong>Referral Link:</strong> {affiliate.referralLink || `https://aiblog.scalezix.com/?ref=${affiliate.slug}`}
                         </p>
@@ -1200,7 +1200,7 @@ function AffiliateActionModal({ type, affiliate, onClose, onSubmit }) {
                                 onChange={(e) => setCommission(parseInt(e.target.value))}
                                 min="1"
                                 max="100"
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                             />
                         </div>
                     )}
@@ -1211,7 +1211,7 @@ function AffiliateActionModal({ type, affiliate, onClose, onSubmit }) {
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
                                 rows={3}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none resize-none"
                                 placeholder={`Enter reason for ${type}...`}
                             />
                         </div>
@@ -1463,7 +1463,7 @@ function WithdrawalActionModal({ type, withdrawal, onClose, onSubmit }) {
                                 type="text"
                                 value={transactionId}
                                 onChange={(e) => setTransactionId(e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                                 placeholder="Enter transaction reference..."
                             />
                         </div>
@@ -1474,7 +1474,7 @@ function WithdrawalActionModal({ type, withdrawal, onClose, onSubmit }) {
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
                                 rows={3}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none resize-none"
                                 placeholder="Enter reason for rejection..."
                             />
                         </div>
@@ -1486,7 +1486,7 @@ function WithdrawalActionModal({ type, withdrawal, onClose, onSubmit }) {
                             value={adminNote}
                             onChange={(e) => setAdminNote(e.target.value)}
                             rows={2}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none resize-none"
                             placeholder="Internal note..."
                         />
                     </div>
@@ -1667,7 +1667,7 @@ function NewsletterView() {
                                         type="text"
                                         value={emailData.subject}
                                         onChange={(e) => setEmailData({ ...emailData, subject: e.target.value })}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                                         placeholder="Email subject line..."
                                     />
                                 </div>
@@ -1677,7 +1677,7 @@ function NewsletterView() {
                                         type="text"
                                         value={emailData.headline}
                                         onChange={(e) => setEmailData({ ...emailData, headline: e.target.value })}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                                         placeholder="Main headline..."
                                     />
                                 </div>
@@ -1687,7 +1687,7 @@ function NewsletterView() {
                                         value={emailData.body}
                                         onChange={(e) => setEmailData({ ...emailData, body: e.target.value })}
                                         rows={6}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none"
+                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none resize-none"
                                         placeholder="Email content..."
                                     />
                                 </div>
@@ -1698,7 +1698,7 @@ function NewsletterView() {
                                             type="text"
                                             value={emailData.ctaText}
                                             onChange={(e) => setEmailData({ ...emailData, ctaText: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                                             placeholder="Learn More"
                                         />
                                     </div>
@@ -1708,7 +1708,7 @@ function NewsletterView() {
                                             type="url"
                                             value={emailData.ctaUrl}
                                             onChange={(e) => setEmailData({ ...emailData, ctaUrl: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                                             placeholder="https://..."
                                         />
                                     </div>
@@ -1799,7 +1799,7 @@ function WordPressView() {
                 </div>
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <p className="text-sm text-gray-500">Processing</p>
-                    <p className="text-3xl font-semibold text-blue-600 mt-1">
+                    <p className="text-3xl font-semibold text-primary-500 mt-1">
                         {jobs.filter(j => j.status === 'processing').length}
                     </p>
                 </div>
@@ -1833,7 +1833,7 @@ function WordPressView() {
                                         <td className="px-6 py-4">
                                             <div>
                                                 <p className="font-medium text-gray-900">{site.siteName}</p>
-                                                <p className="text-sm text-blue-600">{site.siteUrl}</p>
+                                                <p className="text-sm text-primary-500">{site.siteUrl}</p>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-500">{site.userId?.email || '-'}</td>
@@ -1930,7 +1930,7 @@ function AnalyticsView({ stats }) {
                             <p className="text-sm text-gray-500">Total Users</p>
                             <p className="text-3xl font-semibold text-gray-900 mt-1">{stats?.totalUsers || 0}</p>
                         </div>
-                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-primary-500">
                             <Icons.Users />
                         </div>
                     </div>
@@ -2077,7 +2077,7 @@ function ActivityView() {
                                 <div className="flex items-start gap-4">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${log.action.includes('approved') ? 'bg-green-100 text-green-600' :
                                         log.action.includes('rejected') || log.action.includes('banned') ? 'bg-red-100 text-red-600' :
-                                            log.action.includes('withdrawal') ? 'bg-blue-100 text-blue-600' :
+                                            log.action.includes('withdrawal') ? 'bg-blue-100 text-primary-500' :
                                                 'bg-gray-100 text-gray-600'
                                         }`}>
                                         <Icons.Activity />
@@ -2204,7 +2204,7 @@ function SettingsView() {
                             onChange={(e) => setSettings({ ...settings, commissionRate: parseInt(e.target.value) })}
                             min="1"
                             max="100"
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                         />
                     </div>
                     <div>
@@ -2215,7 +2215,7 @@ function SettingsView() {
                             onChange={(e) => setSettings({ ...settings, cookieDuration: parseInt(e.target.value) })}
                             min="1"
                             max="365"
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                         />
                     </div>
                     <div>
@@ -2225,7 +2225,7 @@ function SettingsView() {
                             value={settings.minimumWithdrawal}
                             onChange={(e) => setSettings({ ...settings, minimumWithdrawal: parseInt(e.target.value) })}
                             min="1000"
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-400/20 focus:border-primary-400 outline-none"
                         />
                         <p className="text-xs text-gray-500 mt-1">Current: ₹{(settings.minimumWithdrawal / 100).toLocaleString()}</p>
                     </div>
@@ -2292,7 +2292,7 @@ function SettingsView() {
             </div>
 
             {/* Help Section - Explain Suspend vs Ban */}
-            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+            <div className="bg-primary-50 rounded-2xl p-6 border border-blue-200">
                 <h3 className="text-lg font-semibold text-blue-900 mb-4">📚 Help: User & Affiliate Status Guide</h3>
                 <div className="space-y-4 text-sm">
                     <div className="bg-white rounded-xl p-4">
@@ -2449,7 +2449,7 @@ function ReferredUsersView() {
                                     <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-500 rounded-full flex items-center justify-center text-white font-medium">
                                                     {user.name?.charAt(0) || 'U'}
                                                 </div>
                                                 <div>
@@ -2577,7 +2577,7 @@ function PerformanceView() {
                     </div>
                     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                         <p className="text-xs text-gray-500 mb-1">Total Clicks</p>
-                        <p className="text-2xl font-semibold text-blue-600">{summary.totalClicks.toLocaleString()}</p>
+                        <p className="text-2xl font-semibold text-primary-500">{summary.totalClicks.toLocaleString()}</p>
                     </div>
                     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                         <p className="text-xs text-gray-500 mb-1">Conversions</p>
@@ -2647,7 +2647,7 @@ function PerformanceView() {
                                             {aff.slug}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-center font-medium text-blue-600">
+                                    <td className="px-6 py-4 text-center font-medium text-primary-500">
                                         {aff.totalClicks.toLocaleString()}
                                     </td>
                                     <td className="px-6 py-4 text-center font-medium text-green-600">
@@ -2727,7 +2727,7 @@ function PerformanceView() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-gray-50 rounded-xl p-4">
                                         <p className="text-xs text-gray-500">Total Clicks</p>
-                                        <p className="text-xl font-semibold text-blue-600">{selectedAffiliate.totalClicks}</p>
+                                        <p className="text-xl font-semibold text-primary-500">{selectedAffiliate.totalClicks}</p>
                                     </div>
                                     <div className="bg-gray-50 rounded-xl p-4">
                                         <p className="text-xs text-gray-500">Conversions</p>
@@ -2747,7 +2747,7 @@ function PerformanceView() {
                                     </div>
                                     <div className="bg-gray-50 rounded-xl p-4">
                                         <p className="text-xs text-gray-500">Available Balance</p>
-                                        <p className="text-xl font-semibold text-blue-600">₹{(selectedAffiliate.availableBalance / 100).toLocaleString()}</p>
+                                        <p className="text-xl font-semibold text-primary-500">₹{(selectedAffiliate.availableBalance / 100).toLocaleString()}</p>
                                     </div>
                                 </div>
 

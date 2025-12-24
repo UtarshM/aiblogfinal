@@ -71,7 +71,7 @@ export default function SocialMediaPro() {
             id: 'facebook',
             name: 'Facebook',
             icon: Facebook,
-            color: 'bg-blue-600',
+            color: 'bg-primary-400',
             textColor: 'text-white',
             supports: ['image', 'video', 'text']
         },
@@ -503,7 +503,7 @@ export default function SocialMediaPro() {
                                         ) : (
                                             <button
                                                 onClick={() => handleConnectAccount(platform)}
-                                                className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 font-medium"
+                                                className="px-4 py-2 bg-primary-400 text-white text-sm rounded-lg hover:bg-primary-500 font-medium"
                                             >
                                                 Connect
                                             </button>
@@ -513,13 +513,13 @@ export default function SocialMediaPro() {
                             })}
                         </div>
 
-                        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="mt-6 p-4 bg-primary-50 rounded-lg border border-blue-200">
                             <p className="text-sm text-blue-900 font-medium mb-2">📱 Real Social Media Posting</p>
                             <p className="text-xs text-blue-700 mb-2">
                                 Connect your accounts to post directly to Twitter, Instagram, and Facebook.
                                 All posts require media (image or video).
                             </p>
-                            <p className="text-xs text-blue-600 font-medium">
+                            <p className="text-xs text-primary-500 font-medium">
                                 ⚠️ To connect accounts, add API keys to server/.env file first.
                             </p>
                         </div>
@@ -735,7 +735,7 @@ export default function SocialMediaPro() {
                             <button
                                 onClick={postNow}
                                 disabled={loading || !postContent || !hasMedia() || selectedPlatforms.length === 0}
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transition-all"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transition-all"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
                                 Post Now
@@ -1028,14 +1028,14 @@ export default function SocialMediaPro() {
                                                                 <div key={length} className="bg-white p-3 rounded-lg border">
                                                                     <div className="flex items-start justify-between gap-2">
                                                                         <div className="flex-1">
-                                                                            <p className="text-xs font-bold text-purple-600 uppercase mb-1">
+                                                                            <p className="text-xs font-bold text-primary-500 uppercase mb-1">
                                                                                 {length === 'short' ? '📝 Short (17-20 words)' : length === 'medium' ? '📄 Medium (25-30 words)' : '📃 Long (35-45 words)'}
                                                                             </p>
                                                                             <p className="text-sm text-gray-700">{captions[length]}</p>
                                                                         </div>
                                                                         <button
                                                                             onClick={() => useGeneratedCaption(platformId, length)}
-                                                                            className="flex-shrink-0 px-3 py-2 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 font-bold"
+                                                                            className="flex-shrink-0 px-3 py-2 bg-primary-400 text-white text-xs rounded-lg hover:bg-purple-700 font-bold"
                                                                         >
                                                                             Use
                                                                         </button>
@@ -1051,13 +1051,13 @@ export default function SocialMediaPro() {
 
                                     {/* Hashtags */}
                                     {generatedContent.hashtags && (
-                                        <div className="bg-blue-50 p-5 rounded-xl border border-blue-200">
+                                        <div className="bg-primary-50 p-5 rounded-xl border border-blue-200">
                                             <h4 className="font-bold text-gray-800 mb-3 text-lg">#️⃣ Generated Hashtags</h4>
                                             <div className="flex flex-wrap gap-2">
                                                 {generatedContent.hashtags.recommended?.map((tag, idx) => (
                                                     <span
                                                         key={idx}
-                                                        className="px-3 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold cursor-pointer hover:bg-blue-200 transition-colors"
+                                                        className="px-3 py-2 bg-primary-100 text-blue-700 rounded-full text-sm font-semibold cursor-pointer hover:bg-blue-200 transition-colors"
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(tag)
                                                             showToast(`Copied: ${tag}`, 'success')
@@ -1074,7 +1074,7 @@ export default function SocialMediaPro() {
                                                         navigator.clipboard.writeText(allTags)
                                                         showToast('All hashtags copied!', 'success')
                                                     }}
-                                                    className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700"
+                                                    className="mt-3 px-4 py-2 bg-primary-400 text-white rounded-lg text-sm font-semibold hover:bg-primary-500"
                                                 >
                                                     📋 Copy All Hashtags
                                                 </button>
