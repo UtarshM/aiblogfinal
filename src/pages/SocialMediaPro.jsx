@@ -63,7 +63,7 @@ export default function SocialMediaPro() {
             id: 'instagram',
             name: 'Instagram',
             icon: Instagram,
-            color: 'bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500',
+            color: 'bg-gradient-to-br from-primary-400 via-primary-500 to-orange-500',
             textColor: 'text-white',
             supports: ['image', 'video']
         },
@@ -513,7 +513,7 @@ export default function SocialMediaPro() {
                             })}
                         </div>
 
-                        <div className="mt-6 p-4 bg-primary-50 rounded-lg border border-blue-200">
+                        <div className="mt-6 p-4 bg-primary-50 rounded-lg border border-primary-200">
                             <p className="text-sm text-blue-900 font-medium mb-2">📱 Real Social Media Posting</p>
                             <p className="text-xs text-blue-700 mb-2">
                                 Connect your accounts to post directly to Twitter, Instagram, and Facebook.
@@ -534,7 +534,7 @@ export default function SocialMediaPro() {
                             <h2 className="text-xl font-semibold">Create Post</h2>
                             <button
                                 onClick={() => setShowAIGenerator(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-medium shadow-md"
+                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-primary-500 hover:to-primary-600 font-medium shadow-md"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -548,7 +548,7 @@ export default function SocialMediaPro() {
                             value={postContent}
                             onChange={e => setPostContent(e.target.value)}
                             placeholder="What's on your mind? Share your thoughts..."
-                            className="w-full h-32 p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+                            className="w-full h-32 p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
                             maxLength={280}
                         />
                         <div className="text-right text-sm text-gray-500 mt-1">
@@ -712,7 +712,7 @@ export default function SocialMediaPro() {
                                         value={scheduleDate}
                                         onChange={e => setScheduleDate(e.target.value)}
                                         min={new Date().toISOString().split('T')[0]}
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
                                     />
                                 </div>
                                 <div>
@@ -724,7 +724,7 @@ export default function SocialMediaPro() {
                                         type="time"
                                         value={scheduleTime}
                                         onChange={e => setScheduleTime(e.target.value)}
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
                                     />
                                 </div>
                             </div>
@@ -735,7 +735,7 @@ export default function SocialMediaPro() {
                             <button
                                 onClick={postNow}
                                 disabled={loading || !postContent || !hasMedia() || selectedPlatforms.length === 0}
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transition-all"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl transition-all"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
                                 Post Now
@@ -839,7 +839,7 @@ export default function SocialMediaPro() {
             {showAIGenerator && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-6 rounded-t-2xl z-10">
+                        <div className="sticky top-0 bg-gradient-to-r from-primary-400 to-primary-500 text-white p-6 rounded-t-2xl z-10">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h2 className="text-2xl font-bold">🤖 AI Content Generator</h2>
@@ -865,7 +865,7 @@ export default function SocialMediaPro() {
                                     value={aiConfig.topic}
                                     onChange={e => setAiConfig({ ...aiConfig, topic: e.target.value })}
                                     placeholder="Enter any topic (e.g., Robert Downey Jr, Elon Musk, iPhone 16, Travel to Paris)"
-                                    className="w-full p-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 text-lg"
+                                    className="w-full p-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 text-lg"
                                 />
                             </div>
 
@@ -884,7 +884,7 @@ export default function SocialMediaPro() {
                                             key={option.id}
                                             onClick={() => setAiConfig({ ...aiConfig, length: option.id })}
                                             className={`p-4 rounded-xl border-2 transition-all ${aiConfig.length === option.id
-                                                ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                                ? 'border-primary-400 bg-primary-50 text-primary-600'
                                                 : 'border-gray-200 hover:border-gray-300'
                                                 }`}
                                         >
@@ -905,7 +905,7 @@ export default function SocialMediaPro() {
                                     value={aiConfig.customHashtags}
                                     onChange={e => setAiConfig({ ...aiConfig, customHashtags: e.target.value })}
                                     placeholder="Add your own hashtags (e.g., #marvel #ironman #avengers)"
-                                    className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600"
+                                    className="w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-400"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">AI will also generate relevant hashtags automatically</p>
                             </div>
@@ -914,7 +914,7 @@ export default function SocialMediaPro() {
                             <button
                                 onClick={handleAIGenerate}
                                 disabled={aiGenerating || !aiConfig.topic.trim()}
-                                className="w-full flex items-center justify-center gap-3 px-6 py-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg text-xl transition-all transform hover:scale-[1.02]"
+                                className="w-full flex items-center justify-center gap-3 px-6 py-5 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg text-xl transition-all transform hover:scale-[1.02]"
                             >
                                 {aiGenerating ? (
                                     <>
@@ -1051,7 +1051,7 @@ export default function SocialMediaPro() {
 
                                     {/* Hashtags */}
                                     {generatedContent.hashtags && (
-                                        <div className="bg-primary-50 p-5 rounded-xl border border-blue-200">
+                                        <div className="bg-primary-50 p-5 rounded-xl border border-primary-200">
                                             <h4 className="font-bold text-gray-800 mb-3 text-lg">#️⃣ Generated Hashtags</h4>
                                             <div className="flex flex-wrap gap-2">
                                                 {generatedContent.hashtags.recommended?.map((tag, idx) => (

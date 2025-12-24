@@ -212,7 +212,7 @@ export default function ClientReporting() {
                     >
                         <div className="text-center">
                             <div className="flex justify-center mb-4">
-                                <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-4 rounded-full">
+                                <div className="bg-gradient-to-r from-primary-400 to-primary-500 p-4 rounded-full">
                                     <Lock className="text-white" size={32} />
                                 </div>
                             </div>
@@ -315,7 +315,7 @@ export default function ClientReporting() {
                                             <span className="text-sm font-medium">{stage.stage}</span>
                                             <span className="text-sm text-gray-600">{stage.count.toLocaleString()}</span>
                                         </div>
-                                        <div className="bg-gradient-to-r from-blue-600 to-blue-400 rounded"
+                                        <div className="bg-gradient-to-r from-primary-400 to-primary-500 rounded"
                                             style={{ width: `${stage.width}%`, height: '32px' }} />
                                     </div>
                                 ))}
@@ -351,7 +351,7 @@ export default function ClientReporting() {
                                                     <span className="text-sm font-medium">Stage {i + 1}</span>
                                                     <span className="text-sm text-gray-600">0</span>
                                                 </div>
-                                                <div className="bg-gradient-to-r from-blue-600 to-blue-400 rounded"
+                                                <div className="bg-gradient-to-r from-primary-400 to-primary-500 rounded"
                                                     style={{ width: `${width}%`, height: '32px' }} />
                                             </div>
                                         ))}

@@ -373,12 +373,12 @@ export default function SEOAutomation() {
                                             </table>
                                         </div>
 
-                                        <div className="mt-6 p-4 bg-primary-50 rounded-lg border border-blue-200">
+                                        <div className="mt-6 p-4 bg-primary-50 rounded-lg border border-primary-200">
                                             <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
                                                 <Zap size={18} />
                                                 Keyword Insights
                                             </h4>
-                                            <ul className="text-sm text-blue-800 space-y-1">
+                                            <ul className="text-sm text-primary-800 space-y-1">
                                                 <li>• <strong>Low Difficulty (0-40):</strong> Easier to rank, ideal for new websites</li>
                                                 <li>• <strong>Medium Difficulty (40-60):</strong> Moderate competition, requires quality content</li>
                                                 <li>• <strong>High Difficulty (60-100):</strong> Very competitive, needs strong domain authority</li>
@@ -433,7 +433,7 @@ export default function SEOAutomation() {
                                 {results?.seo && (
                                     <div className="space-y-6">
                                         {/* SEO Score Card */}
-                                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border border-blue-200">
+                                        <div className="bg-gradient-to-r from-primary-50 to-primary-100 p-6 rounded-lg border border-primary-200">
                                             <div className="flex items-center justify-between mb-4">
                                                 <div>
                                                     <h3 className="text-lg font-semibold mb-1">Overall SEO Score</h3>
@@ -580,14 +580,14 @@ export default function SEOAutomation() {
 
                                         {/* Recommendations */}
                                         {results.seo.recommendations && results.seo.recommendations.length > 0 && (
-                                            <div className="bg-primary-50 p-6 rounded-lg border border-blue-200">
+                                            <div className="bg-primary-50 p-6 rounded-lg border border-primary-200">
                                                 <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center gap-2">
                                                     <Zap size={20} />
                                                     Action Items to Improve SEO
                                                 </h3>
                                                 <ul className="space-y-2">
                                                     {results.seo.recommendations.map((rec, i) => (
-                                                        <li key={i} className="flex items-start gap-2 text-blue-800">
+                                                        <li key={i} className="flex items-start gap-2 text-primary-800">
                                                             <span className="text-primary-500 font-bold flex-shrink-0">{i + 1}.</span>
                                                             <span>{rec}</span>
                                                         </li>

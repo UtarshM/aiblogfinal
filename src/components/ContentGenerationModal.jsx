@@ -91,7 +91,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                             value={formData.topic}
                             onChange={(e) => handleChange('topic', e.target.value)}
                             placeholder="e.g., Best Project Management Tools for Remote Teams 2025"
-                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none transition-colors"
+                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary-400 focus:outline-none transition-colors"
                             required
                         />
                         <p className="text-xs text-gray-500 mt-1">Be specific. "Best X for Y in 2025" works better than just "X"</p>
@@ -217,7 +217,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                                     onChange={(e) => handleChange('headings', e.target.value)}
                                     placeholder="Enter headings separated by | or new lines:&#10;Why This Matters | Getting Started | Advanced Tips | Common Mistakes | Parting Thoughts"
                                     rows={3}
-                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary-400 focus:outline-none"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Leave empty to auto-generate. Use 4-5 or 7-8 headings (never 3 or 6)</p>
                             </div>
@@ -232,7 +232,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                                     value={formData.keywords}
                                     onChange={(e) => handleChange('keywords', e.target.value)}
                                     placeholder="e.g., project management, remote work tools, team collaboration"
-                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary-400 focus:outline-none"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Comma-separated. Will be woven naturally into content</p>
                             </div>
@@ -247,7 +247,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                                     onChange={(e) => handleChange('eeat', e.target.value)}
                                     placeholder="e.g., Written by a project manager with 12 years experience at Fortune 500 companies. Tested 47 tools over 6 months."
                                     rows={2}
-                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary-400 focus:outline-none"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Expertise signals to include. Specific numbers and dates work best</p>
                             </div>
@@ -262,7 +262,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                                     value={formData.references}
                                     onChange={(e) => handleChange('references', e.target.value)}
                                     placeholder="e.g., https://example.com/study, https://research.com/report"
-                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-600 focus:outline-none"
+                                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-primary-400 focus:outline-none"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Sources to cite or draw information from</p>
                             </div>
@@ -270,9 +270,9 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                     )}
 
                     {/* Summary Box */}
-                    <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-lg border-2 border-purple-200">
+                    <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-4 rounded-lg border-2 border-purple-200">
                         <h3 className="font-semibold text-purple-900 mb-2">📋 Generation Summary</h3>
-                        <div className="text-sm text-purple-800 space-y-1">
+                        <div className="text-sm text-primary-800 space-y-1">
                             <p>• Topic: <span className="font-medium">{formData.topic || 'Not specified'}</span></p>
                             <p>• Length: <span className="font-medium">{parseInt(formData.minWords).toLocaleString()}+ words</span></p>
                             <p>• Images: <span className="font-medium">{formData.numImages} real images</span></p>
@@ -296,7 +296,7 @@ export default function ContentGenerationModal({ isOpen, onClose, onGenerate }) 
                         <button
                             type="submit"
                             disabled={!formData.topic.trim()}
-                            className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+                            className="flex-1 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg font-semibold hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
                         >
                             Generate Human Content
                         </button>

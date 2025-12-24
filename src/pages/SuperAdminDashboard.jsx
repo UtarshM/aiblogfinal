@@ -359,13 +359,13 @@ function DashboardView({ stats, loading }) {
 
     const statCards = [
         { label: 'Total Users', value: stats?.totalUsers || 0, icon: Icons.Users, color: 'from-primary-400 to-primary-500', change: '+12%' },
-        { label: 'Verified Users', value: stats?.verifiedUsers || 0, icon: Icons.Check, color: 'from-green-500 to-green-600', change: '+8%' },
-        { label: 'Total Affiliates', value: stats?.totalAffiliates || 0, icon: Icons.Affiliates, color: 'from-purple-500 to-purple-600', change: '+15%' },
-        { label: 'Pending Applications', value: stats?.pendingAffiliates || 0, icon: Icons.Clock, color: 'from-orange-500 to-orange-600', change: '' },
-        { label: 'Newsletter Subscribers', value: stats?.newsletterSubscribers || 0, icon: Icons.Mail, color: 'from-cyan-500 to-cyan-600', change: '+22%' },
-        { label: 'WordPress Sites', value: stats?.wordpressSites || 0, icon: Icons.Globe, color: 'from-indigo-500 to-indigo-600', change: '' },
-        { label: 'Total Earnings (₹)', value: `₹${((stats?.totalAffiliateEarnings || 0) / 100).toLocaleString()}`, icon: Icons.TrendingUp, color: 'from-emerald-500 to-emerald-600', change: '+18%' },
-        { label: 'Pending Withdrawals', value: stats?.pendingWithdrawals || 0, icon: Icons.Withdrawals, color: 'from-red-500 to-red-600', change: '' },
+        { label: 'Verified Users', value: stats?.verifiedUsers || 0, icon: Icons.Check, color: 'from-primary-400 to-primary-500', change: '+8%' },
+        { label: 'Total Affiliates', value: stats?.totalAffiliates || 0, icon: Icons.Affiliates, color: 'from-primary-400 to-primary-500', change: '+15%' },
+        { label: 'Pending Applications', value: stats?.pendingAffiliates || 0, icon: Icons.Clock, color: 'from-primary-400 to-primary-500', change: '' },
+        { label: 'Newsletter Subscribers', value: stats?.newsletterSubscribers || 0, icon: Icons.Mail, color: 'from-primary-400 to-primary-500', change: '+22%' },
+        { label: 'WordPress Sites', value: stats?.wordpressSites || 0, icon: Icons.Globe, color: 'from-primary-400 to-primary-500', change: '' },
+        { label: 'Total Earnings (₹)', value: `₹${((stats?.totalAffiliateEarnings || 0) / 100).toLocaleString()}`, icon: Icons.TrendingUp, color: 'from-primary-400 to-primary-500', change: '+18%' },
+        { label: 'Pending Withdrawals', value: stats?.pendingWithdrawals || 0, icon: Icons.Withdrawals, color: 'from-primary-400 to-primary-500', change: '' },
     ];
 
     return (
@@ -452,7 +452,7 @@ function DashboardView({ stats, loading }) {
                         {(stats?.recentAffiliates || []).slice(0, 5).map((aff, i) => (
                             <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-medium">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-500 rounded-full flex items-center justify-center text-white font-medium">
                                         {aff.name?.charAt(0) || 'A'}
                                     </div>
                                     <div>
@@ -678,7 +678,7 @@ function UsersView() {
                                                 {!user.isAdmin ? (
                                                     <button
                                                         onClick={() => handleAction(user._id, 'makeAdmin')}
-                                                        className="p-2 hover:bg-purple-100 text-purple-600 rounded-lg transition-all"
+                                                        className="p-2 hover:bg-primary-100 text-primary-600 rounded-lg transition-all"
                                                         title="Make Admin"
                                                     >
                                                         <Icons.Shield />
@@ -947,7 +947,7 @@ function AffiliatesView() {
                                     <tr key={aff._id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-medium">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-500 rounded-full flex items-center justify-center text-white font-medium">
                                                     {aff.name?.charAt(0) || 'A'}
                                                 </div>
                                                 <div>
@@ -1090,7 +1090,7 @@ function AffiliateDetailModal({ affiliate, onClose }) {
                 </div>
                 <div className="p-6 space-y-6">
                     <div className="flex items-center gap-4">
-                        <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-3xl font-semibold">
+                        <div className="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-500 rounded-2xl flex items-center justify-center text-white text-3xl font-semibold">
                             {affiliate.name?.charAt(0) || 'A'}
                         </div>
                         <div>
@@ -1952,7 +1952,7 @@ function AnalyticsView({ stats }) {
                             <p className="text-sm text-gray-500">Total Clicks</p>
                             <p className="text-3xl font-semibold text-gray-900 mt-1">{stats?.totalClicks || 0}</p>
                         </div>
-                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                        <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-primary-600">
                             <Icons.Activity />
                         </div>
                     </div>
@@ -2292,7 +2292,7 @@ function SettingsView() {
             </div>
 
             {/* Help Section - Explain Suspend vs Ban */}
-            <div className="bg-primary-50 rounded-2xl p-6 border border-blue-200">
+            <div className="bg-primary-50 rounded-2xl p-6 border border-primary-200">
                 <h3 className="text-lg font-semibold text-blue-900 mb-4">📚 Help: User & Affiliate Status Guide</h3>
                 <div className="space-y-4 text-sm">
                     <div className="bg-white rounded-xl p-4">
@@ -2365,7 +2365,7 @@ function ReferredUsersView() {
                             <p className="text-sm text-gray-500">Total Referred Users</p>
                             <p className="text-3xl font-semibold text-gray-900">{totalReferredUsers}</p>
                         </div>
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center text-white">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-500 rounded-xl flex items-center justify-center text-white">
                             <Icons.Link />
                         </div>
                     </div>
@@ -2376,7 +2376,7 @@ function ReferredUsersView() {
                             <p className="text-sm text-gray-500">Active Affiliates</p>
                             <p className="text-3xl font-semibold text-gray-900">{topAffiliates.length}</p>
                         </div>
-                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-500 rounded-xl flex items-center justify-center text-white">
                             <Icons.Affiliates />
                         </div>
                     </div>
@@ -2403,12 +2403,12 @@ function ReferredUsersView() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         {topAffiliates.slice(0, 5).map((item, index) => (
                             <div key={index} className="bg-gray-50 rounded-xl p-4 text-center">
-                                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold mx-auto mb-2">
+                                <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-500 rounded-full flex items-center justify-center text-white font-semibold mx-auto mb-2">
                                     {item.affiliate?.name?.charAt(0) || '?'}
                                 </div>
                                 <p className="font-medium text-gray-900 truncate">{item.affiliate?.name || 'Unknown'}</p>
                                 <p className="text-xs text-gray-500 truncate">{item.affiliate?.slug || '-'}</p>
-                                <p className="text-lg font-bold text-purple-600 mt-1">{item.referralCount} users</p>
+                                <p className="text-lg font-bold text-primary-600 mt-1">{item.referralCount} users</p>
                             </div>
                         ))}
                     </div>
@@ -2585,7 +2585,7 @@ function PerformanceView() {
                     </div>
                     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                         <p className="text-xs text-gray-500 mb-1">Referred Users</p>
-                        <p className="text-2xl font-semibold text-purple-600">{summary.totalReferredUsers}</p>
+                        <p className="text-2xl font-semibold text-primary-600">{summary.totalReferredUsers}</p>
                     </div>
                     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                         <p className="text-xs text-gray-500 mb-1">Total Earnings</p>
@@ -2633,7 +2633,7 @@ function PerformanceView() {
                                 <tr key={aff.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-medium">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-500 rounded-full flex items-center justify-center text-white font-medium">
                                                 {aff.name?.charAt(0) || 'A'}
                                             </div>
                                             <div>
@@ -2653,7 +2653,7 @@ function PerformanceView() {
                                     <td className="px-6 py-4 text-center font-medium text-green-600">
                                         {aff.totalConversions}
                                     </td>
-                                    <td className="px-6 py-4 text-center font-medium text-purple-600">
+                                    <td className="px-6 py-4 text-center font-medium text-primary-600">
                                         {aff.referredUsers}
                                     </td>
                                     <td className="px-6 py-4 text-center">
@@ -2712,7 +2712,7 @@ function PerformanceView() {
 
                             <div className="space-y-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white text-2xl font-semibold">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-500 rounded-2xl flex items-center justify-center text-white text-2xl font-semibold">
                                         {selectedAffiliate.name?.charAt(0)}
                                     </div>
                                     <div>
@@ -2735,7 +2735,7 @@ function PerformanceView() {
                                     </div>
                                     <div className="bg-gray-50 rounded-xl p-4">
                                         <p className="text-xs text-gray-500">Referred Users</p>
-                                        <p className="text-xl font-semibold text-purple-600">{selectedAffiliate.referredUsers}</p>
+                                        <p className="text-xl font-semibold text-primary-600">{selectedAffiliate.referredUsers}</p>
                                     </div>
                                     <div className="bg-gray-50 rounded-xl p-4">
                                         <p className="text-xs text-gray-500">Conversion Rate</p>

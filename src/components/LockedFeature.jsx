@@ -36,8 +36,8 @@ export default function LockedFeature({
                 </div>
 
                 {/* Hover Indicator */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border-2 border-blue-200 transform scale-90 group-hover:scale-100 transition-transform duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-400/5 via-primary-500/5 to-primary-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border-2 border-primary-200 transform scale-90 group-hover:scale-100 transition-transform duration-300">
                         <div className="flex items-center gap-2">
                             <Lock className="text-primary-500" size={20} />
                             <span className="font-semibold text-gray-900">Click to Unlock</span>
@@ -70,7 +70,7 @@ export default function LockedFeature({
                         </button>
 
                         {/* Gradient Header */}
-                        <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-8 text-white relative overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 p-8 text-white relative overflow-hidden">
                             <div className="absolute inset-0 opacity-20">
                                 <div className="absolute inset-0" style={{
                                     backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px)'
@@ -134,7 +134,7 @@ export default function LockedFeature({
                             <div className="space-y-3">
                                 <Link
                                     to="/pricing"
-                                    className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 group"
+                                    className="w-full bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2 group"
                                 >
                                     <Sparkles className="group-hover:rotate-12 transition-transform" size={20} />
                                     Upgrade Now

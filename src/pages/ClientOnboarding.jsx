@@ -263,7 +263,7 @@ export default function ClientOnboarding() {
                     </div>
                     <button
                         onClick={() => setShowBulkUpload(true)}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
                     >
                         <Upload size={20} />
                         Bulk Upload
@@ -436,7 +436,7 @@ export default function ClientOnboarding() {
                 <>
                     {/* Feature Overview Cards */}
                     <div className="grid md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                        <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-xl border border-primary-200">
                             <Users className="text-primary-500 mb-3" size={32} />
                             <h3 className="font-semibold text-gray-900 mb-2">Smart Forms</h3>
                             <p className="text-sm text-gray-600">Collect client information efficiently with validation</p>
@@ -593,7 +593,7 @@ export default function ClientOnboarding() {
                                     </div>
                                 </div>
 
-                                <div className="bg-primary-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+                                <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 flex items-start gap-3">
                                     <AlertCircle className="text-primary-500 flex-shrink-0 mt-0.5" size={20} />
                                     <div>
                                         <p className="text-sm text-blue-900 font-semibold">Required Fields</p>
@@ -766,7 +766,7 @@ export default function ClientOnboarding() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-6 mt-6">
+                                    <div className="bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200 rounded-xl p-6 mt-6">
                                         <div className="flex items-start gap-4">
                                             <Sparkles className="text-primary-500 flex-shrink-0 mt-1" size={24} />
                                             <div>
@@ -807,7 +807,7 @@ export default function ClientOnboarding() {
                                 <h2 className="text-2xl font-semibold mb-4">Review & Confirm</h2>
 
                                 <div className="space-y-4">
-                                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                                    <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-xl border border-primary-200">
                                         <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
                                             <Users size={20} /> Company Information
                                         </h3>
@@ -873,7 +873,7 @@ export default function ClientOnboarding() {
                             ) : (
                                 <button
                                     onClick={handleSubmit}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
                                 >
                                     <CheckCircle size={20} />
                                     Complete Onboarding
@@ -887,7 +887,7 @@ export default function ClientOnboarding() {
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                             <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
                                 {/* Header */}
-                                <div className="bg-gradient-to-r from-green-600 to-blue-600 p-6 text-white flex items-center justify-between">
+                                <div className="bg-gradient-to-r from-primary-400 to-primary-500 p-6 text-white flex items-center justify-between">
                                     <div>
                                         <h2 className="text-2xl font-bold mb-1">Bulk Client Upload</h2>
                                         <p className="text-white/90">Upload multiple clients via CSV file</p>
@@ -907,7 +907,7 @@ export default function ClientOnboarding() {
                                     {!uploadResults ? (
                                         <div className="space-y-6">
                                             {/* Instructions */}
-                                            <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
+                                            <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
                                                 <h3 className="font-semibold text-blue-900 mb-2">Instructions:</h3>
                                                 <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
                                                     <li>Download the CSV template below</li>
@@ -960,7 +960,7 @@ Tech Solutions,IT Services,https://techsol.com,contact@techsol.com,+91-987654321
                                         <div className="space-y-6">
                                             {/* Results Summary */}
                                             <div className="grid md:grid-cols-3 gap-4">
-                                                <div className="bg-primary-50 border border-blue-200 rounded-lg p-4 text-center">
+                                                <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 text-center">
                                                     <p className="text-3xl font-bold text-primary-500">{uploadResults.total}</p>
                                                     <p className="text-sm text-gray-600">Total Records</p>
                                                 </div>

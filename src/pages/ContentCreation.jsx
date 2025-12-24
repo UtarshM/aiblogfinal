@@ -1341,7 +1341,7 @@ Make each description specific, visual, and relevant to the content's main point
 
             {/* Background Job Indicator */}
             {bulkImportJob && bulkImportJob.status === 'processing' && !showBulkImportModal && (
-                <div className="mb-6 bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center justify-between animate-pulse">
+                <div className="mb-6 bg-gradient-to-r from-primary-400 to-primary-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center justify-between animate-pulse">
                     <div className="flex items-center gap-3">
                         <Loader2 className="animate-spin" size={24} />
                         <div>
@@ -1396,7 +1396,7 @@ Make each description specific, visual, and relevant to the content's main point
                             <button
                                 onClick={() => setShowModal(true)}
                                 disabled={aiLoading}
-                                className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded hover:from-purple-700 hover:to-blue-700 disabled:opacity-50"
+                                className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded hover:from-primary-500 hover:to-primary-600 disabled:opacity-50"
                             >
                                 {aiLoading ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
                                 AI Generate
@@ -1423,7 +1423,7 @@ Make each description specific, visual, and relevant to the content's main point
                             <div className="flex-1" />
                             <button
                                 onClick={() => setShowWordPressModal(true)}
-                                className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded hover:from-blue-700 hover:to-cyan-700"
+                                className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded hover:from-primary-500 hover:to-primary-600"
                                 title="WordPress Settings"
                             >
                                 <Settings size={16} />
@@ -1443,7 +1443,7 @@ Make each description specific, visual, and relevant to the content's main point
                             <button
                                 onClick={() => setShowBulkImportModal(true)}
                                 disabled={wordpressSites.length === 0}
-                                className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded hover:from-purple-700 hover:to-pink-700 disabled:opacity-50"
+                                className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded hover:from-primary-500 hover:to-primary-600 disabled:opacity-50"
                                 title="Bulk Import from Excel"
                             >
                                 <Upload size={16} />
@@ -1531,7 +1531,7 @@ Make each description specific, visual, and relevant to the content's main point
                             <button
                                 onClick={downloadAsWord}
                                 disabled={!content}
-                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-md hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 font-medium"
+                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-md hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 font-medium"
                             >
                                 <FileText size={16} />
                                 Word
@@ -1541,7 +1541,7 @@ Make each description specific, visual, and relevant to the content's main point
 
                     {/* 3-Step Generation Progress */}
                     {aiLoading && generationStep > 0 && (
-                        <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg shadow-lg border-2 border-primary-300">
+                        <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg shadow-lg border-2 border-primary-200">
                             <div className="flex items-center gap-3 mb-4">
                                 <Loader2 className="animate-spin text-primary-500" size={24} />
                                 <div>
@@ -1552,7 +1552,7 @@ Make each description specific, visual, and relevant to the content's main point
 
                             <div className="space-y-3">
                                 {/* Step 1 */}
-                                <div className={`flex items-center gap-3 p-3 rounded-lg ${generationStep >= 1 ? 'bg-white border-2 border-primary-300' : 'bg-gray-100'}`}>
+                                <div className={`flex items-center gap-3 p-3 rounded-lg ${generationStep >= 1 ? 'bg-white border-2 border-primary-200' : 'bg-gray-100'}`}>
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${generationStep > 1 ? 'bg-green-500 text-white' : generationStep === 1 ? 'bg-primary-400 text-white' : 'bg-gray-300 text-gray-600'}`}>
                                         {generationStep > 1 ? '✓' : '1'}
                                     </div>
@@ -1564,7 +1564,7 @@ Make each description specific, visual, and relevant to the content's main point
                                 </div>
 
                                 {/* Step 2 */}
-                                <div className={`flex items-center gap-3 p-3 rounded-lg ${generationStep >= 2 ? 'bg-white border-2 border-primary-300' : 'bg-gray-100'}`}>
+                                <div className={`flex items-center gap-3 p-3 rounded-lg ${generationStep >= 2 ? 'bg-white border-2 border-primary-200' : 'bg-gray-100'}`}>
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${generationStep > 2 ? 'bg-green-500 text-white' : generationStep === 2 ? 'bg-primary-400 text-white' : 'bg-gray-300 text-gray-600'}`}>
                                         {generationStep > 2 ? '✓' : '2'}
                                     </div>
@@ -1610,7 +1610,7 @@ Make each description specific, visual, and relevant to the content's main point
                                 <button
                                     onClick={regenerateImages}
                                     disabled={imageLoading}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-sm"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 text-sm"
                                 >
                                     {imageLoading ? (
                                         <Loader2 className="animate-spin" size={14} />
@@ -1650,7 +1650,7 @@ Make each description specific, visual, and relevant to the content's main point
                                                         <div className="flex gap-2">
                                                             <button
                                                                 onClick={() => insertImage(url, i)}
-                                                                className="flex-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:from-purple-700 hover:to-pink-700"
+                                                                className="flex-1 bg-gradient-to-r from-primary-400 to-primary-500 text-white px-3 py-1.5 rounded text-sm font-medium hover:from-primary-500 hover:to-primary-600"
                                                             >
                                                                 Insert
                                                             </button>
@@ -1688,7 +1688,7 @@ Make each description specific, visual, and relevant to the content's main point
                         <div className="bg-white p-6 rounded-lg shadow-sm border">
                             <button
                                 onClick={regenerateImages}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-medium"
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-primary-500 hover:to-primary-600 font-medium"
                             >
                                 <Sparkles size={18} />
                                 Generate AI Images for Content
@@ -1720,7 +1720,7 @@ Make each description specific, visual, and relevant to the content's main point
 
                                 <div className="p-6 space-y-6">
                                     {/* Add New Site Form */}
-                                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-lg border-2 border-blue-200">
+                                    <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg border-2 border-primary-200">
                                         <h3 className="text-lg font-semibold text-primary-900 mb-4">Add WordPress Site</h3>
                                         <div className="space-y-4">
                                             <div>
@@ -1732,7 +1732,7 @@ Make each description specific, visual, and relevant to the content's main point
                                                     value={wpSiteName}
                                                     onChange={(e) => setWpSiteName(e.target.value)}
                                                     placeholder="My Blog"
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400"
                                                 />
                                             </div>
                                             <div>
@@ -1744,7 +1744,7 @@ Make each description specific, visual, and relevant to the content's main point
                                                     value={wpSiteUrl}
                                                     onChange={(e) => setWpSiteUrl(e.target.value)}
                                                     placeholder="https://yourblog.com"
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400"
                                                 />
                                             </div>
                                             <div>
@@ -1756,7 +1756,7 @@ Make each description specific, visual, and relevant to the content's main point
                                                     value={wpUsername}
                                                     onChange={(e) => setWpUsername(e.target.value)}
                                                     placeholder="admin"
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400"
                                                 />
                                             </div>
                                             <div>
@@ -1768,7 +1768,7 @@ Make each description specific, visual, and relevant to the content's main point
                                                     value={wpPassword}
                                                     onChange={(e) => setWpPassword(e.target.value)}
                                                     placeholder="xxxx xxxx xxxx xxxx xxxx xxxx"
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400"
                                                 />
                                                 <p className="text-xs text-gray-500 mt-1">
                                                     Generate in WordPress: Users → Profile → Application Passwords
@@ -1866,11 +1866,11 @@ Make each description specific, visual, and relevant to the content's main point
                                         </select>
                                     </div>
 
-                                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                    <div className="bg-blue-50 p-4 rounded-lg border border-primary-200">
                                         <h4 className="font-semibold text-primary-900 mb-2">Content Preview</h4>
-                                        <p className="text-sm text-blue-800"><strong>Title:</strong> {title}</p>
-                                        <p className="text-sm text-blue-800 mt-1"><strong>Images:</strong> {imageUrls.length} images</p>
-                                        <p className="text-sm text-blue-800 mt-1"><strong>Words:</strong> ~{content.split(' ').length}</p>
+                                        <p className="text-sm text-primary-800"><strong>Title:</strong> {title}</p>
+                                        <p className="text-sm text-primary-800 mt-1"><strong>Images:</strong> {imageUrls.length} images</p>
+                                        <p className="text-sm text-primary-800 mt-1"><strong>Words:</strong> ~{content.split(' ').length}</p>
                                     </div>
 
                                     <button
@@ -1910,7 +1910,7 @@ Make each description specific, visual, and relevant to the content's main point
                                         <>
                                             <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg border-2 border-primary-200">
                                                 <h3 className="text-lg font-semibold text-primary-900 mb-3">📋 How It Works</h3>
-                                                <ol className="text-sm text-purple-800 space-y-2 list-decimal list-inside">
+                                                <ol className="text-sm text-primary-800 space-y-2 list-decimal list-inside">
                                                     <li>Upload Excel file with "Title" column</li>
                                                     <li>AI generates content for each title</li>
                                                     <li>Content is humanized automatically</li>
@@ -1926,7 +1926,7 @@ Make each description specific, visual, and relevant to the content's main point
                                                 <select
                                                     value={selectedWordPressSite || ''}
                                                     onChange={(e) => setSelectedWordPressSite(e.target.value)}
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400"
                                                 >
                                                     {wordpressSites.map((site) => (
                                                         <option key={site._id} value={site._id}>
@@ -1944,7 +1944,7 @@ Make each description specific, visual, and relevant to the content's main point
                                                     type="file"
                                                     accept=".xlsx,.xls"
                                                     onChange={(e) => setBulkImportFile(e.target.files[0])}
-                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-primary-400"
                                                 />
                                                 <p className="text-xs text-gray-500 mt-1">
                                                     Excel file must have a "Title" column with blog post titles
@@ -1962,7 +1962,7 @@ Make each description specific, visual, and relevant to the content's main point
                                             <button
                                                 onClick={handleBulkImport}
                                                 disabled={wordpressLoading || !bulkImportFile}
-                                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 font-medium"
+                                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 font-medium"
                                             >
                                                 {wordpressLoading ? <Loader2 className="animate-spin" size={20} /> : <Upload size={20} />}
                                                 {wordpressLoading ? 'Starting...' : 'Start Bulk Import'}
@@ -1971,7 +1971,7 @@ Make each description specific, visual, and relevant to the content's main point
                                     ) : (
                                         <>
                                             {/* Progress Display */}
-                                            <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg border-2 border-primary-300">
+                                            <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg border-2 border-primary-200">
                                                 {/* Resume Indicator */}
                                                 {localStorage.getItem('bulkImportJobId') && bulkImportJob.status === 'processing' && (
                                                     <div className="mb-4 bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-lg flex items-center gap-2">
@@ -2150,9 +2150,9 @@ Make each description specific, visual, and relevant to the content's main point
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-lg border-2 border-primary-300">
+                    <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg border-2 border-primary-200">
                         <h3 className="font-semibold text-primary-900 mb-3">🚀 3-Step AI Generation</h3>
-                        <ul className="text-sm text-purple-800 space-y-2">
+                        <ul className="text-sm text-primary-800 space-y-2">
                             <li>• <span className="font-bold">Step 1:</span> AI generates content</li>
                             <li>• <span className="font-bold">Step 2:</span> Humanizes the text</li>
                             <li>• <span className="font-bold">Step 3:</span> Auto-inserts images</li>
@@ -2176,9 +2176,9 @@ Make each description specific, visual, and relevant to the content's main point
                         </ul>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg border-2 border-primary-300">
+                    <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-lg border-2 border-primary-200">
                         <h3 className="font-semibold text-primary-900 mb-3">📄 Word Export</h3>
-                        <ul className="text-sm text-blue-800 space-y-2">
+                        <ul className="text-sm text-primary-800 space-y-2">
                             <li>• Professional .docx format</li>
                             <li>• All images embedded</li>
                             <li>• Perfect formatting</li>

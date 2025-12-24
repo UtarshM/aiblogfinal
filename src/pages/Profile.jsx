@@ -669,7 +669,7 @@ export default function Profile() {
                     {activeTab === 'stats' && (
                         <div className="space-y-6">
                             <div className="grid md:grid-cols-2 gap-6">
-                                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+                                <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-6 rounded-xl border border-primary-200">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="font-semibold text-gray-900">Projects Completed</h3>
                                         <Target className="text-primary-500" size={24} />

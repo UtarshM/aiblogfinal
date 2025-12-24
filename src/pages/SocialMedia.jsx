@@ -23,7 +23,7 @@ export default function SocialMedia() {
     const [selectedPlatform, setSelectedPlatform] = useState(null)
 
     const platforms = [
-        { id: 'twitter', name: 'Twitter', icon: Twitter, color: 'bg-blue-400', connected: false },
+        { id: 'twitter', name: 'Twitter', icon: Twitter, color: 'bg-primary-400', connected: false },
         { id: 'instagram', name: 'Instagram', icon: Instagram, color: 'bg-pink-500', connected: false },
         { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'bg-primary-400', connected: false }
     ]
@@ -269,7 +269,7 @@ export default function SocialMedia() {
                             value={postContent}
                             onChange={e => setPostContent(e.target.value)}
                             placeholder="What's on your mind?"
-                            className="w-full h-32 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 resize-none"
+                            className="w-full h-32 p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"
                         />
 
                         {/* Image Upload */}
@@ -344,7 +344,7 @@ export default function SocialMedia() {
                                         value={scheduleDate}
                                         onChange={e => setScheduleDate(e.target.value)}
                                         min={new Date().toISOString().split('T')[0]}
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
                                     />
                                 </div>
                                 <div>
@@ -356,7 +356,7 @@ export default function SocialMedia() {
                                         type="time"
                                         value={scheduleTime}
                                         onChange={e => setScheduleTime(e.target.value)}
-                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
                                     />
                                 </div>
                             </div>
@@ -367,7 +367,7 @@ export default function SocialMedia() {
                             <button
                                 onClick={postNow}
                                 disabled={loading || !postContent || selectedPlatforms.length === 0}
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 font-medium"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-400 to-primary-500 text-white rounded-lg hover:from-primary-500 hover:to-primary-600 disabled:opacity-50 font-medium"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={18} /> : <Send size={18} />}
                                 Post Now
@@ -478,9 +478,9 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
     const getOAuthButtonStyle = () => {
         switch (platform.id) {
             case 'twitter':
-                return 'bg-blue-400 hover:bg-primary-400'
+                return 'bg-primary-400 hover:bg-primary-500'
             case 'instagram':
-                return 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600'
+                return 'bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 hover:from-primary-500 hover:via-primary-600 hover:to-primary-700'
             case 'facebook':
                 return 'bg-primary-400 hover:bg-primary-500'
             default:
@@ -528,7 +528,7 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
                 {/* OAuth Method */}
                 {authMethod === 'oauth' && (
                     <div className="space-y-4">
-                        <div className="p-4 bg-primary-50 rounded-lg border border-blue-200">
+                        <div className="p-4 bg-primary-50 rounded-lg border border-primary-200">
                             <p className="text-sm text-blue-900 mb-3">
                                 <strong>Recommended:</strong> Connect securely using {platform.name}'s official login.
                                 You'll be redirected to {platform.name} to authorize access.
@@ -588,7 +588,7 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
                                 value={credentials.email}
                                 onChange={e => setCredentials({ ...credentials, email: e.target.value })}
                                 placeholder={`your.email@${platform.id}.com`}
-                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
                                 required
                             />
                         </div>
@@ -602,7 +602,7 @@ function ConnectAccountModal({ platform, onClose, onConnect, loading }) {
                                 value={credentials.password}
                                 onChange={e => setCredentials({ ...credentials, password: e.target.value })}
                                 placeholder="••••••••"
-                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
                                 required
                             />
                         </div>

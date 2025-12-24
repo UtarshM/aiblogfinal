@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
-// Tools/Projects data
+// Tools/Projects data - All using primary color for consistency
 const tools = [
     {
         name: 'Content Creation',
@@ -33,9 +33,9 @@ const tools = [
         path: '/tools/client-reporting',
         icon: BarChart3,
         description: 'Generate visual reports',
-        color: 'from-violet-400 to-violet-500',
-        bgColor: 'bg-violet-50',
-        textColor: 'text-violet-600',
+        color: 'from-primary-400 to-primary-500',
+        bgColor: 'bg-primary-50',
+        textColor: 'text-primary-600',
         progress: 60,
     },
     {
@@ -43,9 +43,9 @@ const tools = [
         path: '/tools/seo-automation',
         icon: Search,
         description: 'Optimize your content',
-        color: 'from-emerald-400 to-emerald-500',
-        bgColor: 'bg-emerald-50',
-        textColor: 'text-emerald-600',
+        color: 'from-primary-400 to-primary-500',
+        bgColor: 'bg-primary-50',
+        textColor: 'text-primary-600',
         progress: 85,
     },
     {
@@ -53,9 +53,9 @@ const tools = [
         path: '/tools/campaign-optimization',
         icon: TrendingUp,
         description: 'Track campaign metrics',
-        color: 'from-orange-400 to-orange-500',
-        bgColor: 'bg-orange-50',
-        textColor: 'text-orange-600',
+        color: 'from-primary-400 to-primary-500',
+        bgColor: 'bg-primary-50',
+        textColor: 'text-primary-600',
         progress: 45,
     },
     {
@@ -63,9 +63,9 @@ const tools = [
         path: '/tools/client-onboarding',
         icon: UserPlus,
         description: 'Streamline onboarding',
-        color: 'from-pink-400 to-pink-500',
-        bgColor: 'bg-pink-50',
-        textColor: 'text-pink-600',
+        color: 'from-primary-400 to-primary-500',
+        bgColor: 'bg-primary-50',
+        textColor: 'text-primary-600',
         progress: 90,
     },
     {
@@ -73,14 +73,14 @@ const tools = [
         path: '/tools/social-media',
         icon: Share2,
         description: 'Manage social posts',
-        color: 'from-blue-400 to-blue-500',
-        bgColor: 'bg-blue-50',
-        textColor: 'text-blue-600',
+        color: 'from-primary-400 to-primary-500',
+        bgColor: 'bg-primary-50',
+        textColor: 'text-primary-600',
         progress: 55,
     },
 ]
 
-// Stats data
+// Stats data - All using primary color for consistency
 const stats = [
     {
         label: 'In Progress',
@@ -94,16 +94,16 @@ const stats = [
         label: 'New Tasks',
         value: '3',
         icon: Plus,
-        color: 'from-violet-400 to-violet-500',
-        bgColor: 'bg-violet-50',
+        color: 'from-primary-400 to-primary-500',
+        bgColor: 'bg-primary-50',
         change: 'Assigned today'
     },
     {
         label: 'Completed',
         value: '20',
         icon: CheckCircle,
-        color: 'from-emerald-400 to-emerald-500',
-        bgColor: 'bg-emerald-50',
+        color: 'from-primary-400 to-primary-500',
+        bgColor: 'bg-primary-50',
         change: '+5 this week'
     },
 ]
@@ -171,7 +171,7 @@ export default function Home() {
                                         <p className="text-xs text-gray-400 mt-1">{stat.change}</p>
                                     </div>
                                     <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
-                                        <Icon className={`w-6 h-6 bg-gradient-to-r ${stat.color} bg-clip-text`} style={{ color: index === 0 ? '#52B2BF' : index === 1 ? '#8b5cf6' : '#10b981' }} />
+                                        <Icon className="w-6 h-6 text-primary-500" />
                                     </div>
                                 </div>
                             </motion.div>
@@ -285,10 +285,10 @@ export default function Home() {
                                         <div
                                             key={i}
                                             className={`py-2 rounded-lg text-sm ${isToday
-                                                    ? 'bg-primary-400 text-white font-medium'
-                                                    : isCurrentMonth
-                                                        ? 'text-gray-700 hover:bg-gray-50'
-                                                        : 'text-gray-300'
+                                                ? 'bg-primary-400 text-white font-medium'
+                                                : isCurrentMonth
+                                                    ? 'text-gray-700 hover:bg-gray-50'
+                                                    : 'text-gray-300'
                                                 }`}
                                         >
                                             {isCurrentMonth ? day : ''}

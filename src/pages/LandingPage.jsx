@@ -44,11 +44,11 @@ export default function LandingPage() {
 
     const features = [
         { icon: FileText, title: 'AI Content', description: 'Generate SEO-optimized content in seconds', color: 'from-primary-400 to-primary-500' },
-        { icon: Search, title: 'SEO Tools', description: 'Analyze and optimize your rankings', color: 'from-violet-400 to-violet-500' },
-        { icon: BarChart3, title: 'Analytics', description: 'Track performance in real-time', color: 'from-emerald-400 to-emerald-500' },
-        { icon: Share2, title: 'Social Media', description: 'Schedule posts across platforms', color: 'from-pink-400 to-pink-500' },
-        { icon: Users, title: 'Team Collab', description: 'Work together seamlessly', color: 'from-orange-400 to-orange-500' },
-        { icon: Zap, title: 'Automation', description: 'Automate repetitive tasks', color: 'from-blue-400 to-blue-500' },
+        { icon: Search, title: 'SEO Tools', description: 'Analyze and optimize your rankings', color: 'from-primary-400 to-primary-500' },
+        { icon: BarChart3, title: 'Analytics', description: 'Track performance in real-time', color: 'from-primary-400 to-primary-500' },
+        { icon: Share2, title: 'Social Media', description: 'Schedule posts across platforms', color: 'from-primary-400 to-primary-500' },
+        { icon: Users, title: 'Team Collab', description: 'Work together seamlessly', color: 'from-primary-400 to-primary-500' },
+        { icon: Zap, title: 'Automation', description: 'Automate repetitive tasks', color: 'from-primary-400 to-primary-500' },
     ];
 
     const stats = [
@@ -108,7 +108,7 @@ export default function LandingPage() {
             <section className="pt-32 pb-20 px-6 bg-mesh relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-20 left-10 w-72 h-72 bg-primary-400/10 rounded-full blur-3xl" />
-                    <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-400/10 rounded-full blur-3xl" />
+                    <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary-300/10 rounded-full blur-3xl" />
                 </div>
 
                 <div className="max-w-7xl mx-auto relative">

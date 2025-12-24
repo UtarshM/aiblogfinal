@@ -359,7 +359,7 @@ export default function Settings() {
                                 <h2 className="text-2xl font-bold mb-6">Appearance</h2>
 
                                 <div className="space-y-6">
-                                    <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
+                                    <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
                                         <p className="text-sm text-blue-900 font-semibold">
                                             ☀️ Light Mode Active
                                         </p>
@@ -380,7 +380,7 @@ export default function Settings() {
                                                 <button
                                                     key={name}
                                                     onClick={() => updateSetting('colorScheme', name)}
-                                                    className={`w-14 h-14 rounded-full ${color} transition-all hover:scale-110 ${settings.colorScheme === name ? 'ring-4 ring-offset-2 ring-blue-600 scale-110' : ''
+                                                    className={`w-14 h-14 rounded-full ${color} transition-all hover:scale-110 ${settings.colorScheme === name ? 'ring-4 ring-offset-2 ring-primary-400 scale-110' : ''
                                                         }`}
                                                     title={name}
                                                 />
@@ -723,7 +723,7 @@ export default function Settings() {
                                         />
                                     </div>
 
-                                    <div className="bg-primary-50 border border-blue-200 rounded-lg p-4">
+                                    <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
                                         <p className="font-semibold text-blue-900 mb-2">API Key</p>
                                         <div className="flex gap-2">
                                             <input
