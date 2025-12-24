@@ -963,6 +963,121 @@ app.post('/api/auth/send-reminders', async (req, res) => {
   }
 });
 
+// ═══════════════════════════════════════════════════════════════
+// USER DASHBOARD STATS - Real data for each user
+// ═══════════════════════════════════════════════════════════════
+
+app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    
+    // FALLBACK: If MongoDB is not connected, return empty stats
+    if (!User.db || User.db.readyState !== 1) {
+      return res.json({
+        contentCreated: 0,
+        wordpressPosts: 0,
+        socialPosts: 0,
+        seoAnalyses: 0,
+        clients: 0,
+        campaigns: 0,
+        recentActivity: [],
+        contentHistory: []
+      });
+    }
+
+    // Get user's content count
+    const contentCount = await Content.countDocuments({ userId }) || 0;
+    
+    // Get user's WordPress posts count
+    const { WordPressPost } = await import('./wordpressModels.js');
+    const wordpressCount = await WordPressPost.countDocuments({ userId }) || 0;
+    
+    // Get user's social posts count
+    const { SocialPost: UserSocialPost } = await import('./socialModels.js');
+    const socialCount = await UserSocialPost.countDocuments({ userId }) || 0;
+    
+    // Get user's SEO analyses count
+    const seoCount = await SEOAnalysis.countDocuments({ userId }) || 0;
+    
+    // Get user's clients count
+    const clientCount = await Client.countDocuments({ userId }) || 0;
+    
+    // Get user's campaigns count
+    const campaignCount = await Campaign.countDocuments({ userId }) || 0;
+    
+    // Get recent activity (last 10 items from various collections)
+    const recentContent = await Content.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('title createdAt');
+    
+    const recentWordPress = await WordPressPost.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('title createdAt status');
+    
+    // Build recent activity list
+    const recentActivity = [
+      ...recentContent.map(c => ({
+        type: 'content',
+        title: c.title || 'Untitled Content',
+        action: 'Created content',
+        time: c.createdAt,
+        icon: '📝'
+      })),
+      ...recentWordPress.map(w => ({
+        type: 'wordpress',
+        title: w.title || 'Untitled Post',
+        action: w.status === 'published' ? 'Published to WordPress' : 'Drafted post',
+        time: w.createdAt,
+        icon: '🌐'
+      }))
+    ].sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 5);
+    
+    // Format time ago
+    const formatTimeAgo = (date) => {
+      const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+      if (seconds < 60) return 'Just now';
+      if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+      if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+      if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+      return new Date(date).toLocaleDateString();
+    };
+    
+    res.json({
+      contentCreated: contentCount,
+      wordpressPosts: wordpressCount,
+      socialPosts: socialCount,
+      seoAnalyses: seoCount,
+      clients: clientCount,
+      campaigns: campaignCount,
+      totalProjects: contentCount + wordpressCount,
+      completedTasks: wordpressCount, // Published posts
+      inProgress: contentCount, // Content being worked on
+      recentActivity: recentActivity.map(a => ({
+        ...a,
+        time: formatTimeAgo(a.time)
+      }))
+    });
+    
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    // Return empty stats on error instead of failing
+    res.json({
+      contentCreated: 0,
+      wordpressPosts: 0,
+      socialPosts: 0,
+      seoAnalyses: 0,
+      clients: 0,
+      campaigns: 0,
+      totalProjects: 0,
+      completedTasks: 0,
+      inProgress: 0,
+      recentActivity: []
+    });
+  }
+});
+
 // PROFILE ENDPOINTS
 
 // Get user profile

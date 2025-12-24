@@ -1,6 +1,6 @@
 /**
  * Global Styles - MacBook Style Premium UI 2025
- * Primary Color: #52B2BF (Teal/Cyan)
+ * Primary Color: #1E8A9A (Darker Teal)
  * Design: Clean, Minimal, Smooth, Professional
  * 
  * @author Scalezix Venture PVT LTD
@@ -16,16 +16,16 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Primary Colors */
-  --primary: #52B2BF;
-  --primary-light: #7dd0da;
-  --primary-dark: #3a9aa8;
-  --primary-50: #f0fafb;
-  --primary-100: #d9f2f5;
-  --primary-200: #b8e6ec;
-  --primary-400: #52B2BF;
-  --primary-500: #3a9aa8;
-  --primary-600: #2d7a87;
+  /* Primary Colors - DARKER TEAL for better visibility */
+  --primary: #1E8A9A;
+  --primary-light: #33a7b7;
+  --primary-dark: #186f7c;
+  --primary-50: #e6f4f6;
+  --primary-100: #cce9ed;
+  --primary-200: #99d3db;
+  --primary-400: #33a7b7;
+  --primary-500: #1E8A9A;
+  --primary-600: #186f7c;
   
   /* Background Gradient */
   --bg-gradient-start: #f8fafc;

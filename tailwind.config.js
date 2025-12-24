@@ -1,6 +1,6 @@
 /**
  * Tailwind CSS Configuration - MacBook Style Premium UI 2025
- * Primary Color: #52B2BF (Teal/Cyan)
+ * Primary Color: #1E8A9A (Darker Teal)
  * Design: Clean, Minimal, Smooth Animations
  * 
  * @author Scalezix Venture PVT LTD
@@ -15,19 +15,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary brand color
+        // Primary brand color - DARKER TEAL for better visibility
         primary: {
-          50: '#f0fafb',
-          100: '#d9f2f5',
-          200: '#b8e6ec',
-          300: '#87d4de',
-          400: '#52B2BF',
-          500: '#3a9aa8',
-          600: '#2d7a87',
-          700: '#28636e',
-          800: '#26525b',
-          900: '#24454d',
-          950: '#122c33',
+          50: '#e6f4f6',
+          100: '#cce9ed',
+          200: '#99d3db',
+          300: '#66bdc9',
+          400: '#33a7b7',
+          500: '#1E8A9A',  // Main primary - darker and more visible
+          600: '#186f7c',
+          700: '#12545d',
+          800: '#0c393f',
+          900: '#061e20',
+          950: '#030f10',
         },
         // Secondary colors
         secondary: {
@@ -99,10 +99,10 @@ export default {
         'soft-2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
         'card': '0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03)',
         'card-hover': '0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04)',
-        'button': '0 2px 4px rgba(82, 178, 191, 0.2), 0 4px 12px rgba(82, 178, 191, 0.15)',
-        'button-hover': '0 4px 8px rgba(82, 178, 191, 0.25), 0 8px 20px rgba(82, 178, 191, 0.2)',
-        'glow': '0 0 20px rgba(82, 178, 191, 0.3)',
-        'glow-lg': '0 0 40px rgba(82, 178, 191, 0.4)',
+        'button': '0 2px 4px rgba(30, 138, 154, 0.2), 0 4px 12px rgba(30, 138, 154, 0.15)',
+        'button-hover': '0 4px 8px rgba(30, 138, 154, 0.25), 0 8px 20px rgba(30, 138, 154, 0.2)',
+        'glow': '0 0 20px rgba(30, 138, 154, 0.3)',
+        'glow-lg': '0 0 40px rgba(30, 138, 154, 0.4)',
         'inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.03)',
         'sidebar': '4px 0 24px rgba(0, 0, 0, 0.04)',
         'dropdown': '0 10px 40px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)',

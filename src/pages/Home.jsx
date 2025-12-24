@@ -11,8 +11,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
     FileText, BarChart3, Search, TrendingUp, UserPlus, Share2,
-    ArrowRight, Sparkles, Zap, Target, Rocket, Clock, CheckCircle,
-    Play, MoreHorizontal, Plus, Calendar
+    ArrowRight, Sparkles, Plus, Calendar, MoreHorizontal
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
@@ -23,9 +22,6 @@ const tools = [
         path: '/tools/content-creation',
         icon: FileText,
         description: 'Create AI-powered content',
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        textColor: 'text-primary-600',
         progress: 75,
     },
     {
@@ -33,9 +29,6 @@ const tools = [
         path: '/tools/client-reporting',
         icon: BarChart3,
         description: 'Generate visual reports',
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        textColor: 'text-primary-600',
         progress: 60,
     },
     {
@@ -43,9 +36,6 @@ const tools = [
         path: '/tools/seo-automation',
         icon: Search,
         description: 'Optimize your content',
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        textColor: 'text-primary-600',
         progress: 85,
     },
     {
@@ -53,9 +43,6 @@ const tools = [
         path: '/tools/campaign-optimization',
         icon: TrendingUp,
         description: 'Track campaign metrics',
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        textColor: 'text-primary-600',
         progress: 45,
     },
     {
@@ -63,9 +50,6 @@ const tools = [
         path: '/tools/client-onboarding',
         icon: UserPlus,
         description: 'Streamline onboarding',
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        textColor: 'text-primary-600',
         progress: 90,
     },
     {
@@ -73,38 +57,7 @@ const tools = [
         path: '/tools/social-media',
         icon: Share2,
         description: 'Manage social posts',
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        textColor: 'text-primary-600',
         progress: 55,
-    },
-]
-
-// Stats data - All using primary color for consistency
-const stats = [
-    {
-        label: 'In Progress',
-        value: '8',
-        icon: Play,
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        change: '+2 this week'
-    },
-    {
-        label: 'New Tasks',
-        value: '3',
-        icon: Plus,
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        change: 'Assigned today'
-    },
-    {
-        label: 'Completed',
-        value: '20',
-        icon: CheckCircle,
-        color: 'from-primary-400 to-primary-500',
-        bgColor: 'bg-primary-50',
-        change: '+5 this week'
     },
 ]
 
@@ -150,33 +103,61 @@ export default function Home() {
                 animate="visible"
                 className="space-y-6"
             >
-                {/* Stats Cards - Like Reference Image */}
+                {/* Stats Cards */}
                 <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {stats.map((stat, index) => {
-                        const Icon = stat.icon
-                        return (
-                            <motion.div
-                                key={stat.label}
-                                whileHover={{ y: -2, transition: { duration: 0.2 } }}
-                                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-card hover:shadow-card-hover transition-all duration-300"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className={`text-4xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                                                {stat.value}
-                                            </span>
-                                            <span className="text-gray-400 text-sm">{stat.label}</span>
-                                        </div>
-                                        <p className="text-xs text-gray-400 mt-1">{stat.change}</p>
-                                    </div>
-                                    <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center`}>
-                                        <Icon className="w-6 h-6 text-primary-500" />
-                                    </div>
+                    <motion.div
+                        whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                        className="bg-white rounded-2xl p-6 border border-gray-100 shadow-card hover:shadow-card-hover transition-all duration-300"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-4xl font-bold text-primary-500">8</span>
+                                    <span className="text-gray-400 text-sm">In Progress</span>
                                 </div>
-                            </motion.div>
-                        )
-                    })}
+                                <p className="text-xs text-gray-400 mt-1">+2 this week</p>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center">
+                                <FileText className="w-6 h-6 text-primary-500" />
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                        className="bg-white rounded-2xl p-6 border border-gray-100 shadow-card hover:shadow-card-hover transition-all duration-300"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-4xl font-bold text-primary-500">3</span>
+                                    <span className="text-gray-400 text-sm">New Tasks</span>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">Assigned today</p>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center">
+                                <Plus className="w-6 h-6 text-primary-500" />
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                        className="bg-white rounded-2xl p-6 border border-gray-100 shadow-card hover:shadow-card-hover transition-all duration-300"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-4xl font-bold text-primary-500">20</span>
+                                    <span className="text-gray-400 text-sm">Completed</span>
+                                </div>
+                                <p className="text-xs text-gray-400 mt-1">+5 this week</p>
+                            </div>
+                            <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center">
+                                <Sparkles className="w-6 h-6 text-primary-500" />
+                            </div>
+                        </div>
+                    </motion.div>
                 </motion.div>
 
                 {/* Main Content Grid */}
@@ -201,8 +182,8 @@ export default function Home() {
                                                 whileHover={{ x: 4, transition: { duration: 0.2 } }}
                                                 className="flex items-center gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors group"
                                             >
-                                                <div className={`w-10 h-10 rounded-lg ${tool.bgColor} flex items-center justify-center flex-shrink-0`}>
-                                                    <Icon className={`w-5 h-5 ${tool.textColor}`} />
+                                                <div className="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0">
+                                                    <Icon className="w-5 h-5 text-primary-500" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center justify-between mb-1">
@@ -216,7 +197,7 @@ export default function Home() {
                                                             initial={{ width: 0 }}
                                                             animate={{ width: `${tool.progress}%` }}
                                                             transition={{ duration: 0.8, delay: index * 0.1 }}
-                                                            className={`h-full rounded-full bg-gradient-to-r ${tool.color}`}
+                                                            className="h-full rounded-full bg-gradient-to-r from-primary-400 to-primary-500"
                                                         />
                                                     </div>
                                                 </div>
@@ -246,8 +227,8 @@ export default function Home() {
                                                 whileTap={{ scale: 0.98 }}
                                                 className="p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-soft transition-all group text-center"
                                             >
-                                                <div className={`w-12 h-12 mx-auto rounded-xl ${tool.bgColor} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                                                    <Icon className={`w-6 h-6 ${tool.textColor}`} />
+                                                <div className="w-12 h-12 mx-auto rounded-xl bg-primary-50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                                    <Icon className="w-6 h-6 text-primary-500" />
                                                 </div>
                                                 <h3 className="font-medium text-gray-900 text-sm group-hover:text-primary-600 transition-colors">
                                                     {tool.name}

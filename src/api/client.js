@@ -31,6 +31,20 @@ axiosInstance.interceptors.request.use((config) => {
 export const api = {
   // Axios instance for direct use
   ...axiosInstance,
+
+  // ═══════════════════════════════════════════════════════════════
+  // USER DASHBOARD STATS - Real data for logged in user
+  // ═══════════════════════════════════════════════════════════════
+  getDashboardStats: async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/dashboard/stats`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load dashboard stats');
+    return result;
+  },
+
   // Leads with AI Scoring
   getLeads: async () => {
     const res = await fetch(`${API_BASE}/leads`);
