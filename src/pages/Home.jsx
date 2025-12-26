@@ -10,9 +10,11 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
     FileText, BarChart3, Search, TrendingUp, UserPlus, Share2,
-    ArrowRight, Sparkles, Plus, Calendar, MoreHorizontal, CheckCircle, Clock
+    ArrowRight, Sparkles, Plus, Calendar, MoreHorizontal, CheckCircle, Coins, RefreshCw
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { usePlan } from '../context/PlanContext'
+import { api } from '../api/client'
 
 // Tools/Projects data with different colors for variety
 const tools = [
@@ -78,45 +80,6 @@ const tools = [
     },
 ]
 
-// Stats with different colors
-const stats = [
-    {
-        label: 'In Progress',
-        value: '8',
-        icon: Clock,
-        color: 'text-primary-500',
-        bgColor: 'bg-primary-50',
-        borderColor: 'border-primary-200',
-        change: '+2 this week'
-    },
-    {
-        label: 'New Tasks',
-        value: '3',
-        icon: Plus,
-        color: 'text-secondary-500',
-        bgColor: 'bg-secondary-50',
-        borderColor: 'border-secondary-200',
-        change: 'Assigned today'
-    },
-    {
-        label: 'Completed',
-        value: '20',
-        icon: CheckCircle,
-        color: 'text-success-500',
-        bgColor: 'bg-success-50',
-        borderColor: 'border-success-200',
-        change: '+5 this week'
-    },
-]
-
-// Recent activity
-const recentActivity = [
-    { user: 'Content AI', action: 'Generated blog post', time: '2 min ago', avatar: '🤖', color: 'bg-primary-100' },
-    { user: 'SEO Tool', action: 'Optimized 3 articles', time: '15 min ago', avatar: '🔍', color: 'bg-success-100' },
-    { user: 'Social Media', action: 'Scheduled 5 posts', time: '1 hour ago', avatar: '📱', color: 'bg-secondary-100' },
-    { user: 'Reports', action: 'Generated weekly report', time: '3 hours ago', avatar: '📊', color: 'bg-accent-100' },
-]
-
 // Animation variants
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -137,11 +100,75 @@ const itemVariants = {
 
 export default function Home() {
     const [currentDate, setCurrentDate] = useState(new Date())
+    const [dashboardStats, setDashboardStats] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const { tokenBalance, refreshBalance, getPlanDisplayName } = usePlan()
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentDate(new Date()), 60000)
         return () => clearInterval(timer)
     }, [])
+
+    useEffect(() => {
+        fetchDashboardStats()
+    }, [])
+
+    const fetchDashboardStats = async () => {
+        try {
+            setLoading(true)
+            const stats = await api.getDashboardStats()
+            setDashboardStats(stats)
+        } catch (error) {
+            console.error('Failed to fetch dashboard stats:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // Dynamic stats based on real data
+    const stats = [
+        {
+            label: 'Content Created',
+            value: dashboardStats?.contentCreated?.toString() || '0',
+            icon: FileText,
+            color: 'text-primary-500',
+            bgColor: 'bg-primary-50',
+            borderColor: 'border-primary-200',
+            change: 'Blog posts'
+        },
+        {
+            label: 'WordPress Posts',
+            value: dashboardStats?.wordpressPosts?.toString() || '0',
+            icon: CheckCircle,
+            color: 'text-success-500',
+            bgColor: 'bg-success-50',
+            borderColor: 'border-success-200',
+            change: 'Published'
+        },
+        {
+            label: 'Social Posts',
+            value: dashboardStats?.socialPosts?.toString() || '0',
+            icon: Share2,
+            color: 'text-secondary-500',
+            bgColor: 'bg-secondary-50',
+            borderColor: 'border-secondary-200',
+            change: 'Scheduled'
+        },
+    ]
+
+    // Recent activity from API or default
+    const recentActivity = dashboardStats?.recentActivity?.length > 0
+        ? dashboardStats.recentActivity.map(a => ({
+            user: a.type === 'content' ? 'Content AI' : 'WordPress',
+            action: a.action,
+            time: a.time,
+            avatar: a.icon || '📝',
+            color: a.type === 'content' ? 'bg-primary-100' : 'bg-success-100'
+        }))
+        : [
+            { user: 'System', action: 'Welcome! Start creating content', time: 'Just now', avatar: '👋', color: 'bg-primary-100' },
+            { user: 'Tip', action: 'Use Content Creation to generate blogs', time: '', avatar: '💡', color: 'bg-accent-100' },
+        ]
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -151,9 +178,50 @@ export default function Home() {
                 animate="visible"
                 className="space-y-6"
             >
-                {/* Stats Cards with different colors */}
+                {/* Token Balance Banner */}
+                {tokenBalance && (
+                    <motion.div
+                        variants={itemVariants}
+                        className="bg-gradient-to-r from-primary-400 via-secondary-500 to-accent-400 rounded-2xl p-6 text-white shadow-button"
+                    >
+                        <div className="flex items-center justify-between flex-wrap gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-white/20 rounded-xl">
+                                    <Coins className="w-8 h-8" />
+                                </div>
+                                <div>
+                                    <p className="text-white/80 text-sm">Token Balance</p>
+                                    <p className="text-3xl font-bold">{tokenBalance.current.toLocaleString()}</p>
+                                    <p className="text-white/70 text-sm">{getPlanDisplayName()} Plan</p>
+                                </div>
+                            </div>
+                            <div className="text-right flex-1 min-w-[200px]">
+                                <div className="mb-2">
+                                    <span className="text-white/80 text-sm">Used: </span>
+                                    <span className="font-semibold">{tokenBalance.used.toLocaleString()} / {tokenBalance.total.toLocaleString()}</span>
+                                </div>
+                                <div className="w-full max-w-[200px] ml-auto bg-white/20 rounded-full h-3">
+                                    <div
+                                        className="bg-white h-3 rounded-full transition-all duration-500"
+                                        style={{ width: `${Math.min(tokenBalance.percentage, 100)}%` }}
+                                    />
+                                </div>
+                                <p className="text-white/70 text-xs mt-1">{tokenBalance.percentage}% used this month</p>
+                            </div>
+                            <button
+                                onClick={() => { fetchDashboardStats(); refreshBalance(); }}
+                                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                title="Refresh"
+                            >
+                                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Stats Cards */}
                 <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {stats.map((stat, index) => {
+                    {stats.map((stat) => {
                         const Icon = stat.icon
                         return (
                             <motion.div
@@ -356,16 +424,20 @@ export default function Home() {
                                         fill="none"
                                         strokeLinecap="round"
                                         initial={{ strokeDasharray: '0 352' }}
-                                        animate={{ strokeDasharray: '264 352' }}
+                                        animate={{ strokeDasharray: `${(tokenBalance?.percentage || 75) * 3.52} 352` }}
                                         transition={{ duration: 1.5, ease: 'easeOut' }}
                                     />
                                 </svg>
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-3xl font-bold">75%</span>
+                                    <span className="text-3xl font-bold">{tokenBalance?.percentage || 0}%</span>
                                 </div>
                             </div>
                             <p className="text-center text-white/80 text-sm">
-                                Great progress! Keep up the momentum.
+                                {tokenBalance?.percentage < 50
+                                    ? 'Great! Plenty of tokens remaining.'
+                                    : tokenBalance?.percentage < 80
+                                        ? 'Good progress! Keep creating.'
+                                        : 'Running low on tokens. Consider upgrading.'}
                             </p>
                         </div>
                     </motion.div>

@@ -1409,4 +1409,62 @@ export const api = {
     if (!res.ok) throw new Error(result.error || 'Failed to load blocked users');
     return result;
   },
+
+  // ═══════════════════════════════════════════════════════════════
+  // TOKEN/CREDITS USAGE API
+  // ═══════════════════════════════════════════════════════════════
+
+  // Get user's token balance and usage stats
+  getUsageBalance: async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/usage/balance`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load usage balance');
+    return result;
+  },
+
+  // Get usage history with pagination
+  getUsageHistory: async (page = 1, limit = 20, operation = '') => {
+    const token = localStorage.getItem('token');
+    const params = new URLSearchParams({ page, limit });
+    if (operation) params.append('operation', operation);
+    const res = await fetch(`${API_BASE}/usage/history?${params}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load usage history');
+    return result;
+  },
+
+  // Get token costs reference
+  getUsageCosts: async () => {
+    const res = await fetch(`${API_BASE}/usage/costs`);
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load costs');
+    return result;
+  },
+
+  // Get real client reporting data
+  getReportingStats: async (days = 30) => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/reporting/stats?days=${days}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load reporting stats');
+    return result;
+  },
+
+  // Get real campaign data
+  getCampaignStats: async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/campaigns/stats`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to load campaign stats');
+    return result;
+  },
 };

@@ -1,47 +1,83 @@
-import { useState } from 'react'
-import { Download, Calendar, Lock } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Download, Calendar, Lock, RefreshCw, TrendingUp, FileText, Share2, Search, Coins } from 'lucide-react'
 import { usePlan } from '../context/PlanContext'
 import { useToast } from '../context/ToastContext'
 import LockedFeature from '../components/LockedFeature'
 import { jsPDF } from 'jspdf'
+import { api } from '../api/client'
 
 export default function ClientReporting() {
-    const { hasAccess } = usePlan()
+    const { hasAccess, tokenBalance, usageStats, refreshBalance } = usePlan()
     const [dateRange, setDateRange] = useState('30')
     const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+    const [loading, setLoading] = useState(true)
+    const [reportData, setReportData] = useState(null)
     const canAccessReporting = hasAccess('client-reporting')
     const toast = useToast()
 
-    const metrics = [
-        { label: 'Total Visitors', value: '45,231', rawValue: 45231, change: '+12.5%', positive: true },
-        { label: 'Conversions', value: '1,234', rawValue: 1234, change: '+8.2%', positive: true },
-        { label: 'Bounce Rate', value: '42.3%', rawValue: 42.3, change: '-3.1%', positive: true },
-        { label: 'Avg. Session', value: '3m 24s', rawValue: 204, change: '+15.3%', positive: true },
-    ]
+    // Fetch real reporting data
+    useEffect(() => {
+        fetchReportingData()
+    }, [dateRange])
 
-    const trafficData = [
-        { source: 'Organic Search', visitors: 18500, percentage: 41 },
-        { source: 'Direct', visitors: 13500, percentage: 30 },
-        { source: 'Social Media', visitors: 9000, percentage: 20 },
-        { source: 'Referral', visitors: 4231, percentage: 9 },
-    ]
+    const fetchReportingData = async () => {
+        try {
+            setLoading(true)
+            const data = await api.getReportingStats(parseInt(dateRange))
+            setReportData(data)
+        } catch (error) {
+            console.error('Failed to fetch reporting data:', error)
+            toast.error('Failed to load reporting data')
+        } finally {
+            setLoading(false)
+        }
+    }
 
-    const conversionFunnel = [
-        { stage: 'Visitors', count: 45231, width: 100 },
-        { stage: 'Engaged', count: 12500, width: 75 },
-        { stage: 'Leads', count: 3200, width: 50 },
-        { stage: 'Customers', count: 1234, width: 25 },
-    ]
+    // Calculate metrics from real data
+    const metrics = reportData ? [
+        {
+            label: 'Content Created',
+            value: reportData.metrics.contentCreated.toString(),
+            rawValue: reportData.metrics.contentCreated,
+            change: '+' + reportData.metrics.contentCreated,
+            positive: true,
+            icon: FileText,
+            color: 'primary'
+        },
+        {
+            label: 'Published Posts',
+            value: reportData.metrics.publishedPosts.toString(),
+            rawValue: reportData.metrics.publishedPosts,
+            change: '+' + reportData.metrics.publishedPosts,
+            positive: true,
+            icon: TrendingUp,
+            color: 'green'
+        },
+        {
+            label: 'Social Posts',
+            value: reportData.metrics.socialPosts.toString(),
+            rawValue: reportData.metrics.socialPosts,
+            change: '+' + reportData.metrics.socialPosts,
+            positive: true,
+            icon: Share2,
+            color: 'purple'
+        },
+        {
+            label: 'Tokens Used',
+            value: reportData.metrics.tokensUsed.toLocaleString(),
+            rawValue: reportData.metrics.tokensUsed,
+            change: tokenBalance ? `${tokenBalance.percentage}% of limit` : '',
+            positive: tokenBalance?.percentage < 80,
+            icon: Coins,
+            color: 'amber'
+        },
+    ] : []
 
-    const topContent = [
-        { title: 'Ultimate Guide to SEO', views: 8234 },
-        { title: '10 Marketing Tips', views: 6521 },
-        { title: 'Social Media Strategy', views: 5432 },
-        { title: 'Email Marketing Best Practices', views: 4123 },
-    ]
+    const trafficData = reportData?.trafficSources || []
+    const conversionFunnel = reportData?.conversionFunnel || []
+    const topContent = reportData?.topContent || []
 
     const exportReport = () => {
-        // Check if user has access to reporting
         if (!canAccessReporting) {
             setShowUpgradeModal(true)
             return
@@ -54,7 +90,7 @@ export default function ClientReporting() {
             const margin = 14
 
             // Header Background
-            doc.setFillColor(59, 130, 246)
+            doc.setFillColor(82, 178, 191) // Primary color #52B2BF
             doc.rect(0, 0, pageWidth, 45, 'F')
 
             // Title
@@ -79,7 +115,7 @@ export default function ClientReporting() {
             // Key Metrics Section
             doc.setFontSize(16)
             doc.setFont('helvetica', 'bold')
-            doc.setTextColor(37, 99, 235)
+            doc.setTextColor(82, 178, 191)
             doc.text('Key Performance Metrics', margin, yPos)
             yPos += 8
 
@@ -97,10 +133,31 @@ export default function ClientReporting() {
 
             yPos += 8
 
+            // Token Usage
+            if (tokenBalance) {
+                doc.setFontSize(16)
+                doc.setFont('helvetica', 'bold')
+                doc.setTextColor(82, 178, 191)
+                doc.text('Token Usage', margin, yPos)
+                yPos += 8
+
+                doc.setFontSize(10)
+                doc.setTextColor(0, 0, 0)
+                doc.setFont('helvetica', 'normal')
+                doc.text(`Current Balance: ${tokenBalance.current.toLocaleString()} tokens`, margin, yPos)
+                yPos += 6
+                doc.text(`Used This Period: ${tokenBalance.used.toLocaleString()} tokens`, margin, yPos)
+                yPos += 6
+                doc.text(`Monthly Limit: ${tokenBalance.total.toLocaleString()} tokens`, margin, yPos)
+                yPos += 6
+                doc.text(`Usage: ${tokenBalance.percentage}%`, margin, yPos)
+                yPos += 12
+            }
+
             // Traffic Sources
             doc.setFontSize(16)
             doc.setFont('helvetica', 'bold')
-            doc.setTextColor(37, 99, 235)
+            doc.setTextColor(82, 178, 191)
             doc.text('Traffic Sources', margin, yPos)
             yPos += 8
 
@@ -112,7 +169,7 @@ export default function ClientReporting() {
                 doc.setFont('helvetica', 'bold')
                 doc.text(`${item.source}:`, margin, yPos)
                 doc.setFont('helvetica', 'normal')
-                doc.text(`${item.visitors.toLocaleString()} visitors (${item.percentage}%)`, margin + 50, yPos)
+                doc.text(`${item.count.toLocaleString()} visitors (${item.percentage}%)`, margin + 50, yPos)
                 yPos += 6
             })
 
@@ -121,7 +178,7 @@ export default function ClientReporting() {
             // Conversion Funnel
             doc.setFontSize(16)
             doc.setFont('helvetica', 'bold')
-            doc.setTextColor(37, 99, 235)
+            doc.setTextColor(82, 178, 191)
             doc.text('Conversion Funnel', margin, yPos)
             yPos += 8
 
@@ -129,12 +186,11 @@ export default function ClientReporting() {
             doc.setTextColor(0, 0, 0)
             doc.setFont('helvetica', 'normal')
 
-            conversionFunnel.forEach((stage, i) => {
-                const rate = i === 0 ? '100%' : `${((stage.count / conversionFunnel[0].count) * 100).toFixed(1)}%`
+            conversionFunnel.forEach((stage) => {
                 doc.setFont('helvetica', 'bold')
                 doc.text(`${stage.stage}:`, margin, yPos)
                 doc.setFont('helvetica', 'normal')
-                doc.text(`${stage.count.toLocaleString()} (${rate})`, margin + 50, yPos)
+                doc.text(`${stage.count.toLocaleString()} (${stage.percentage}%)`, margin + 50, yPos)
                 yPos += 6
             })
 
@@ -149,7 +205,7 @@ export default function ClientReporting() {
             // Top Content
             doc.setFontSize(16)
             doc.setFont('helvetica', 'bold')
-            doc.setTextColor(37, 99, 235)
+            doc.setTextColor(82, 178, 191)
             doc.text('Top Performing Content', margin, yPos)
             yPos += 8
 
@@ -180,24 +236,69 @@ export default function ClientReporting() {
         }
     }
 
+    if (loading) {
+        return (
+            <div className="max-w-7xl mx-auto px-4 py-8">
+                <div className="flex items-center justify-center h-64">
+                    <RefreshCw className="animate-spin text-primary-500" size={32} />
+                    <span className="ml-3 text-gray-600">Loading reporting data...</span>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="flex justify-between items-start mb-8">
                 <div>
                     <h1 className="text-3xl font-bold mb-2">Automated Client Reporting</h1>
-                    <p className="text-gray-600">Visual analytics and performance metrics</p>
+                    <p className="text-gray-600">Real-time analytics and performance metrics</p>
                 </div>
-                <button
-                    onClick={exportReport}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${canAccessReporting
-                        ? 'bg-primary-400 text-white hover:bg-primary-500 hover:shadow-lg'
-                        : 'bg-gray-300 text-gray-600 cursor-not-allowed hover:bg-gray-400'
-                        }`}
-                >
-                    {canAccessReporting ? <Download size={16} /> : <Lock size={16} />}
-                    Export PDF
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={() => { fetchReportingData(); refreshBalance(); }}
+                        className="flex items-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                        <RefreshCw size={16} />
+                        Refresh
+                    </button>
+                    <button
+                        onClick={exportReport}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${canAccessReporting
+                            ? 'bg-primary-400 text-white hover:bg-primary-500 hover:shadow-lg'
+                            : 'bg-gray-300 text-gray-600 cursor-not-allowed hover:bg-gray-400'
+                            }`}
+                    >
+                        {canAccessReporting ? <Download size={16} /> : <Lock size={16} />}
+                        Export PDF
+                    </button>
+                </div>
             </div>
+
+            {/* Token Balance Card */}
+            {tokenBalance && (
+                <div className="bg-gradient-to-r from-primary-400 to-primary-500 rounded-xl p-6 mb-8 text-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-lg font-semibold mb-1">Token Balance</h3>
+                            <p className="text-3xl font-bold">{tokenBalance.current.toLocaleString()} <span className="text-lg font-normal opacity-80">tokens remaining</span></p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-sm opacity-80">Used this period</p>
+                            <p className="text-xl font-semibold">{tokenBalance.used.toLocaleString()} / {tokenBalance.total.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        <div className="w-full bg-white/20 rounded-full h-3">
+                            <div
+                                className="bg-white h-3 rounded-full transition-all duration-500"
+                                style={{ width: `${Math.min(tokenBalance.percentage, 100)}%` }}
+                            />
+                        </div>
+                        <p className="text-sm mt-2 opacity-80">{tokenBalance.percentage}% of monthly limit used</p>
+                    </div>
+                </div>
+            )}
 
             {/* Upgrade Modal for PDF Export */}
             {showUpgradeModal && (
@@ -257,30 +358,45 @@ export default function ClientReporting() {
             </div>
 
             <div className="grid md:grid-cols-4 gap-4 mb-8">
-                {metrics.map(metric => (
-                    <div key={metric.label} className="bg-white p-6 rounded-lg shadow-sm border">
-                        <p className="text-sm text-gray-600 mb-1">{metric.label}</p>
-                        <p className="text-3xl font-bold mb-2">{metric.value}</p>
-                        <p className={`text-sm ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
-                            {metric.change}
-                        </p>
-                    </div>
-                ))}
+                {metrics.map(metric => {
+                    const Icon = metric.icon
+                    return (
+                        <div key={metric.label} className="bg-white p-6 rounded-lg shadow-sm border">
+                            <div className="flex items-center gap-3 mb-2">
+                                <div className={`p-2 rounded bg-${metric.color}-100`}>
+                                    <Icon className={`text-${metric.color}-500`} size={20} />
+                                </div>
+                                <p className="text-sm text-gray-600">{metric.label}</p>
+                            </div>
+                            <p className="text-3xl font-bold mb-2">{metric.value}</p>
+                            <p className={`text-sm ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
+                                {metric.change}
+                            </p>
+                        </div>
+                    )
+                })}
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6">
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
-                    <h2 className="text-xl font-semibold mb-4">Traffic Over Time</h2>
+                    <h2 className="text-xl font-semibold mb-4">Daily Activity</h2>
                     <div className="h-64 flex items-end justify-between gap-2">
-                        {[32, 45, 38, 52, 48, 61, 55, 68, 72, 65, 78, 82, 75, 88].map((height, i) => (
-                            <div key={i} className="flex-1 bg-primary-400 rounded-t hover:bg-primary-500 transition-colors"
-                                style={{ height: `${height}%` }}
-                                title={`Day ${i + 1}: ${Math.floor(height * 100)} visitors`} />
-                        ))}
+                        {(reportData?.dailyMetrics || []).slice(-14).map((day, i) => {
+                            const maxTokens = Math.max(...(reportData?.dailyMetrics || []).map(d => d.tokens)) || 1
+                            const height = (day.tokens / maxTokens) * 100
+                            return (
+                                <div
+                                    key={i}
+                                    className="flex-1 bg-primary-400 rounded-t hover:bg-primary-500 transition-colors cursor-pointer"
+                                    style={{ height: `${Math.max(height, 5)}%` }}
+                                    title={`${day.date}: ${day.tokens} tokens, ${day.content} content`}
+                                />
+                            )
+                        })}
                     </div>
                     <div className="flex justify-between mt-2 text-xs text-gray-500">
-                        <span>Week 1</span>
-                        <span>Week 2</span>
+                        <span>14 days ago</span>
+                        <span>Today</span>
                     </div>
                 </div>
 
@@ -291,7 +407,7 @@ export default function ClientReporting() {
                             <div key={item.source}>
                                 <div className="flex justify-between mb-1">
                                     <span className="text-sm font-medium">{item.source}</span>
-                                    <span className="text-sm text-gray-600">{item.visitors.toLocaleString()}</span>
+                                    <span className="text-sm text-gray-600">{item.count.toLocaleString()}</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
@@ -313,10 +429,10 @@ export default function ClientReporting() {
                                     <div key={stage.stage}>
                                         <div className="flex justify-between mb-1">
                                             <span className="text-sm font-medium">{stage.stage}</span>
-                                            <span className="text-sm text-gray-600">{stage.count.toLocaleString()}</span>
+                                            <span className="text-sm text-gray-600">{stage.count.toLocaleString()} ({stage.percentage}%)</span>
                                         </div>
                                         <div className="bg-gradient-to-r from-primary-400 to-primary-500 rounded"
-                                            style={{ width: `${stage.width}%`, height: '32px' }} />
+                                            style={{ width: `${stage.percentage}%`, height: '32px' }} />
                                     </div>
                                 ))}
                             </div>
@@ -325,12 +441,14 @@ export default function ClientReporting() {
                         <div className="bg-white p-6 rounded-lg shadow-sm border">
                             <h2 className="text-xl font-semibold mb-4">Top Performing Content</h2>
                             <div className="space-y-3">
-                                {topContent.map((content, i) => (
+                                {topContent.length > 0 ? topContent.map((content, i) => (
                                     <div key={i} className="flex justify-between items-center p-3 border rounded">
-                                        <span className="text-sm font-medium">{content.title}</span>
+                                        <span className="text-sm font-medium truncate max-w-[200px]">{content.title}</span>
                                         <span className="text-sm text-gray-600">{content.views.toLocaleString()} views</span>
                                     </div>
-                                ))}
+                                )) : (
+                                    <p className="text-gray-500 text-center py-4">No content created yet. Start creating to see performance!</p>
+                                )}
                             </div>
                         </div>
                     </>
