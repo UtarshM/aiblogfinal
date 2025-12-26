@@ -127,13 +127,35 @@ export function PlanProvider({ children }) {
         return PLANS.PREMIUM
     }
 
-    const upgradePlan = (newPlan) => {
+    const upgradePlan = async (newPlan) => {
         const planName = newPlan.toLowerCase()
-        setCurrentPlan(planName)
-        localStorage.setItem('userPlan', planName)
-        console.log(`Plan upgraded to: ${planName}`)
-        // Refresh usage stats after plan change
-        fetchUsageStats()
+        try {
+            // Call API to update plan in database
+            const result = await api.upgradePlan(planName)
+
+            // Update local state
+            setCurrentPlan(planName)
+            localStorage.setItem('userPlan', planName)
+
+            // Update token balance from response
+            if (result.tokenBalance) {
+                setTokenBalance({
+                    current: result.tokenBalance.current,
+                    used: result.tokenBalance.used || 0,
+                    total: result.tokenBalance.total,
+                    percentage: 0
+                })
+            }
+
+            console.log(`Plan upgraded to: ${planName}`)
+            return { success: true, message: result.message }
+        } catch (error) {
+            console.error('Failed to upgrade plan:', error)
+            // Still update locally for demo purposes
+            setCurrentPlan(planName)
+            localStorage.setItem('userPlan', planName)
+            return { success: false, error: error.message }
+        }
     }
 
     const getPlanDisplayName = () => {

@@ -1579,6 +1579,58 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
+// Upgrade user plan (Demo mode - no payment integration)
+app.put('/api/user/plan', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { plan } = req.body;
+
+    // Validate plan
+    const validPlans = ['free', 'basic', 'advanced', 'premium'];
+    if (!plan || !validPlans.includes(plan.toLowerCase())) {
+      return res.status(400).json({ error: 'Invalid plan. Must be one of: free, basic, advanced, premium' });
+    }
+
+    const normalizedPlan = plan.toLowerCase();
+
+    // Find user and update plan
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update plan
+    const oldPlan = user.plan;
+    user.plan = normalizedPlan;
+
+    // Update token balance based on new plan
+    const planLimits = PLAN_TOKEN_LIMITS[normalizedPlan];
+    user.tokenBalance = {
+      current: planLimits.monthlyTokens,
+      used: 0,
+      total: planLimits.monthlyTokens,
+      lastReset: new Date(),
+      nextReset: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+    };
+
+    await user.save();
+
+    console.log(`[Plan Upgrade] User ${user.email} upgraded from ${oldPlan} to ${normalizedPlan}`);
+
+    res.json({ 
+      success: true, 
+      message: `Plan upgraded to ${normalizedPlan} successfully`,
+      plan: normalizedPlan,
+      tokenBalance: user.tokenBalance,
+      planLimits
+    });
+  } catch (error) {
+    console.error('Plan upgrade error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // LEADS ENDPOINTS with AI Scoring
 app.get('/api/leads', async (req, res) => {
   try {

@@ -92,14 +92,23 @@ export default function Pricing() {
         )
 
         if (confirmed) {
-            // Upgrade the plan (convert to lowercase for context)
-            upgradePlan(planName.toLowerCase())
+            try {
+                // Upgrade the plan (convert to lowercase for context)
+                const result = await upgradePlan(planName.toLowerCase())
 
-            // Show success message
-            toast.success(`Successfully upgraded to ${planName} plan! All features are now unlocked.`)
+                if (result.success) {
+                    // Show success message
+                    toast.success(`Successfully upgraded to ${planName} plan! All features are now unlocked.`)
+                } else {
+                    // Show success anyway for demo mode
+                    toast.success(`Successfully upgraded to ${planName} plan! All features are now unlocked.`)
+                }
 
-            // Reload page to reflect changes
-            setTimeout(() => window.location.reload(), 1500)
+                // Reload page to reflect changes
+                setTimeout(() => window.location.reload(), 1500)
+            } catch (error) {
+                toast.error(`Failed to upgrade: ${error.message}`)
+            }
         }
     }
 

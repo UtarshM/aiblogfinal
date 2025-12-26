@@ -33,6 +33,24 @@ export const api = {
   ...axiosInstance,
 
   // ═══════════════════════════════════════════════════════════════
+  // USER PLAN UPGRADE
+  // ═══════════════════════════════════════════════════════════════
+  upgradePlan: async (plan) => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/user/plan`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify({ plan })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to upgrade plan');
+    return result;
+  },
+
+  // ═══════════════════════════════════════════════════════════════
   // USER DASHBOARD STATS - Real data for logged in user
   // ═══════════════════════════════════════════════════════════════
   getDashboardStats: async () => {
