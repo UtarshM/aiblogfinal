@@ -20,7 +20,7 @@ import jwt from 'jsonwebtoken';
 import connectDB, { Lead, Content, SocialPost, Client, Campaign, ChatMessage, WhiteLabelConfig, SEOAnalysis } from './database.js';
 import * as aiServices from './aiServices.js';
 import { analyzeWebsite } from './seoAnalyzer.js';
-import { User, OTP } from './authModels.js';
+import { User, OTP, UsageLog, PLAN_TOKEN_LIMITS, TOKEN_COSTS, checkTokenBalance, deductTokens, getUserUsageStats } from './authModels.js';
 import { generateOTP, sendOTPEmail, sendWelcomeEmail, sendReminderEmail } from './emailService.js';
 import affiliateRoutes from './affiliateRoutes.js';
 import superAdminRoutes from './superAdminRoutes.js';
@@ -1081,8 +1081,6 @@ app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
 // ═══════════════════════════════════════════════════════════════
 // TOKEN/CREDITS USAGE ENDPOINTS
 // ═══════════════════════════════════════════════════════════════
-
-import { UsageLog, PLAN_TOKEN_LIMITS, TOKEN_COSTS, checkTokenBalance, deductTokens, getUserUsageStats } from './authModels.js';
 
 // Get user's token balance and usage stats
 app.get('/api/usage/balance', authenticateToken, async (req, res) => {
