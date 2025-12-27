@@ -31,6 +31,10 @@ import superAdminRoutes from './superAdminRoutes.js';
 // Human Content Engine - Advanced AI Detection Bypass
 import { humanizeContent, analyzeAIRisk, FORBIDDEN_AI_WORDS } from './humanContentEngine.js';
 import { generateMegaPrompt, PERSONAS } from './megaPromptEngine.js';
+// StealthGPT Integration - Professional AI Humanizer
+import { humanizeWithStealth, generateStealthArticle, humanizeLongContent, checkStealthBalance } from './stealthService.js';
+// Undetectable.ai Integration - Premium AI Humanizer
+import { humanizeWithUndetectable, humanizeLongContentUndetectable, checkUndetectableCredits } from './undetectableService.js';
 
 // Created by: Scalezix Venture PVT LTD
 
@@ -2308,11 +2312,11 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // ADVANCED HUMANIZATION - Using Human Content Engine
+    // ADVANCED HUMANIZATION - Multi-Layer Approach
     // ═══════════════════════════════════════════════════════════════
     console.log('[Content] Applying advanced humanization...');
     
-    // Apply the comprehensive humanization engine
+    // Layer 1: Apply the comprehensive humanization engine (vocabulary, contractions, etc.)
     cleanContent = humanizeContent(cleanContent, {
       removeForbidden: true,
       useContractions: true,
@@ -2328,18 +2332,77 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
       questionFrequency: 0.06
     });
     
-    // Analyze AI detection risk
-    const aiRiskAnalysis = analyzeAIRisk(cleanContent);
-    console.log(`[Content] AI Risk Score: ${aiRiskAnalysis.score}/100 (${aiRiskAnalysis.riskLevel})`);
+    // Analyze AI detection risk after first pass
+    let aiRiskAnalysis = analyzeAIRisk(cleanContent);
+    console.log(`[Content] After Layer 1 - AI Risk Score: ${aiRiskAnalysis.score}/100 (${aiRiskAnalysis.riskLevel})`);
     
-    // If risk is still high, apply additional humanization
-    if (aiRiskAnalysis.score < 70) {
-      console.log('[Content] Risk still high, applying additional humanization...');
-      cleanContent = humanizeContent(cleanContent, {
-        voiceFrequency: 0.18,
-        hedgeFrequency: 0.12,
-        questionFrequency: 0.10
+    // Layer 2: Professional Humanization (StealthGPT or Undetectable.ai)
+    let stealthResult = null;
+    let undetectableResult = null;
+    const humanizer = config.humanizer || 'auto'; // 'auto', 'stealthgpt', 'undetectable', 'local'
+    
+    // Determine which humanizer to use
+    const useStealthGPT = (humanizer === 'stealthgpt' || humanizer === 'auto') && 
+                          process.env.STEALTHGPT_API_KEY && 
+                          config.useStealthGPT !== false;
+    const useUndetectable = (humanizer === 'undetectable' || (humanizer === 'auto' && !useStealthGPT)) && 
+                            process.env.UNDETECTABLE_API_KEY && 
+                            config.useUndetectable !== false;
+    
+    if (useStealthGPT) {
+      console.log('[Content] Layer 2: Applying StealthGPT humanization...');
+      
+      stealthResult = await humanizeLongContent(cleanContent, {
+        tone: config.tone === 'academic' ? 'PhD' : 'Standard',
+        mode: 'High',
+        business: true
       });
+      
+      if (stealthResult.success) {
+        cleanContent = stealthResult.content;
+        console.log(`[Content] StealthGPT success! Words used: ${stealthResult.totalWordsUsed}`);
+        
+        // Re-analyze after StealthGPT
+        aiRiskAnalysis = analyzeAIRisk(cleanContent);
+        console.log(`[Content] After StealthGPT - AI Risk Score: ${aiRiskAnalysis.score}/100 (${aiRiskAnalysis.riskLevel})`);
+      } else {
+        console.log('[Content] StealthGPT failed:', stealthResult.error);
+      }
+    } else if (useUndetectable) {
+      console.log('[Content] Layer 2: Applying Undetectable.ai humanization...');
+      
+      undetectableResult = await humanizeLongContentUndetectable(cleanContent, {
+        readability: config.tone === 'academic' ? 'Doctorate' : 'Journalist',
+        purpose: 'Article',
+        strength: 'More Human',
+        model: 'v11sr'
+      });
+      
+      if (undetectableResult.success) {
+        cleanContent = undetectableResult.content;
+        console.log(`[Content] Undetectable.ai success! Chunks processed: ${undetectableResult.chunksProcessed}`);
+        
+        // Re-analyze after Undetectable.ai
+        aiRiskAnalysis = analyzeAIRisk(cleanContent);
+        console.log(`[Content] After Undetectable.ai - AI Risk Score: ${aiRiskAnalysis.score}/100 (${aiRiskAnalysis.riskLevel})`);
+      } else {
+        console.log('[Content] Undetectable.ai failed:', undetectableResult.error);
+      }
+    } else {
+      console.log('[Content] No professional humanizer configured, using local engine only');
+    }
+    
+    // Layer 3: If risk is still high, apply additional local humanization
+    if (aiRiskAnalysis.score < 70) {
+      console.log('[Content] Layer 3: Risk still high, applying additional humanization...');
+      cleanContent = humanizeContent(cleanContent, {
+        voiceFrequency: 0.20,
+        hedgeFrequency: 0.15,
+        questionFrequency: 0.12
+      });
+      
+      aiRiskAnalysis = analyzeAIRisk(cleanContent);
+      console.log(`[Content] After Layer 3 - AI Risk Score: ${aiRiskAnalysis.score}/100`);
     }
 
     // Fetch topic-relevant images
@@ -2368,6 +2431,11 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
     
     console.log(`[Content] Tokens deducted: ${tokenResult.tokensUsed}, remaining: ${tokenResult.remaining}`);
 
+    // Determine which humanizer was used
+    const humanizerUsed = stealthResult?.success ? 'StealthGPT' : 
+                          undetectableResult?.success ? 'Undetectable.ai' : 
+                          'Local Engine';
+
     res.json({
       content: contentWithImages,
       title: title,
@@ -2380,7 +2448,12 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
       tokensUsed: tokenResult.tokensUsed,
       tokensRemaining: tokenResult.remaining,
       humanizationScore: aiRiskAnalysis.score,
-      humanizationLevel: aiRiskAnalysis.riskLevel
+      humanizationLevel: aiRiskAnalysis.riskLevel,
+      humanizerUsed: humanizerUsed,
+      stealthGPTUsed: stealthResult?.success || false,
+      stealthWordsUsed: stealthResult?.totalWordsUsed || 0,
+      undetectableUsed: undetectableResult?.success || false,
+      undetectableChunks: undetectableResult?.chunksProcessed || 0
     });
 
   } catch (error) {
@@ -2389,7 +2462,7 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
   }
 });
 
-// HUMANIZATION ENDPOINT - Advanced AI Detection Bypass
+// HUMANIZATION ENDPOINT - Advanced AI Detection Bypass with StealthGPT
 app.post('/api/content/humanize', async (req, res) => {
   try {
     const { content, options = {} } = req.body;
@@ -2404,8 +2477,56 @@ app.post('/api/content/humanize', async (req, res) => {
     const originalRisk = analyzeAIRisk(content);
     console.log(`[Humanize] Original AI Risk: ${originalRisk.score}/100 (${originalRisk.riskLevel})`);
     
-    // Apply the comprehensive humanization engine
-    let humanizedContent = humanizeContent(content, {
+    let humanizedContent = content;
+    let stealthResult = null;
+    let undetectableResult = null;
+    const humanizer = options.humanizer || 'auto'; // 'auto', 'stealthgpt', 'undetectable', 'local'
+    
+    // Determine which humanizer to use
+    const useStealthGPT = (humanizer === 'stealthgpt' || humanizer === 'auto') && 
+                          process.env.STEALTHGPT_API_KEY && 
+                          options.useStealthGPT !== false;
+    const useUndetectable = (humanizer === 'undetectable' || (humanizer === 'auto' && !useStealthGPT)) && 
+                            process.env.UNDETECTABLE_API_KEY && 
+                            options.useUndetectable !== false;
+    
+    // Layer 1: Try professional humanizer first
+    if (useStealthGPT) {
+      console.log('[Humanize] Using StealthGPT for professional humanization...');
+      
+      stealthResult = await humanizeWithStealth(content, {
+        tone: options.tone || 'Standard',
+        mode: 'High',
+        business: true
+      });
+      
+      if (stealthResult.success) {
+        humanizedContent = stealthResult.content;
+        console.log(`[Humanize] StealthGPT success! Detection score: ${stealthResult.detectionScore}`);
+      } else {
+        console.log('[Humanize] StealthGPT failed:', stealthResult.error);
+      }
+    } else if (useUndetectable) {
+      console.log('[Humanize] Using Undetectable.ai for professional humanization...');
+      
+      undetectableResult = await humanizeWithUndetectable(content, {
+        readability: options.readability || 'Journalist',
+        purpose: options.purpose || 'Article',
+        strength: 'More Human',
+        model: 'v11sr'
+      });
+      
+      if (undetectableResult.success) {
+        humanizedContent = undetectableResult.content;
+        console.log('[Humanize] Undetectable.ai success!');
+      } else {
+        console.log('[Humanize] Undetectable.ai failed:', undetectableResult.error);
+      }
+    }
+    
+    // Layer 2: Apply local humanization engine
+    console.log('[Humanize] Applying local humanization engine...');
+    humanizedContent = humanizeContent(humanizedContent, {
       removeForbidden: true,
       useContractions: true,
       fixThreeRule: true,
@@ -2421,23 +2542,28 @@ app.post('/api/content/humanize', async (req, res) => {
     });
     
     // Analyze the humanized content
-    const humanizedRisk = analyzeAIRisk(humanizedContent);
-    console.log(`[Humanize] Humanized AI Risk: ${humanizedRisk.score}/100 (${humanizedRisk.riskLevel})`);
+    let finalRisk = analyzeAIRisk(humanizedContent);
+    console.log(`[Humanize] After humanization - AI Risk: ${finalRisk.score}/100 (${finalRisk.riskLevel})`);
     
-    // If still high risk, apply additional humanization
-    if (humanizedRisk.score < 70) {
+    // Layer 3: If still high risk, apply additional humanization
+    if (finalRisk.score < 70) {
       console.log('[Humanize] Applying additional humanization pass...');
       humanizedContent = humanizeContent(humanizedContent, {
-        voiceFrequency: 0.20,
-        hedgeFrequency: 0.15,
-        questionFrequency: 0.12
+        voiceFrequency: 0.22,
+        hedgeFrequency: 0.18,
+        questionFrequency: 0.15
       });
+      finalRisk = analyzeAIRisk(humanizedContent);
     }
     
-    const finalRisk = analyzeAIRisk(humanizedContent);
+    // Determine which humanizer was used
+    const humanizerUsed = stealthResult?.success ? 'StealthGPT' : 
+                          undetectableResult?.success ? 'Undetectable.ai' : 
+                          'Local Engine';
     
     res.json({ 
       content: humanizedContent.trim(),
+      humanizerUsed,
       analysis: {
         originalScore: originalRisk.score,
         originalLevel: originalRisk.riskLevel,
@@ -2446,11 +2572,216 @@ app.post('/api/content/humanize', async (req, res) => {
         improvement: finalRisk.score - originalRisk.score,
         issues: finalRisk.issues,
         recommendations: finalRisk.recommendations
+      },
+      stealthGPT: {
+        used: stealthResult?.success || false,
+        detectionScore: stealthResult?.detectionScore || null,
+        wordsUsed: stealthResult?.wordsUsed || 0
+      },
+      undetectable: {
+        used: undetectableResult?.success || false,
+        documentId: undetectableResult?.documentId || null
       }
     });
   } catch (error) {
     console.error('Humanize error:', error);
     res.status(500).json({ error: error.message || 'An unexpected error occurred' });
+  }
+});
+
+// STEALTH HUMANIZE ENDPOINT - Direct StealthGPT humanization
+app.post('/api/content/stealth-humanize', authenticateToken, async (req, res) => {
+  try {
+    const { content, options = {} } = req.body;
+    
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    
+    if (!process.env.STEALTHGPT_API_KEY) {
+      return res.status(400).json({ 
+        error: 'StealthGPT not configured',
+        message: 'Please add STEALTHGPT_API_KEY to your environment variables'
+      });
+    }
+    
+    console.log('[StealthHumanize] Processing content, length:', content.length);
+    
+    const result = await humanizeLongContent(content, {
+      tone: options.tone || 'Standard',
+      mode: options.mode || 'High',
+      business: options.business !== false
+    });
+    
+    if (result.success) {
+      const finalRisk = analyzeAIRisk(result.content);
+      
+      res.json({
+        success: true,
+        content: result.content,
+        totalWordsUsed: result.totalWordsUsed,
+        creditsRemaining: result.creditsRemaining,
+        humanScore: finalRisk.score,
+        humanLevel: finalRisk.riskLevel
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Stealth humanize error:', error);
+    res.status(500).json({ error: error.message || 'An unexpected error occurred' });
+  }
+});
+
+// STEALTH BALANCE ENDPOINT - Check StealthGPT credits
+app.get('/api/content/stealth-balance', authenticateToken, async (req, res) => {
+  try {
+    if (!process.env.STEALTHGPT_API_KEY) {
+      return res.json({ 
+        configured: false,
+        message: 'StealthGPT not configured'
+      });
+    }
+    
+    const balance = await checkStealthBalance();
+    
+    res.json({
+      configured: true,
+      ...balance
+    });
+  } catch (error) {
+    console.error('Stealth balance error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// UNDETECTABLE.AI INTEGRATION - Premium AI Humanizer
+// ═══════════════════════════════════════════════════════════════
+
+// UNDETECTABLE HUMANIZE ENDPOINT - Direct Undetectable.ai humanization
+app.post('/api/content/undetectable-humanize', authenticateToken, async (req, res) => {
+  try {
+    const { content, options = {} } = req.body;
+    
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    
+    if (!process.env.UNDETECTABLE_API_KEY) {
+      return res.status(400).json({ 
+        error: 'Undetectable.ai not configured',
+        message: 'Please add UNDETECTABLE_API_KEY to your environment variables. Get your API key at https://undetectable.ai/pricing'
+      });
+    }
+    
+    console.log('[UndetectableHumanize] Processing content, length:', content.length);
+    
+    // For long content, use chunked processing
+    const result = content.length > 3000 
+      ? await humanizeLongContentUndetectable(content, {
+          readability: options.readability || 'Journalist',
+          purpose: options.purpose || 'Article',
+          strength: options.strength || 'More Human',
+          model: options.model || 'v11sr'
+        })
+      : await humanizeWithUndetectable(content, {
+          readability: options.readability || 'Journalist',
+          purpose: options.purpose || 'Article',
+          strength: options.strength || 'More Human',
+          model: options.model || 'v11sr'
+        });
+    
+    if (result.success) {
+      const finalRisk = analyzeAIRisk(result.content);
+      
+      res.json({
+        success: true,
+        content: result.content,
+        documentId: result.documentId,
+        humanScore: finalRisk.score,
+        humanLevel: finalRisk.riskLevel,
+        chunksProcessed: result.chunksProcessed || 1
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Undetectable humanize error:', error);
+    res.status(500).json({ error: error.message || 'An unexpected error occurred' });
+  }
+});
+
+// UNDETECTABLE BALANCE ENDPOINT - Check Undetectable.ai credits
+app.get('/api/content/undetectable-balance', authenticateToken, async (req, res) => {
+  try {
+    if (!process.env.UNDETECTABLE_API_KEY) {
+      return res.json({ 
+        configured: false,
+        message: 'Undetectable.ai not configured. Get your API key at https://undetectable.ai/pricing'
+      });
+    }
+    
+    const balance = await checkUndetectableCredits();
+    
+    res.json({
+      configured: true,
+      ...balance
+    });
+  } catch (error) {
+    console.error('Undetectable balance error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// HUMANIZER STATUS ENDPOINT - Check which humanizers are configured
+app.get('/api/content/humanizer-status', authenticateToken, async (req, res) => {
+  try {
+    const status = {
+      stealthGPT: {
+        configured: !!process.env.STEALTHGPT_API_KEY,
+        name: 'StealthGPT',
+        description: 'Professional AI humanizer with high bypass rate',
+        pricing: '$0.0002/word',
+        getApiKey: 'https://stealthgpt.ai/stealthapi'
+      },
+      undetectable: {
+        configured: !!process.env.UNDETECTABLE_API_KEY,
+        name: 'Undetectable.ai',
+        description: 'Premium AI humanizer rated #1 by Forbes',
+        pricing: 'From $9.99/month',
+        getApiKey: 'https://undetectable.ai/pricing'
+      },
+      localEngine: {
+        configured: true,
+        name: 'Local Humanization Engine',
+        description: 'Built-in humanization (vocabulary, contractions, burstiness)',
+        pricing: 'Free (included)',
+        note: 'Less effective against advanced detectors like Originality.ai'
+      }
+    };
+    
+    // Check balances if configured
+    if (status.stealthGPT.configured) {
+      const stealthBalance = await checkStealthBalance();
+      status.stealthGPT.balance = stealthBalance;
+    }
+    
+    if (status.undetectable.configured) {
+      const undetectableBalance = await checkUndetectableCredits();
+      status.undetectable.balance = undetectableBalance;
+    }
+    
+    res.json(status);
+  } catch (error) {
+    console.error('Humanizer status error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 

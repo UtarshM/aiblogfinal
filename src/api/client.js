@@ -136,6 +136,47 @@ export const api = {
     }
     return data;
   },
+  // Undetectable.ai humanization
+  undetectableHumanize: async (content, options = {}) => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/content/undetectable-humanize`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ content, options }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to humanize content');
+    }
+    return data;
+  },
+  // Check Undetectable.ai credits
+  getUndetectableBalance: async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/content/undetectable-balance`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return res.json();
+  },
+  // Check StealthGPT credits
+  getStealthBalance: async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/content/stealth-balance`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return res.json();
+  },
+  // Get humanizer status (which services are configured)
+  getHumanizerStatus: async () => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/content/humanizer-status`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return res.json();
+  },
   analyzeAIRisk: async (content) => {
     const token = localStorage.getItem('token');
     const res = await fetch(`${API_BASE}/content/analyze-risk`, {
