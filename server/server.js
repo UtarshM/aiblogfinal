@@ -28,6 +28,9 @@ import { User, OTP, UsageLog, PLAN_TOKEN_LIMITS, TOKEN_COSTS, checkTokenBalance,
 import { generateOTP, sendOTPEmail, sendWelcomeEmail, sendReminderEmail } from './emailService.js';
 import affiliateRoutes from './affiliateRoutes.js';
 import superAdminRoutes from './superAdminRoutes.js';
+// Human Content Engine - Advanced AI Detection Bypass
+import { humanizeContent, analyzeAIRisk, FORBIDDEN_AI_WORDS } from './humanContentEngine.js';
+import { generateMegaPrompt, PERSONAS } from './megaPromptEngine.js';
 
 // Created by: Scalezix Venture PVT LTD
 
@@ -2069,297 +2072,29 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
     const references = config.references || '';
     const eeat = config.eeat || '';
     const targetAudience = config.targetAudience || 'professional peers';
+    const persona = config.persona || 'journalist';
 
     // Parse headings
     const headings = customHeadings ? customHeadings.split(/[|\n]/).map(h => h.trim()).filter(h => h) : [];
-    const headingsList = headings.length > 0 
-      ? headings.map((h, i) => `${i + 1}. ${h}`).join('\n')
-      : 'Create 8-12 detailed section headings appropriate for this topic. Make them specific and actionable.';
 
-    // THE ULTIMATE HUMAN CONTENT PROMPT - PROFESSIONAL JOURNALIST STYLE
-    const prompt = `<system_instructions>
-Act as a high-level technical journalist and field researcher with 20 years of experience. Your voice is defined by skepticism, blunt honesty, and a profound distaste for corporate jargon and "clean" AI-style writing. You do not explain basic concepts; you write for professional peers who value nuance and evidence-based field experience. You never identify as an AI and you do not use the supportive, helpful, or balanced tone common in synthetic outputs.
-
-<mandatory_stylistic_constraints>
-1. ACTIVE VOICE ONLY: Never say "The meeting was canceled." Say "Management canceled the meeting".
-2. DIRECT ADDRESS: Speak directly to the reader using "you" and "your".
-3. NO FLUFF: Avoid marketing language like "cutting-edge" or "unparalleled results." Use plain and simple English.
-4. CONTRACTIONS: Use contractions (don't, it's, can't, won't, you're, they're, I've, I'd) consistently to mirror natural speech.
-5. PUNCTUATION FRICTION: Use em-dashes (—) and ellipses (...) sparingly to create conversational flow. Avoid semicolons entirely.
-6. SENTENCE VARIETY (BURSTINESS): You MUST manually vary sentence length without repeating patterns. Start a paragraph with a 3-word sentence. Follow it with a 45-word complex period with multiple dependent clauses. Then use a 12-word declarative sentence. Use fragments for emphasis.
-7. NO RULE OF THREE: AI lists exactly three items for rhythmic effect. You MUST list two or four items, but NEVER exactly three.
-</mandatory_stylistic_constraints>
-
-<forbidden_vocabulary>
-DO NOT use ANY of these high-frequency AI markers:
-- delve, tapestry, unlock, realm, pivotal, landscape, testament, vibrant, bustling
-- comprehensive, meticulous, foster, integrate, streamline
-- furthermore, moreover, additionally, in conclusion, it is important to note, crucial to understand
-- tapestry of, delve into the intricacies, underscores, embarking, vibrant metropolis
-- navigating the complexities, leverage, utilize, implement, facilitate
-- robust, seamless, cutting-edge, game-changer, optimal, subsequently
-- paramount, plethora, myriad, endeavor, ascertain, commence
-- prior to, in order to, due to the fact that, it goes without saying
-- at the end of the day, when all is said and done, needless to say
-- first and foremost, last but not least, in today's world
-- revolutionize, transform, empower, elevate, enhance
-- synergy, holistic, paradigm, ecosystem, scalable
-</forbidden_vocabulary>
-
-<content_requirements>
-1. EEAT INJECTION: Inject specific, niche "anecdotal data." Describe a specific, fictional but realistic scenario from the winter of 2024. Use sensory details (smell, touch, sight). Reference real companies, real tools, real numbers.
-
-2. ANSWER-FIRST STRUCTURE: Open EVERY section with a direct, concise answer (under 50 words). Then expand with context. Don't build up to the point—start with it.
-
-3. HIGH PERPLEXITY: Use unexpected synonyms and non-standard syntactic arrangements. Avoid the most predictable word choices. If the obvious word is "important," use "non-negotiable" or "make-or-break."
-
-4. OPINION INJECTION: State opinions boldly. "I think X is overrated." "Most experts get this wrong." "Here's what nobody tells you."
-
-5. IMPERFECTION MARKERS: Include natural speech patterns like "Look," "Here's the thing," "I mean," "Honestly," "Real talk."
-</content_requirements>
-</system_instructions>
-
-<context>
-Topic: ${topic}
-Target Keyword: ${targetKeyword}
-Word Count: ${minWords}+ words (this is a DEEP DIVE article)
-Target Audience: ${targetAudience}
-Tone: ${tone} but with journalistic skepticism
-Formatting: Use H1 for title, H2 for main sections, H3 for sub-questions.
-</context>
-
-You are a professional human ghostwriter with 20 years of experience. Write an extremely detailed, ${minWords}-word blog post about "${topic}".
-
-═══════════════════════════════════════════════════════════════
-STRUCTURE & HEADINGS (USE EXACTLY THESE IN ORDER)
-═══════════════════════════════════════════════════════════════
-
-${headingsList}
-
-Format each main heading as: <h2 id="section1">Heading Text</h2>
-Format sub-headings as: <h3>Sub-heading Text</h3>
-
-After the opening paragraph, add a Table of Contents:
-<div class="toc">
-<h3>What's Inside</h3>
-<ul>
-<li><a href="#section1">First Heading</a></li>
-<li><a href="#section2">Second Heading</a></li>
-...continue for all sections...
-</ul>
-</div>
-
-═══════════════════════════════════════════════════════════════
-KEYWORDS TO WEAVE NATURALLY
-═══════════════════════════════════════════════════════════════
-
-${keywords}
-
-Don't force keywords. Let them appear where they make sense.
-
-═══════════════════════════════════════════════════════════════
-E-E-A-T AUTHORITY SIGNALS
-═══════════════════════════════════════════════════════════════
-
-${eeat || 'Write as a field researcher who has spent years testing, failing, and learning. Reference specific dates, specific tools, specific outcomes. "In November 2024, I tested X and found Y."'}
-
-Include:
-- Specific dates and timeframes
-- Named tools, products, or companies
-- Quantified results ("37% improvement" not "significant improvement")
-- Personal failures and lessons learned
-- Contrarian takes that challenge conventional wisdom
-
-═══════════════════════════════════════════════════════════════
-REFERENCE MATERIAL
-═══════════════════════════════════════════════════════════════
-
-${references || 'Draw from your expertise. Cite specific studies, tools, or industry reports where relevant.'}
-
-═══════════════════════════════════════════════════════════════
-BURSTINESS ENGINE (CRITICAL FOR HUMAN DETECTION)
-═══════════════════════════════════════════════════════════════
-
-Your sentence rhythm MUST follow this pattern throughout:
-
-SHORT (3-7 words): "This changes everything."
-LONG (35-50 words): "When I first encountered this problem back in 2023, I spent three weeks testing every solution on the market, burning through my budget, losing sleep, and ultimately discovering that the answer was simpler than anyone in the industry wanted to admit."
-MEDIUM (12-20 words): "The solution wasn't complicated. It just required abandoning what everyone else was doing."
-FRAGMENT: "Counterintuitive? Absolutely."
-
-Repeat this rhythm variation throughout. Never let two consecutive sentences have similar length.
-
-═══════════════════════════════════════════════════════════════
-VOICE MARKERS (USE THROUGHOUT)
-═══════════════════════════════════════════════════════════════
-
-Sentence starters to use:
-- "Look, here's what nobody tells you..."
-- "I've tested this. Multiple times."
-- "The industry gets this wrong."
-- "Real talk:"
-- "Here's the uncomfortable truth..."
-- "Most guides skip this part."
-- "You've probably heard X. It's wrong."
-- "I made this mistake. Cost me Y."
-- "Forget what you've read elsewhere."
-
-Opinion markers:
-- "In my experience..."
-- "I think..."
-- "What I've found is..."
-- "My take:"
-- "Unpopular opinion:"
-
-Hedging (shows human uncertainty):
-- "probably"
-- "might"
-- "seems like"
-- "from what I've seen"
-- "could be"
-
-═══════════════════════════════════════════════════════════════
-SECTION STRUCTURE (EACH H2)
-═══════════════════════════════════════════════════════════════
-
-Each section MUST follow this pattern:
-
-1. ANSWER FIRST (50 words max): State the key point immediately. No buildup.
-
-2. CONTEXT & EVIDENCE (300-500 words): Expand with specifics, data, examples.
-
-3. ANECDOTE (150-250 words): A specific story—yours or observed. Include sensory details. "The office smelled like burnt coffee. My screen showed..."
-
-4. CONTRARIAN TAKE (100-150 words): Challenge conventional wisdom. "Most experts say X. They're missing Y."
-
-5. PRACTICAL APPLICATION (200-300 words): Concrete steps. Not generic advice.
-
-6. COMMON MISTAKES (100-200 words): What people get wrong. Be specific.
-
-Total per section: 900-1,400 words minimum.
-
-═══════════════════════════════════════════════════════════════
-LISTS RULE (CRITICAL - NO RULE OF THREE)
-═══════════════════════════════════════════════════════════════
-
-NEVER list exactly 3 items. AI loves the rule of three.
-
-Always list 2 items, 4 items, 5 items, or 7 items.
-
-Bad: "Three key factors: A, B, and C."
-Good: "Four factors matter here: A, B, C, and D."
-Good: "Two things drive this: A and B."
-
-═══════════════════════════════════════════════════════════════
-BANNED WORDS - NEVER USE THESE (AI GIVEAWAYS)
-═══════════════════════════════════════════════════════════════
-
-❌ delve → look into, dig into
-❌ realm → area, world, space
-❌ landscape → world, scene, space
-❌ robust → strong, solid, reliable
-❌ leverage → use, take advantage of
-❌ comprehensive → full, complete, thorough
-❌ game-changer → big deal, huge, changes everything
-❌ cutting-edge → new, latest, modern
-❌ seamless → smooth, easy, simple
-❌ utilize → use
-❌ implement → set up, start, put in place
-❌ facilitate → help, make easier
-❌ optimal → best, ideal
-❌ subsequently → then, after that
-❌ furthermore → also, plus, and
-❌ moreover → also, and, plus
-❌ therefore → so, that's why
-❌ nevertheless → but, still
-❌ consequently → so, as a result
-❌ paramount → important, key, critical
-❌ plethora → many, lots of
-❌ myriad → many, countless
-❌ embark → start, begin
-❌ foster → build, grow
-❌ endeavor → try, attempt
-❌ ascertain → find out, figure out
-❌ commence → start, begin
-❌ prior to → before
-❌ in order to → to
-❌ due to the fact that → because
-❌ tapestry → mix, blend
-❌ vibrant → lively, active
-❌ bustling → busy, active
-❌ meticulous → careful, detailed
-❌ streamline → simplify
-❌ synergy → teamwork, combined effort
-❌ holistic → complete, whole
-❌ paradigm → model, approach
-❌ ecosystem → system, environment
-❌ scalable → growable
-
-═══════════════════════════════════════════════════════════════
-LENGTH REQUIREMENTS (NON-NEGOTIABLE)
-═══════════════════════════════════════════════════════════════
-
-TOTAL: At least ${minWords} words (this is a DEEP DIVE article)
-
-Each H2 section: 800-1,200 words minimum
-
-Include in each section:
-- A personal story or example (150-200 words)
-- Detailed explanation with specifics (400-500 words)
-- Practical tips or steps (200-300 words)
-- Common mistakes to avoid (100-150 words)
-
-DO NOT SUMMARIZE. Go deep. Explain everything thoroughly.
-
-═══════════════════════════════════════════════════════════════
-ENDING (NO "IN CONCLUSION")
-═══════════════════════════════════════════════════════════════
-
-End with "Parting Thoughts" or "Final Words" or "Where This Leaves You"
-- Make it personal and memorable
-- Share one last piece of hard-won advice
-- NO bullet point summaries
-- NO "In conclusion" or "To summarize" or "In summary"
-- NO "I hope this helps" or similar AI pleasantries
-
-═══════════════════════════════════════════════════════════════
-HTML FORMAT
-═══════════════════════════════════════════════════════════════
-
-<h2 id="section1">Heading</h2>
-<h3>Sub-heading</h3>
-<p>Paragraph text</p>
-<ul><li>List item</li></ul>
-<strong>Bold text</strong>
-<em>Italic text</em>
-<blockquote>Important quote or callout</blockquote>
-
-═══════════════════════════════════════════════════════════════
-SELF-AUDIT BEFORE SUBMITTING
-═══════════════════════════════════════════════════════════════
-
-Before finalizing, evaluate your draft:
-1. Find sections that feel too "smooth" or predictable
-2. Add friction: a qualifying remark, changed word order, or short staccato sentence
-3. Check for forbidden vocabulary—replace any that slipped through
-4. Verify no section has three-item lists
-5. Confirm sentence length varies dramatically
-
-═══════════════════════════════════════════════════════════════
-FLESCH READING EASE TARGET: ~70
-═══════════════════════════════════════════════════════════════
-
-Use short words. Short sentences mixed with longer ones.
-Avoid jargon unless your audience expects it.
-Write like you're explaining to a smart friend, not a textbook.
-
-═══════════════════════════════════════════════════════════════
-START WRITING NOW
-═══════════════════════════════════════════════════════════════
-
-Begin directly with an engaging opening paragraph. No "Here is..." or any meta-commentary.
-Just start the article as if you're a seasoned journalist sharing hard-won knowledge.
-Your first sentence should hook the reader immediately.`;
+    // ═══════════════════════════════════════════════════════════════
+    // GENERATE MEGA-PROMPT USING THE NEW ENGINE
+    // ═══════════════════════════════════════════════════════════════
+    console.log('[Content] Generating mega-prompt with persona:', persona);
+    
+    const prompt = generateMegaPrompt({
+      topic,
+      keywords,
+      targetAudience,
+      tone,
+      minWords,
+      headings,
+      references,
+      eeat,
+      persona
+    });
+    
+    console.log('[Content] Mega-prompt generated, length:', prompt.length);
 
     let content = null;
     let apiUsed = '';
@@ -2572,14 +2307,40 @@ Your first sentence should hook the reader immediately.`;
       cleanContent = cleanContent.replace(regex, replacement);
     }
 
-    // Remove "In conclusion" type endings
-    cleanContent = cleanContent.replace(/<h2[^>]*>In Conclusion<\/h2>/gi, '<h2 id="final-words">Parting Thoughts</h2>');
-    cleanContent = cleanContent.replace(/<h2[^>]*>Conclusion<\/h2>/gi, '<h2 id="final-words">Parting Thoughts</h2>');
-    cleanContent = cleanContent.replace(/<h2[^>]*>To Summarize<\/h2>/gi, '<h2 id="final-words">Final Words</h2>');
-    cleanContent = cleanContent.replace(/<h2[^>]*>Summary<\/h2>/gi, '<h2 id="final-words">Where This Leaves You</h2>');
-    cleanContent = cleanContent.replace(/In conclusion,?\s*/gi, '');
-    cleanContent = cleanContent.replace(/To summarize,?\s*/gi, '');
-    cleanContent = cleanContent.replace(/In summary,?\s*/gi, '');
+    // ═══════════════════════════════════════════════════════════════
+    // ADVANCED HUMANIZATION - Using Human Content Engine
+    // ═══════════════════════════════════════════════════════════════
+    console.log('[Content] Applying advanced humanization...');
+    
+    // Apply the comprehensive humanization engine
+    cleanContent = humanizeContent(cleanContent, {
+      removeForbidden: true,
+      useContractions: true,
+      fixThreeRule: true,
+      injectVoice: true,
+      addHedges: true,
+      fixEndings: true,
+      addPunctuation: true,
+      improveBurst: true,
+      addQuestions: true,
+      voiceFrequency: 0.12,
+      hedgeFrequency: 0.08,
+      questionFrequency: 0.06
+    });
+    
+    // Analyze AI detection risk
+    const aiRiskAnalysis = analyzeAIRisk(cleanContent);
+    console.log(`[Content] AI Risk Score: ${aiRiskAnalysis.score}/100 (${aiRiskAnalysis.riskLevel})`);
+    
+    // If risk is still high, apply additional humanization
+    if (aiRiskAnalysis.score < 70) {
+      console.log('[Content] Risk still high, applying additional humanization...');
+      cleanContent = humanizeContent(cleanContent, {
+        voiceFrequency: 0.18,
+        hedgeFrequency: 0.12,
+        questionFrequency: 0.10
+      });
+    }
 
     // Fetch topic-relevant images
     console.log('[Content] Fetching images for topic:', topic);
@@ -2596,6 +2357,7 @@ Your first sentence should hook the reader immediately.`;
     const wordCount = textOnly.split(/\s+/).filter(w => w.length > 0).length;
 
     console.log(`[Content] Generated using ${apiUsed}: ${wordCount} words, ${images.length} images`);
+    console.log(`[Content] Final AI Risk: ${aiRiskAnalysis.riskLevel} (Score: ${aiRiskAnalysis.score})`);
 
     // Deduct tokens after successful generation
     const tokenResult = await deductTokens(userId, 'blogPost', {
@@ -2616,7 +2378,9 @@ Your first sentence should hook the reader immediately.`;
       scheduleDate: config.scheduleDate || null,
       scheduleTime: config.scheduleTime || null,
       tokensUsed: tokenResult.tokensUsed,
-      tokensRemaining: tokenResult.remaining
+      tokensRemaining: tokenResult.remaining,
+      humanizationScore: aiRiskAnalysis.score,
+      humanizationLevel: aiRiskAnalysis.riskLevel
     });
 
   } catch (error) {
@@ -2625,10 +2389,10 @@ Your first sentence should hook the reader immediately.`;
   }
 });
 
-// HUMANIZATION ENDPOINT - JavaScript implementation (no Python needed)
+// HUMANIZATION ENDPOINT - Advanced AI Detection Bypass
 app.post('/api/content/humanize', async (req, res) => {
   try {
-    const { content } = req.body;
+    const { content, options = {} } = req.body;
     
     if (!content || !content.trim()) {
       return res.status(400).json({ error: 'Content is required' });
@@ -2636,75 +2400,80 @@ app.post('/api/content/humanize', async (req, res) => {
     
     console.log('[Humanize] Processing content, length:', content.length);
     
-    const humanizePrompt = `You are an expert content humanizer. Your task is to rewrite the following content to make it sound more natural, engaging, and human-written while preserving all the information and meaning.
-
-Guidelines:
-- Use varied sentence structures
-- Add natural transitions
-- Include conversational elements where appropriate
-- Maintain the original meaning and facts
-- Keep the same general length
-- Make it flow naturally
-
-Content to humanize:
-${content}
-
-Rewrite the content to sound more human and natural:`;
-
-    let humanizedContent = null;
-
-    // Try OpenRouter first
-    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-    if (OPENROUTER_API_KEY) {
-      try {
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://ai-marketing-platform.com',
-            'X-Title': 'AI Marketing Platform'
-          },
-          body: JSON.stringify({
-            model: 'anthropic/claude-3-haiku',
-            messages: [{ role: 'user', content: humanizePrompt }],
-            max_tokens: 4000
-          })
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          humanizedContent = data.choices?.[0]?.message?.content;
-        }
-      } catch (err) {
-        console.log('[Humanize] OpenRouter error:', err.message);
+    // First, analyze the AI risk of the original content
+    const originalRisk = analyzeAIRisk(content);
+    console.log(`[Humanize] Original AI Risk: ${originalRisk.score}/100 (${originalRisk.riskLevel})`);
+    
+    // Apply the comprehensive humanization engine
+    let humanizedContent = humanizeContent(content, {
+      removeForbidden: true,
+      useContractions: true,
+      fixThreeRule: true,
+      injectVoice: options.injectVoice !== false,
+      addHedges: options.addHedges !== false,
+      fixEndings: true,
+      addPunctuation: true,
+      improveBurst: true,
+      addQuestions: options.addQuestions !== false,
+      voiceFrequency: options.voiceFrequency || 0.15,
+      hedgeFrequency: options.hedgeFrequency || 0.10,
+      questionFrequency: options.questionFrequency || 0.08
+    });
+    
+    // Analyze the humanized content
+    const humanizedRisk = analyzeAIRisk(humanizedContent);
+    console.log(`[Humanize] Humanized AI Risk: ${humanizedRisk.score}/100 (${humanizedRisk.riskLevel})`);
+    
+    // If still high risk, apply additional humanization
+    if (humanizedRisk.score < 70) {
+      console.log('[Humanize] Applying additional humanization pass...');
+      humanizedContent = humanizeContent(humanizedContent, {
+        voiceFrequency: 0.20,
+        hedgeFrequency: 0.15,
+        questionFrequency: 0.12
+      });
+    }
+    
+    const finalRisk = analyzeAIRisk(humanizedContent);
+    
+    res.json({ 
+      content: humanizedContent.trim(),
+      analysis: {
+        originalScore: originalRisk.score,
+        originalLevel: originalRisk.riskLevel,
+        humanizedScore: finalRisk.score,
+        humanizedLevel: finalRisk.riskLevel,
+        improvement: finalRisk.score - originalRisk.score,
+        issues: finalRisk.issues,
+        recommendations: finalRisk.recommendations
       }
-    }
-
-    // Fallback to Google AI
-    if (!humanizedContent) {
-      const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
-      if (GOOGLE_AI_KEY) {
-        try {
-          const { GoogleGenerativeAI } = await import('@google/generative-ai');
-          const genAI = new GoogleGenerativeAI(GOOGLE_AI_KEY);
-          const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-          const result = await model.generateContent(humanizePrompt);
-          humanizedContent = result.response.text();
-        } catch (err) {
-          console.log('[Humanize] Google AI error:', err.message);
-        }
-      }
-    }
-
-    if (humanizedContent) {
-      res.json({ content: humanizedContent.trim() });
-    } else {
-      // Return original content if humanization fails
-      res.json({ content: content, note: 'Humanization unavailable, returning original' });
-    }
+    });
   } catch (error) {
     console.error('Humanize error:', error);
+    res.status(500).json({ error: error.message || 'An unexpected error occurred' });
+  }
+});
+
+// AI RISK ANALYSIS ENDPOINT - Check content for AI detection risk
+app.post('/api/content/analyze-risk', async (req, res) => {
+  try {
+    const { content } = req.body;
+    
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+    
+    const analysis = analyzeAIRisk(content);
+    
+    res.json({
+      score: analysis.score,
+      riskLevel: analysis.riskLevel,
+      riskColor: analysis.riskColor,
+      issues: analysis.issues,
+      recommendations: analysis.recommendations
+    });
+  } catch (error) {
+    console.error('Analyze risk error:', error);
     res.status(500).json({ error: error.message || 'An unexpected error occurred' });
   }
 });

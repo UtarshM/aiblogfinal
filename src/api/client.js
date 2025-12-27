@@ -120,15 +120,35 @@ export const api = {
     }
     return data;
   },
-  humanizeContent: async (content) => {
+  humanizeContent: async (content, options = {}) => {
+    const token = localStorage.getItem('token');
     const res = await fetch(`${API_BASE}/content/humanize`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content }),
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ content, options }),
     });
     const data = await res.json();
     if (!res.ok) {
       throw new Error(data.error || 'Failed to humanize content');
+    }
+    return data;
+  },
+  analyzeAIRisk: async (content) => {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${API_BASE}/content/analyze-risk`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ content }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to analyze content');
     }
     return data;
   },
