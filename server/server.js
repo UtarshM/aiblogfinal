@@ -2891,10 +2891,28 @@ app.post('/api/images/search', async (req, res) => {
     const searchQuery = encodeURIComponent(topic);
     const SERPAPI_KEY = process.env.SERPAPI_KEY;
     
+    // Helper function to convert HTTP to HTTPS and validate URLs
+    const sanitizeImageUrl = (url) => {
+      if (!url) return null;
+      // Convert HTTP to HTTPS to avoid mixed content warnings
+      let sanitizedUrl = url.replace(/^http:\/\//i, 'https://');
+      // Filter out problematic domains that block hotlinking
+      const blockedDomains = ['wikia.nocookie.net', 'fandom.com', 'static.wikia.nocookie.net'];
+      try {
+        const urlObj = new URL(sanitizedUrl);
+        if (blockedDomains.some(domain => urlObj.hostname.includes(domain))) {
+          return null;
+        }
+      } catch (e) {
+        return null;
+      }
+      return sanitizedUrl;
+    };
+    
     // Use SerpAPI to search Google Images - returns EXACT images
     if (SERPAPI_KEY) {
       try {
-        const serpUrl = `https://serpapi.com/search.json?engine=google_images&q=${searchQuery}&num=${numImages + 2}&api_key=${SERPAPI_KEY}&safe=active`;
+        const serpUrl = `https://serpapi.com/search.json?engine=google_images&q=${searchQuery}&num=${numImages + 5}&api_key=${SERPAPI_KEY}&safe=active`;
         
         const response = await fetch(serpUrl);
         
@@ -2902,12 +2920,19 @@ app.post('/api/images/search', async (req, res) => {
           const data = await response.json();
           
           if (data.images_results && data.images_results.length > 0) {
-            const images = data.images_results.slice(0, numImages).map(img => ({
-              url: img.original || img.thumbnail,
-              title: img.title || topic,
-              alt: img.title || topic,
-              source: img.source || 'Google Images'
-            })).filter(img => img.url);
+            const images = data.images_results
+              .map(img => {
+                const url = sanitizeImageUrl(img.original || img.thumbnail);
+                if (!url) return null;
+                return {
+                  url,
+                  title: img.title || topic,
+                  alt: img.title || topic,
+                  source: img.source || 'Google Images'
+                };
+              })
+              .filter(img => img !== null)
+              .slice(0, numImages);
             
             if (images.length > 0) {
               console.log(`[Images API] ✅ Found ${images.length} REAL Google Images for: "${topic}"`);
@@ -2926,7 +2951,7 @@ app.post('/api/images/search', async (req, res) => {
     
     if (GOOGLE_SEARCH_API_KEY && GOOGLE_SEARCH_CX) {
       try {
-        const googleUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_SEARCH_API_KEY}&cx=${GOOGLE_SEARCH_CX}&q=${searchQuery}&searchType=image&num=${numImages}&imgSize=large&safe=active`;
+        const googleUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_SEARCH_API_KEY}&cx=${GOOGLE_SEARCH_CX}&q=${searchQuery}&searchType=image&num=${numImages + 3}&imgSize=large&safe=active`;
         
         const response = await fetch(googleUrl);
         
@@ -2934,12 +2959,19 @@ app.post('/api/images/search', async (req, res) => {
           const data = await response.json();
           
           if (data.items && data.items.length > 0) {
-            const images = data.items.map(item => ({
-              url: item.link,
-              title: item.title || topic,
-              alt: item.title || topic,
-              source: item.displayLink
-            }));
+            const images = data.items
+              .map(item => {
+                const url = sanitizeImageUrl(item.link);
+                if (!url) return null;
+                return {
+                  url,
+                  title: item.title || topic,
+                  alt: item.title || topic,
+                  source: item.displayLink
+                };
+              })
+              .filter(img => img !== null)
+              .slice(0, numImages);
             
             console.log(`[Images API] ✅ Found ${images.length} Google Custom Search images for: "${topic}"`);
             return res.json({ images });

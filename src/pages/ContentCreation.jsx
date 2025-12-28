@@ -1465,7 +1465,7 @@ Make each description specific, visual, and relevant to the content's main point
                                     className="whitespace-pre-wrap"
                                     dangerouslySetInnerHTML={{
                                         __html: content
-                                            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="w-full max-w-3xl mx-auto my-6 rounded-lg shadow-lg" style="max-height: 400px; object-fit: contain;" />')
+                                            .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="w-full max-w-3xl mx-auto my-6 rounded-lg shadow-lg" style="max-height: 400px; object-fit: contain;" onerror="this.style.display=\'none\'" />')
                                             .replace(/\n/g, '<br />')
                                     }}
                                 />
