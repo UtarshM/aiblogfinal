@@ -179,6 +179,7 @@ export default function SuperAdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState(null);
     const [adminUser, setAdminUser] = useState(null);
+    const toast = useToast();
 
     useEffect(() => {
         const token = localStorage.getItem('superAdminToken');
@@ -190,11 +191,50 @@ export default function SuperAdminDashboard() {
         }
 
         if (user) {
-            setAdminUser(JSON.parse(user));
+            try {
+                setAdminUser(JSON.parse(user));
+            } catch (e) {
+                console.error('Failed to parse admin user:', e);
+            }
         }
 
-        loadDashboardData();
+        // Verify token is still valid
+        verifyAndLoadData();
     }, [navigate]);
+
+    const verifyAndLoadData = async () => {
+        setLoading(true);
+        try {
+            // First verify the token
+            const verifyResult = await api.verifySuperAdminToken();
+
+            if (!verifyResult.success) {
+                // Token is invalid or expired
+                handleSessionExpired();
+                return;
+            }
+
+            // Token is valid, load dashboard data
+            const data = await api.getSuperAdminStats();
+            setStats(data);
+        } catch (error) {
+            console.error('Failed to load stats:', error);
+
+            // Check if it's an auth error
+            if (error.message?.includes('Invalid') || error.message?.includes('expired') || error.message?.includes('token')) {
+                handleSessionExpired();
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSessionExpired = () => {
+        localStorage.removeItem('superAdminToken');
+        localStorage.removeItem('superAdminUser');
+        toast.error('Session expired. Please login again.');
+        navigate('/superadmin/login');
+    };
 
     const loadDashboardData = async () => {
         setLoading(true);
@@ -203,6 +243,9 @@ export default function SuperAdminDashboard() {
             setStats(data);
         } catch (error) {
             console.error('Failed to load stats:', error);
+            if (error.message?.includes('Invalid') || error.message?.includes('expired') || error.message?.includes('token')) {
+                handleSessionExpired();
+            }
         } finally {
             setLoading(false);
         }
@@ -2121,6 +2164,7 @@ function ActivityView() {
 // SETTINGS VIEW - Platform Settings
 // ═══════════════════════════════════════════════════════════════
 function SettingsView() {
+    const navigate = useNavigate();
     const [settings, setSettings] = useState({
         commissionRate: 20,
         cookieDuration: 30,
@@ -2132,6 +2176,13 @@ function SettingsView() {
     const [loading, setLoading] = useState(true);
     const toast = useToast();
     const modal = useModal();
+
+    const handleSessionExpired = () => {
+        localStorage.removeItem('superAdminToken');
+        localStorage.removeItem('superAdminUser');
+        toast.error('Session expired. Please login again.');
+        navigate('/superadmin/login');
+    };
 
     useEffect(() => {
         loadSettings();
@@ -2151,6 +2202,9 @@ function SettingsView() {
             }
         } catch (error) {
             console.error('Failed to load settings:', error);
+            if (error.message?.includes('Invalid') || error.message?.includes('expired') || error.message?.includes('token')) {
+                handleSessionExpired();
+            }
         } finally {
             setLoading(false);
         }
@@ -2162,7 +2216,11 @@ function SettingsView() {
             await api.updateSuperAdminSettings(settings);
             toast.success('Settings saved successfully!');
         } catch (error) {
-            toast.error('Failed to save: ' + error.message);
+            if (error.message?.includes('Invalid') || error.message?.includes('expired') || error.message?.includes('token')) {
+                handleSessionExpired();
+            } else {
+                toast.error('Failed to save: ' + error.message);
+            }
         } finally {
             setSaving(false);
         }
