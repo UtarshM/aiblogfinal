@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../api/client';
 import { useToast } from '../context/ToastContext';
 import { useModal } from '../components/Modal';
+import { useMaintenance } from '../context/MaintenanceContext';
 
 // Icons Component
 const Icons = {
@@ -2194,6 +2195,7 @@ function ActivityView() {
 // ═══════════════════════════════════════════════════════════════
 function SettingsView({ onMaintenanceChange }) {
     const navigate = useNavigate();
+    const { enableMaintenance, disableMaintenance } = useMaintenance();
     const [settings, setSettings] = useState({
         commissionRate: 20,
         cookieDuration: 30,
@@ -2245,7 +2247,14 @@ function SettingsView({ onMaintenanceChange }) {
             await api.updateSuperAdminSettings(settings);
             toast.success('Settings saved successfully!');
 
-            // Clear maintenance cache so changes take effect immediately
+            // Update localStorage-based maintenance mode (works immediately, no API needed)
+            if (settings.maintenanceMode) {
+                enableMaintenance(settings.maintenanceMessage);
+            } else {
+                disableMaintenance();
+            }
+
+            // Clear old maintenance cache key (legacy cleanup)
             localStorage.removeItem('maintenanceStatus');
 
             // Update parent state for maintenance banner

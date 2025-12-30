@@ -48,7 +48,7 @@ function ProtectedRoute({ children }) {
 
 // Maintenance Wrapper - Shows maintenance page when enabled (but not for SuperAdmin routes)
 function MaintenanceWrapper({ children }) {
-    const { isMaintenanceMode, maintenanceMessage, loading, canBypassMaintenance, apiCallFailed } = useMaintenance();
+    const { isMaintenanceMode, maintenanceMessage, loading, canBypassMaintenance } = useMaintenance();
     const location = useLocation();
 
     // SuperAdmin routes should ALWAYS bypass maintenance

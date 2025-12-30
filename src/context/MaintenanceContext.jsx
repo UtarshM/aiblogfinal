@@ -1,6 +1,10 @@
 /**
  * Maintenance Context - Checks and manages maintenance mode status
  * 
+ * WORKAROUND: Uses localStorage-based sync since backend CORS is not deployed
+ * When SuperAdmin enables maintenance, it saves to localStorage
+ * All browser tabs/windows check localStorage for maintenance status
+ * 
  * @author Scalezix Venture PVT LTD
  * @copyright 2025 All Rights Reserved
  */
@@ -12,152 +16,139 @@ const API_BASE = import.meta.env.VITE_API_URL ||
 
 const MaintenanceContext = createContext();
 
-// Cache key for maintenance status
-const MAINTENANCE_CACHE_KEY = 'maintenanceStatus';
-const MAINTENANCE_CACHE_DURATION = 30 * 1000; // 30 seconds (reduced from 5 minutes)
+// Keys for maintenance status
+const MAINTENANCE_ENABLED_KEY = 'maintenanceEnabled';
+const MAINTENANCE_MESSAGE_KEY = 'maintenanceMessage';
 
 export function MaintenanceProvider({ children }) {
+    // Check localStorage for maintenance status (instant, no network needed)
     const [isMaintenanceMode, setIsMaintenanceMode] = useState(() => {
-        // Check cached status on initial load
         try {
-            const cached = localStorage.getItem(MAINTENANCE_CACHE_KEY);
-            if (cached) {
-                const { status, timestamp } = JSON.parse(cached);
-                // Use cached value if less than 30 seconds old
-                if (Date.now() - timestamp < MAINTENANCE_CACHE_DURATION) {
-                    console.log('[Maintenance] Using cached status:', status);
-                    return status;
-                }
+            const flag = localStorage.getItem(MAINTENANCE_ENABLED_KEY);
+            return flag === 'true';
+        } catch (e) {
+            return false;
+        }
+    });
+
+    const [maintenanceMessage, setMaintenanceMessage] = useState(() => {
+        try {
+            return localStorage.getItem(MAINTENANCE_MESSAGE_KEY) ||
+                'We are currently performing maintenance. Please check back soon.';
+        } catch (e) {
+            return 'We are currently performing maintenance. Please check back soon.';
+        }
+    });
+
+    const [loading] = useState(false);
+    const [apiAvailable, setApiAvailable] = useState(false);
+
+    // Try to sync with API (non-blocking, just for cross-device sync)
+    const checkMaintenanceStatus = useCallback(async () => {
+        // Always read from localStorage first (instant)
+        try {
+            const flag = localStorage.getItem(MAINTENANCE_ENABLED_KEY);
+            const msg = localStorage.getItem(MAINTENANCE_MESSAGE_KEY);
+
+            if (flag === 'true') {
+                setIsMaintenanceMode(true);
+                if (msg) setMaintenanceMessage(msg);
+            } else if (flag === 'false') {
+                setIsMaintenanceMode(false);
             }
         } catch (e) {
-            // Ignore cache errors
+            // Ignore
         }
-        return false;
-    });
-    const [maintenanceMessage, setMaintenanceMessage] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [lastChecked, setLastChecked] = useState(null);
-    const [apiCallFailed, setApiCallFailed] = useState(false);
 
-    // Check maintenance status with retry
-    const checkMaintenanceStatus = useCallback(async (retry = 0) => {
-        console.log('[Maintenance] Checking status... (retry:', retry, ')');
-
+        // Try API sync (don't retry on failure to avoid spam)
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
 
             const response = await fetch(`${API_BASE}/maintenance/status`, {
                 signal: controller.signal,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
+                headers: { 'Accept': 'application/json' },
                 mode: 'cors',
-                credentials: 'omit' // Don't send credentials for this public endpoint
+                credentials: 'omit'
             });
 
             clearTimeout(timeoutId);
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
+            if (response.ok) {
+                const data = await response.json();
+                setApiAvailable(true);
 
-            const data = await response.json();
-            console.log('[Maintenance] API Response:', data);
+                // Sync localStorage with API response
+                if (typeof data.maintenanceMode === 'boolean') {
+                    localStorage.setItem(MAINTENANCE_ENABLED_KEY, data.maintenanceMode ? 'true' : 'false');
+                    setIsMaintenanceMode(data.maintenanceMode);
 
-            const maintenanceStatus = data.maintenanceMode === true;
-            setIsMaintenanceMode(maintenanceStatus);
-            setMaintenanceMessage(data.maintenanceMessage || '');
-            setLastChecked(new Date());
-            setApiCallFailed(false);
-
-            // Cache the status
-            try {
-                localStorage.setItem(MAINTENANCE_CACHE_KEY, JSON.stringify({
-                    status: maintenanceStatus,
-                    message: data.maintenanceMessage || '',
-                    timestamp: Date.now()
-                }));
-            } catch (e) {
-                // Ignore cache errors
-            }
-
-            return maintenanceStatus;
-        } catch (error) {
-            console.error('[Maintenance] Check failed:', error.message);
-            setApiCallFailed(true);
-
-            // Retry up to 3 times with exponential backoff
-            if (retry < 3) {
-                const delay = Math.pow(2, retry) * 1000; // 1s, 2s, 4s
-                console.log(`[Maintenance] Retrying in ${delay}ms...`);
-                setTimeout(() => {
-                    checkMaintenanceStatus(retry + 1);
-                }, delay);
-                return isMaintenanceMode; // Return current state while retrying
-            }
-
-            // After all retries fail, check cached status
-            try {
-                const cached = localStorage.getItem(MAINTENANCE_CACHE_KEY);
-                if (cached) {
-                    const { status, message } = JSON.parse(cached);
-                    console.log('[Maintenance] Using cached status after API failure:', status);
-                    setIsMaintenanceMode(status);
-                    setMaintenanceMessage(message || '');
-                    return status;
+                    if (data.maintenanceMessage) {
+                        localStorage.setItem(MAINTENANCE_MESSAGE_KEY, data.maintenanceMessage);
+                        setMaintenanceMessage(data.maintenanceMessage);
+                    }
                 }
-            } catch (e) {
-                // Ignore cache errors
             }
-
-            // If no cache and API failed, default to false (allow access)
-            // This is a trade-off: we don't want to block users if the API is down
-            console.log('[Maintenance] No cache, defaulting to false');
-            setIsMaintenanceMode(false);
-            return false;
-        } finally {
-            setLoading(false);
+        } catch (error) {
+            // API not available - use localStorage only
+            setApiAvailable(false);
         }
-    }, [isMaintenanceMode]);
+    }, []);
 
-    // Check on mount
+    // Listen for localStorage changes (cross-tab sync)
+    useEffect(() => {
+        const handleStorageChange = (e) => {
+            if (e.key === MAINTENANCE_ENABLED_KEY) {
+                setIsMaintenanceMode(e.newValue === 'true');
+            }
+            if (e.key === MAINTENANCE_MESSAGE_KEY && e.newValue) {
+                setMaintenanceMessage(e.newValue);
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
+
+    // Check on mount (once)
     useEffect(() => {
         checkMaintenanceStatus();
     }, []);
 
-    // Periodically check maintenance status (every 15 seconds)
+    // Check periodically (every 2 minutes - reduced to avoid rate limiting)
     useEffect(() => {
-        const interval = setInterval(() => {
-            checkMaintenanceStatus();
-        }, 15000); // Check every 15 seconds
-
+        const interval = setInterval(checkMaintenanceStatus, 120000);
         return () => clearInterval(interval);
     }, [checkMaintenanceStatus]);
 
     // Check if user should bypass maintenance (SuperAdmin)
     const canBypassMaintenance = useCallback(() => {
-        const superAdminToken = localStorage.getItem('superAdminToken');
-        return !!superAdminToken;
+        return !!localStorage.getItem('superAdminToken');
     }, []);
 
-    // Force clear cache and recheck (called when SuperAdmin changes settings)
-    const forceRefresh = useCallback(() => {
-        console.log('[Maintenance] Force refresh triggered');
-        localStorage.removeItem(MAINTENANCE_CACHE_KEY);
-        return checkMaintenanceStatus();
-    }, [checkMaintenanceStatus]);
+    // Enable maintenance mode (called by SuperAdmin settings)
+    const enableMaintenance = useCallback((message) => {
+        localStorage.setItem(MAINTENANCE_ENABLED_KEY, 'true');
+        localStorage.setItem(MAINTENANCE_MESSAGE_KEY, message || 'We are currently performing maintenance. Please check back soon.');
+        setIsMaintenanceMode(true);
+        setMaintenanceMessage(message || 'We are currently performing maintenance. Please check back soon.');
+    }, []);
+
+    // Disable maintenance mode (called by SuperAdmin settings)
+    const disableMaintenance = useCallback(() => {
+        localStorage.setItem(MAINTENANCE_ENABLED_KEY, 'false');
+        setIsMaintenanceMode(false);
+    }, []);
 
     const value = {
         isMaintenanceMode,
         maintenanceMessage,
         loading,
-        lastChecked,
-        apiCallFailed,
+        apiAvailable,
         checkMaintenanceStatus,
         canBypassMaintenance,
-        forceRefresh
+        enableMaintenance,
+        disableMaintenance
     };
 
     return (
