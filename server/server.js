@@ -180,6 +180,14 @@ if (isProduction) {
 app.use(bodyParser.json({ limit: '10mb' })); // Reduced from 50mb for security
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
+// 6.5 Set default timeout for all requests (5 minutes for long AI operations)
+app.use((req, res, next) => {
+  // Set timeout to 5 minutes (300000ms) for AI content generation
+  req.setTimeout(300000);
+  res.setTimeout(300000);
+  next();
+});
+
 // 7. Request logging (minimal in production)
 if (!isProduction) {
   app.use((req, res, next) => {
@@ -1993,6 +2001,10 @@ function insertImagesIntoContent(htmlContent, images) {
 
 // ULTIMATE HUMAN CONTENT GENERATION - PROFESSIONAL JOURNALIST STYLE
 app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req, res) => {
+  // Set longer timeout for this endpoint (5 minutes)
+  req.setTimeout(300000);
+  res.setTimeout(300000);
+  
   try {
     console.log('[Content] generate-human endpoint called');
     const config = req.body;
@@ -2057,6 +2069,10 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
     const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
+    // Create AbortController for timeout (4 minutes for AI generation)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 240000);
+
     // Try Google AI first (better for long content)
     if (GOOGLE_AI_KEY) {
       console.log('[Content] Trying Google AI (Gemini 2.0 Flash)...');
@@ -2066,6 +2082,7 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
               generationConfig: {
@@ -2088,14 +2105,27 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
           console.log('[Content] Google AI response:', JSON.stringify(googleData).substring(0, 500));
         }
       } catch (err) {
-        console.log('[Content] Google AI error:', err.message);
+        if (err.name === 'AbortError') {
+          console.log('[Content] Google AI request timed out');
+        } else {
+          console.log('[Content] Google AI error:', err.message);
+        }
       }
+    }
+
+    // Clear timeout if we got content
+    if (content) {
+      clearTimeout(timeoutId);
     }
 
     // Fallback to OpenRouter
     if (!content && OPENROUTER_API_KEY) {
       console.log('[Content] Trying OpenRouter API...');
       try {
+        // Create new timeout for OpenRouter
+        const orController = new AbortController();
+        const orTimeoutId = setTimeout(() => orController.abort(), 180000); // 3 minutes
+        
         // Try free models first, then paid
         const modelsToTry = [
           'google/gemini-2.0-flash-exp:free',  // Free Gemini
@@ -2113,6 +2143,7 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
               'HTTP-Referer': process.env.FRONTEND_URL || 'https://aiblog.scalezix.com',
               'X-Title': 'AI Marketing Platform'
             },
+            signal: orController.signal,
             body: JSON.stringify({
               model: model,
               messages: [{ role: 'user', content: prompt }],
@@ -2128,15 +2159,25 @@ app.post('/api/content/generate-human', authenticateToken, aiLimiter, async (req
             content = data.choices[0].message.content;
             apiUsed = `OpenRouter (${model})`;
             console.log(`[Content] ${model} success`);
+            clearTimeout(orTimeoutId);
             break; // Exit loop on success
           } else if (data.error) {
             console.log(`[Content] ${model} error:`, data.error.message?.substring(0, 200));
           }
         }
+        
+        clearTimeout(orTimeoutId);
       } catch (err) {
-        console.log('[Content] OpenRouter error:', err.message);
+        if (err.name === 'AbortError') {
+          console.log('[Content] OpenRouter request timed out');
+        } else {
+          console.log('[Content] OpenRouter error:', err.message);
+        }
       }
     }
+
+    // Clear the main timeout
+    clearTimeout(timeoutId);
 
     // If all APIs fail
     if (!content) {
