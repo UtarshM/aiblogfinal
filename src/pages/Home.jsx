@@ -15,7 +15,6 @@ import {
 import { useState, useEffect } from 'react'
 import { usePlan } from '../context/PlanContext'
 import { api } from '../api/client'
-import { DashboardSkeleton } from '../components/SkeletonLoader'
 
 // Tools/Projects data with different colors for variety
 const tools = [
@@ -126,12 +125,14 @@ export default function Home() {
             <AnimatePresence mode="wait">
                 {loading ? (
                     <motion.div
-                        key="skeleton"
+                        key="loading"
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
+                        className="min-h-[60vh] flex items-center justify-center"
                     >
-                        <DashboardSkeleton />
+                        <div className="text-center">
+                            <img src="/scalezix_logo.png" alt="Loading" className="w-12 h-12 mx-auto animate-pulse" />
+                        </div>
                     </motion.div>
                 ) : (
                     <motion.div
