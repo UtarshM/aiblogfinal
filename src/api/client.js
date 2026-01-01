@@ -106,7 +106,8 @@ export const api = {
   },
   generateHumanContent: async (config) => {
     const token = localStorage.getItem('token');
-    const res = await fetch(`${API_BASE}/content/generate-human`, {
+    // Use Chaos Engine v2.0 endpoint for 100% human content (2-4 min processing)
+    const res = await fetch(`${API_BASE}/content/generate-chaos`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
