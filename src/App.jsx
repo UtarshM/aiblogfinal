@@ -13,6 +13,7 @@ import { ThemeProvider } from './context/ThemeContext'
 import { ToastProvider } from './context/ToastContext'
 import { MaintenanceProvider, useMaintenance } from './context/MaintenanceContext'
 import { ModalProvider } from './components/Modal'
+import AppLoader from './components/AppLoader'
 import Layout from './components/Layout'
 import PlanSelector from './components/PlanSelector'
 import LandingPage from './pages/LandingPage'
@@ -169,7 +170,9 @@ function App() {
                 <ToastProvider>
                     <MaintenanceProvider>
                         <ModalProvider>
-                            <AppContent />
+                            <AppLoader minLoadTime={1000}>
+                                <AppContent />
+                            </AppLoader>
                         </ModalProvider>
                     </MaintenanceProvider>
                 </ToastProvider>
