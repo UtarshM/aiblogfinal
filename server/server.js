@@ -1268,23 +1268,23 @@ app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
     }
 
     // Get user's content count
-    const contentCount = await Content.countDocuments({ userId }) || 0;
+    const contentCount = await Content.countDocuments({ userId }).catch(() => 0) || 0;
     
     // Get user's WordPress posts count
     const { WordPressPost } = await import('./wordpressModels.js');
-    const wordpressCount = await WordPressPost.countDocuments({ userId }) || 0;
+    const wordpressCount = await WordPressPost?.countDocuments({ userId }).catch(() => 0) || 0;
     
-    // Get user's social posts count
-    const socialCount = await SocialPost.countDocuments({ userId }) || 0;
+    // Get user's social posts count - with null check
+    const socialCount = SocialPost ? await SocialPost.countDocuments({ userId }).catch(() => 0) : 0;
     
-    // Get user's SEO analyses count
-    const seoCount = await SEOAnalysis.countDocuments({ userId }) || 0;
+    // Get user's SEO analyses count - with null check
+    const seoCount = SEOAnalysis ? await SEOAnalysis.countDocuments({ userId }).catch(() => 0) : 0;
     
-    // Get user's clients count
-    const clientCount = await Client.countDocuments({ userId }) || 0;
+    // Get user's clients count - with null check
+    const clientCount = Client ? await Client.countDocuments({ userId }).catch(() => 0) : 0;
     
-    // Get user's campaigns count
-    const campaignCount = await Campaign.countDocuments({ userId }) || 0;
+    // Get user's campaigns count - with null check
+    const campaignCount = Campaign ? await Campaign.countDocuments({ userId }).catch(() => 0) : 0;
     
     // Get recent activity (last 10 items from various collections)
     const recentContent = await Content.find({ userId })
