@@ -1956,6 +1956,105 @@ async function fetchTopicImages(topic, count = 4) {
   return images;
 }
 
+// Helper function to add Table of Contents to content
+function addTableOfContents(htmlContent) {
+  // Check if TOC already exists
+  if (htmlContent.includes('class="toc"') || htmlContent.includes('class="table-of-contents"')) {
+    return htmlContent;
+  }
+  
+  // Extract all h2 headings
+  const h2Regex = /<h2[^>]*id="([^"]*)"[^>]*>([^<]*)<\/h2>/gi;
+  const headings = [];
+  let match;
+  
+  while ((match = h2Regex.exec(htmlContent)) !== null) {
+    headings.push({
+      id: match[1],
+      text: match[2].trim()
+    });
+  }
+  
+  // If no headings with IDs, try to find h2 without IDs and add them
+  if (headings.length === 0) {
+    const simpleH2Regex = /<h2[^>]*>([^<]*)<\/h2>/gi;
+    let index = 1;
+    htmlContent = htmlContent.replace(simpleH2Regex, (match, text) => {
+      const id = `section-${index}`;
+      headings.push({ id, text: text.trim() });
+      index++;
+      return `<h2 id="${id}">${text}</h2>`;
+    });
+  }
+  
+  if (headings.length < 2) {
+    return htmlContent; // Not enough headings for TOC
+  }
+  
+  // Build TOC HTML
+  const tocItems = headings.map(h => 
+    `<li><a href="#${h.id}">${h.text}</a></li>`
+  ).join('\n');
+  
+  const tocHtml = `
+<div class="table-of-contents" style="background: #f8f9fa; border-left: 4px solid #52b2bf; padding: 20px; margin: 20px 0; border-radius: 8px;">
+  <h3 style="margin-top: 0; color: #333; font-size: 18px;">📑 Table of Contents</h3>
+  <ul style="list-style: none; padding-left: 0; margin-bottom: 0;">
+    ${tocItems}
+  </ul>
+</div>
+`;
+  
+  // Insert TOC after first paragraph
+  const firstPEnd = htmlContent.indexOf('</p>');
+  if (firstPEnd !== -1) {
+    return htmlContent.slice(0, firstPEnd + 4) + tocHtml + htmlContent.slice(firstPEnd + 4);
+  }
+  
+  // If no paragraph, insert at beginning
+  return tocHtml + htmlContent;
+}
+
+// Helper function to generate SEO Schema markup
+function generateSEOSchema(config) {
+  const { title, description, keywords, wordCount, images } = config;
+  
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description,
+    "keywords": keywords,
+    "wordCount": wordCount,
+    "articleBody": description,
+    "author": {
+      "@type": "Organization",
+      "name": "Scalezix"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Scalezix",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://aiblog.scalezix.com/scalezix_logo.png"
+      }
+    },
+    "datePublished": new Date().toISOString(),
+    "dateModified": new Date().toISOString()
+  };
+  
+  // Add image if available
+  if (images && images.length > 0) {
+    schema.image = images.map(img => ({
+      "@type": "ImageObject",
+      "url": img.url,
+      "caption": img.alt
+    }));
+  }
+  
+  return schema;
+}
+
 // Helper function to insert images into content
 function insertImagesIntoContent(htmlContent, images) {
   if (!images || images.length === 0) return htmlContent;
@@ -2722,7 +2821,19 @@ app.post('/api/content/generate-chaos', authenticateToken, aiLimiter, async (req
     // Fetch and insert images
     console.log('[ChaosEngine] Fetching images...');
     const images = await fetchTopicImages(topic, numImages);
-    const contentWithImages = insertImagesIntoContent(cleanContent, images);
+    let contentWithImages = insertImagesIntoContent(cleanContent, images);
+    
+    // Add Table of Contents if not present
+    contentWithImages = addTableOfContents(contentWithImages);
+    
+    // Generate SEO Schema markup
+    const schemaMarkup = generateSEOSchema({
+      title: topic,
+      description: contentWithImages.substring(0, 160).replace(/<[^>]*>/g, ''),
+      keywords: config.keywords || topic,
+      wordCount: contentWithImages.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(w => w.length > 0).length,
+      images: images
+    });
     
     // Final word count
     const textOnly = contentWithImages.replace(/<[^>]*>/g, ' ');
@@ -2759,6 +2870,8 @@ app.post('/api/content/generate-chaos', authenticateToken, aiLimiter, async (req
       scheduleTime: config.scheduleTime || null,
       tokensUsed: tokenResult.tokensUsed,
       tokensRemaining: tokenResult.remaining,
+      // SEO Schema markup
+      seoSchema: schemaMarkup,
       // Chaos Engine specific metrics
       processingTime: totalTime,
       processingMinutes: (totalTime/1000/60).toFixed(1),
